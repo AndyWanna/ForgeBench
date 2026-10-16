@@ -4,7 +4,7 @@
 #
 # Usage: bash release/build_release.sh [BUNDLE_DIR]      (default: release/_bundle)
 # Sources that do not exist are skipped with a warning (listed at the end), so the script
-# can be re-run as more results (Catapult, HLSFactory, tool eval, full-model) appear.
+# can be re-run as more results (tool evaluation) appear.
 # Inputs (maintainers only, not in git): the raw lean archives in checkpoints/ of this checkout, or of FORGEBENCH_ARCHIVES.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -34,8 +34,8 @@ have "$ARCH/r2_cleanup/fullmodel_single_seed_pre_r2.tar.gz" && cp "$ARCH/r2_clea
 # status logs. Archived from the pre-release history (commit 82bbdd50).
 have "$ARCH/r2_cleanup/removed_from_repo_r2_cleanup.tar.gz" && cp "$ARCH/r2_cleanup/removed_from_repo_r2_cleanup.tar.gz" "$OUT/logs/"
 
-# (v)+(vi) verification / CO-SIM / Catapult / HLSFactory / tool-eval logs
-for d in verification/e2e results/catapult_vs_vitis results/hlsfactory/expected_output results/tool_eval; do
+# (v)+(vi) Catapult vs Vitis and tool-evaluation logs
+for d in results/catapult_vs_vitis results/tool_eval; do
   if have "$d"; then tar -czf "$OUT/logs/$(echo "$d" | tr / _).tar.gz" "$d"; fi
 done
 have _run_logs && tar -czf "$OUT/logs/run_logs_r1_july.tar.gz" _run_logs

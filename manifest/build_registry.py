@@ -5,7 +5,7 @@ Scope rule: only designs the paper references are registered.
   ops      Table 2 (per-operator verification: 17 operators)         -> ops.csv
   modular  Sec. 4.4 / Table 7 (modularization test cases)            -> modular.csv, modular_cases.csv
   (sweeps: Table 4/Figs 6-8/Table 5 -> build_manifest.py; full models: Table 3 -> fullmodel.csv, once the
-   configs are recovered; tool evaluation: Table 6 -> tool_eval/ selections of sweep design ids)
+   configs are recovered; tool evaluation: the tool-support table, Case Study 3 -> results/tool_eval/)
 Whole-design configs in designs/configs/examples/<gen>/ that the paper does not reference (e.g. ResNet/VGG blocks,
 attention_op_p*, testing_*) and the two unused modular designs (gemm/mlp, gemm/diff_dims_module_large) are not
 registered; they remain in the repo and in git history.
