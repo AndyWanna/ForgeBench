@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "description": "Exact saved production sources and version-specific fixed/FP64 reference pairs; v2 uses wide reductions and integer controls.",
+  "variants": {
+    "resnet18-full": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "22d34f7fc608a00728f96fd6bbbed2b564078e7393391d39f9f960cecdf1422d",
+            "top.h": "d07a5e0b7c4403af735f7c51c74d1b969fb093a72b0e1dac7c8f89aba835927e"
+          }
+        }
+      ]
+    },
+    "resnet18-tiled": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "19eaf0eab45ec0df45e4e8f77f86b237c5becebeff7ee4ab7741cd99488a75b7",
+            "top.h": "bb63989f7e232882ed51eb343963fbbc638214b639a7be6cb76aaa0cbb0f780b"
+          }
+        }
+      ]
+    },
+    "llama3-prefill": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "8082c277ef746d9ee9ae23154d599895757ddb29561a86ae20b7293f3b559d2f",
+            "top.h": "042ed3e6fbf62e058a98a846516058ccb90d5210db16052b682817e358725c0c"
+          }
+        },
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "bd1ab821efed6699db64566f80e5aa96d5127586fdb1eba25fa98fc8fb8cef08",
+            "top.h": "cc34aa3c70743974e261aee2cc29659bfdb15948489ac8afdf7af084fe83d629"
+          }
+        }
+      ]
+    },
+    "llama3-decode": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "3eff53f847c6e712fc4d315f1224923163bc6d01b8a3b403e90feb1c2e4e1d8f",
+            "top.h": "f9063d8262fc09730f99b897fe0f288981f1fd534ae6ffad8d32c160779f6c4b"
+          }
+        },
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "5244e3bee87385f796e67f695c9f8149762b0a91674dee6895f03add6c29b108",
+            "top.h": "d53565dcf2e0e34cd785ca6df6e984aa66ae475d97aefc311b7a1e1329a5cb1e"
+          }
+        }
+      ]
+    },
+    "resnet50-full": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "ba01802fcd4f0bda183a717f869ceecd7551b522d376f1fe940deea78a43e762",
+            "top.h": "7d24ca76d69a606337d384d23826d1a593b1e98d76d3f9c32990be96e0d86ae6"
+          }
+        }
+      ]
+    },
+    "resnet50-tiled": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "30ed7bb656de42664401de8e908b211e8989e15b8922812ce2e5327881ea218d",
+            "top.h": "f7c6ff5517d775e9f1a9b81ad48999d797cb8e1fc9265aee9e24dd761385726d"
+          }
+        }
+      ]
+    },
+    "resnet34-full": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "53a2ff2c8fb80d591a337c06c8147543dd23e186061a9b96d1d74c33d023fc42",
+            "top.h": "449f230dba805240511f445c8d04b4c58bf746f932b4cca3b6e7652e36d160b5"
+          }
+        }
+      ]
+    },
+    "resnet34-tiled": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "d0c3616c9ef3f876a5693edae91d0c023e82b0407f0afc0f3a989a4528448f14",
+            "top.h": "cc5a898d4fc8fe501b67aa87c6e2b6a221cdd13a92d4a5cfbeb35a533e425bf9"
+          }
+        }
+      ]
+    },
+    "resnet101-full": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "d8a010aa663d7fdff7dcce2e270b2319d7e9b3a62bf07c307e6068d944f877b1",
+            "top.h": "8bce3a6bfbee5d9cc10bb6e7b2cb47ddd0483a630f4de04c2cc5855eb9061d04"
+          }
+        }
+      ]
+    },
+    "resnet101-tiled": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "2394f0505f63a8d816e78dac7852bfb146db75d53620c1d25590b9782e2efcbb",
+            "top.h": "f8d727a537363fc12acd50fe4a5de0cd92e33f77deb0a034dae305f0d64ff3d1"
+          }
+        }
+      ]
+    },
+    "resnet152-full": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "9935d17746e1e3e2982839130da7bd45519831fcd588ee7b4786bac410233c7e",
+            "top.h": "f99d37209dcb954c9fb5ecd411b00cb29ce6477fad3fa93eefe81bdca45c56d7"
+          }
+        }
+      ]
+    },
+    "resnet152-tiled": {
+      "revisions": [
+        {
+          "reference_version": 2,
+          "sources": {
+            "top.cpp": "9c72002d156ff91e3075a560443ac5d972b43b12d24abb6d4894d0221671319f",
+            "top.h": "5771255f22f2a9b945194003327ea18b679b7f94c488f191c483609cf96acf11"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+#include <ap_fixed.h>
+#ifndef TOP_H
+#define TOP_H
+
+typedef ap_fixed<32, 10, AP_TRN, AP_WRAP> data_t;
+
+void top(data_t DRAM_image_input[256][14][14], data_t DRAM_conv_weight_1[256][256][3][3], data_t DRAM_bn_weight_1[4][256], data_t DRAM_conv_weight_2[256][256][3][3], data_t DRAM_bn_weight_2[4][256], data_t DRAM_image_output[256][14][14]);
+
+#endif // TOP_H

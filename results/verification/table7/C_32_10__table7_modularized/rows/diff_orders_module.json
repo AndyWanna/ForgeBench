@@ -1,0 +1,50 @@
+[
+ {
+  "merged_design": "modular/gemm/diff_orders_module",
+  "program": "designs/gemm/diff_orders_p1",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 1.9311904907226562e-05,
+  "rel_l2": 2.6808510085035694e-05,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 128,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "221.1"
+ },
+ {
+  "merged_design": "modular/gemm/diff_orders_module",
+  "program": "designs/gemm/diff_orders_p2",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 1.901388168334961e-05,
+  "rel_l2": 2.6986564119322024e-05,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 128,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "221.1"
+ },
+ {
+  "merged_design": "modular/gemm/diff_orders_module",
+  "program": "designs/gemm/diff_orders_p3",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 1.9252300262451172e-05,
+  "rel_l2": 2.7048345523126616e-05,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 128,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "221.1"
+ }
+]

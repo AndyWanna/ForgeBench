@@ -1,0 +1,50 @@
+[
+ {
+  "merged_design": "modular/conv/activation_module",
+  "program": "designs/conv/activation_op1",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 8.344650268554688e-07,
+  "rel_l2": 6.475157617957346e-07,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 28,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "161.7"
+ },
+ {
+  "merged_design": "modular/conv/activation_module",
+  "program": "designs/conv/activation_op2",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 2.466142177581787e-06,
+  "rel_l2": 2.423046783962756e-06,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 28,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "161.7"
+ },
+ {
+  "merged_design": "modular/conv/activation_module",
+  "program": "designs/conv/activation_op3",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 2.384185791015625e-07,
+  "rel_l2": 1.1916595701272225e-07,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 28,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "161.7"
+ }
+]

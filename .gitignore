@@ -1,0 +1,67 @@
+forgebench/gemm/generator_tests
+designs/hls/**/project_1
+verification/fullmodel/tests/fixtures/*/project_1
+
+# generator outputs when run from forgebench/<gen>/ (the committed sweep configs are designs/configs/ml_sweep/)
+forgebench/*/auto_generated_configs
+forgebench/*/large_hls_files
+forgebench/*/hls_files
+forgebench/*/DRAM_*.txt
+
+ML_testsuite/*
+ModularHLS_testsuite/*
+
+
+*.log
+*/__pycache__
+**/__pycache__
+ML_testsuite.tar.gz
+
+# verification harness local self-check artifacts (generated, Vitis-free)
+verification/_selfcheck/
+verification/_server/
+verification/**/sim
+
+
+# manuscript PDF (author-held, not part of the code artifact)
+*.pdf
+
+# impl P&R run output (large, regenerable)
+_impl1000/
+_run_logs/
+
+# --- large artifacts (live in the Zenodo release bundle, not git; see release/) ------
+# Kept on disk locally; history retains them under tag r1-july-harness / r1-public-snapshot.
+ML_testsuite_part_*
+checkpoints/*/*.tar.gz
+checkpoints/*/*_part_*
+checkpoints/*/regroup.sh
+checkpoints/*/*.log
+release/_bundle/
+
+# --- verification scratch (regenerable) ---------------------------------
+verification/_server_ops/
+verification/_csim_ops*/
+verification/_csim_designs*/
+.vprep.lock
+
+# session / tooling junk
+.claude/
+jgproject/
+tmux-*.log
+.venv/
+
+# sweep runs (generated designs, lean outputs, logs)
+_sweeps/
+verification/_selfcheck_ops/
+verification/_regression/
+
+# bulk verification outputs (per-trial CSVs, sweep curves, paper-run working dirs); summaries are committed explicitly
+verification/results_paper/
+verification/results*/**/trials/
+verification/results*/**/sweep_curves/
+results/verification/**/trials/
+!results/verification/catapult/*/trials/
+!results/verification/operators/*__pm1/trials/
+*.egg-info/
+paper_artifacts/out/

@@ -1,0 +1,76 @@
+{
+    "brams": [
+        {"name": "BRAM_attn_input", "dims": [32, 512]},
+        {"name": "BRAM_WQ", "dims": [256, 512]},
+        {"name": "BRAM_WK", "dims": [256, 512]},
+        {"name": "BRAM_WV", "dims": [256, 512]},
+        {"name": "BRAM_attn_output", "dims": [32, 256]},
+        {"name": "BRAM_norm_output", "dims": [32, 256]},
+        {"name": "BRAM_norm_gamma", "dims": [256]},
+        {"name": "BRAM_norm_beta", "dims": [256]}
+    ],
+    "drams": [
+{"name": "DRAM_attn_input", "dims": [32, 512], "bundle": "mem1"},
+{"name": "DRAM_WQ", "dims": [256, 512], "bundle": "mem2"},
+{"name": "DRAM_WK", "dims": [256, 512], "bundle": "mem3"},
+{"name": "DRAM_WV", "dims": [256, 512], "bundle": "mem4"},
+{"name": "DRAM_norm_output", "dims": [32, 256], "bundle": "mem6"},
+{"name": "DRAM_norm_gamma", "dims": [256], "bundle": "mem5"},
+{"name": "DRAM_norm_beta", "dims": [256], "bundle": "mem7"}
+    ],
+    "ops": {
+        "load_1": {
+        "func_name": "load",
+        "dims": [32, 512],
+        "args": ["DRAM_attn_input", "BRAM_attn_input"]
+    },
+        "load_2": {
+        "func_name": "load",
+        "dims": [256, 512],
+        "args": ["DRAM_WQ", "BRAM_WQ"]
+    },
+        "load_3": {
+        "func_name": "load",
+        "dims": [256, 512],
+        "args": ["DRAM_WK", "BRAM_WK"]
+    },
+        "load_4": {
+        "func_name": "load",
+        "dims": [256, 512],
+        "args": ["DRAM_WV", "BRAM_WV"]
+    },
+        "attn": {
+        "func_name": "mha",
+        "dims": [32, 512, 8, 32],
+        "func_info": ["grouped_mha_rope_template.cpp", false, 2],
+        "args": ["BRAM_attn_input", "BRAM_WQ", "BRAM_WK", "BRAM_WV", "BRAM_attn_output", "2"]
+    },
+        "load_norm_gamma": {
+        "func_name": "load",
+        "dims": [256],
+        "args": ["DRAM_norm_gamma", "BRAM_norm_gamma"]
+    },
+        "load_norm_beta": {
+        "func_name": "load",
+        "dims": [256],
+        "args": ["DRAM_norm_beta", "BRAM_norm_beta"]
+    },
+        "norm": {
+        "func_name": "layernorm",
+        "dims": [32, 256, 0.01],
+        "func_info": ["layer_norm_template.cpp"],
+        "args": ["BRAM_attn_output", "BRAM_norm_gamma", "BRAM_norm_beta", "BRAM_norm_output"]
+    },
+        "store_1": {
+        "func_name": "store",
+        "dims": [32, 256],
+        "args": ["BRAM_norm_output", "DRAM_norm_output"]
+    }
+    },
+    "output_dram_names": ["DRAM_norm_output"],
+    "FPGA_name": "xczu9eg-ffvb1156-2-e",
+    "clock_period": 10,
+    "task": ["csynth"],
+    "data_type": "ap_fixed<16,5>",
+    "top_func_name": "top"
+}

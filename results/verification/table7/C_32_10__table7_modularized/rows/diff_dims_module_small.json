@@ -1,0 +1,50 @@
+[
+ {
+  "merged_design": "modular/gemm/diff_dims_module_small",
+  "program": "designs/gemm/diff_dims_p1",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 6.914138793945312e-05,
+  "rel_l2": 7.597158555685369e-05,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 512,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "852.7"
+ },
+ {
+  "merged_design": "modular/gemm/diff_dims_module_small",
+  "program": "designs/gemm/diff_dims_p2",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 3.647804260253906e-05,
+  "rel_l2": 3.774638690415637e-05,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 256,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "852.7"
+ },
+ {
+  "merged_design": "modular/gemm/diff_dims_module_small",
+  "program": "designs/gemm/diff_dims_p3",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 2.0384788513183594e-05,
+  "rel_l2": 1.8999526408169522e-05,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 128,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "852.7"
+ }
+]

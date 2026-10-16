@@ -1,0 +1,7 @@
+domain,parameter,value
+gemm,inline,True
+gemm,data_type,"ap_fixed<16,5>"
+dnn,pad,1
+dnn,stride,1
+dnn,data_type,"ap_fixed<16,5>"
+llm,data_type,"ap_fixed<16,5>"

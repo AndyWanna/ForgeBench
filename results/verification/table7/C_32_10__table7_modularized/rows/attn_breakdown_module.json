@@ -1,0 +1,34 @@
+[
+ {
+  "merged_design": "modular/llm/attn_breakdown_module",
+  "program": "designs/llm/attn_breakdown_op1",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 7.510185241699219e-06,
+  "rel_l2": 9.93376271902001e-06,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 32,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "49.3"
+ },
+ {
+  "merged_design": "modular/llm/attn_breakdown_module",
+  "program": "designs/llm/attn_breakdown_op2",
+  "datatype": "fixed<32,10>",
+  "status": "ok",
+  "n_trials": 100,
+  "trials_within_bound": 100,
+  "max_abs_err": 7.62939453125e-06,
+  "rel_l2": 9.947206386821926e-06,
+  "same_as_program": 0,
+  "program_trials_compared": 100,
+  "accum_len": 32,
+  "program_run": "verification/results_paper/C_32_10__table7r2_pm1",
+  "notes": "",
+  "total_s": "49.3"
+ }
+]

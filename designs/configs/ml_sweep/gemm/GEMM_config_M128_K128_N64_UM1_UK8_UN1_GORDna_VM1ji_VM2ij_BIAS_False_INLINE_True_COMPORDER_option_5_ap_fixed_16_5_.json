@@ -1,0 +1,103 @@
+{
+    "brams": [
+        {"name": "BRAM_x", "dims": [128]},
+        {"name": "BRAM_A", "dims": [128, 128]},
+        {"name": "BRAM_B", "dims": [128, 64]},
+        {"name": "BRAM_y", "dims": [64]},
+        {"name": "BRAM_bias", "dims": [1]},
+        {"name": "BRAM_result", "dims": [1]},
+        {"name": "BRAM_xt_bias", "dims": [128]},
+        {"name": "BRAM_xt", "dims": [128]},
+        {"name": "BRAM_yt_bias", "dims": [128]},
+        {"name": "BRAM_yt", "dims": [128]}
+    ],
+    "drams": [
+{"name": "DRAM_x", "dims": [128], "bundle": "mem1"},
+{"name": "DRAM_A", "dims": [128, 128], "bundle": "mem1"},
+{"name": "DRAM_B", "dims": [128, 64], "bundle": "mem1"},
+{"name": "DRAM_y", "dims": [64], "bundle": "mem1"},
+{"name": "DRAM_bias", "dims": [1], "bundle": "mem1"},
+{"name": "DRAM_result", "dims": [1], "bundle": "mem2"}
+    ],
+    "ops": {
+        "load_1": {
+        "func_name": "load",
+        "dims": [128],
+        "args": ["DRAM_x", "BRAM_x"]
+    },
+        "load_2": {
+        "func_name": "load",
+        "dims": [128, 128],
+        "args": ["DRAM_A", "BRAM_A"]
+    },
+        "load_3": {
+        "func_name": "load",
+        "dims": [128, 64],
+        "args": ["DRAM_B", "BRAM_B"]
+    },
+        "load_4": {
+        "func_name": "load",
+        "dims": [64],
+        "args": ["DRAM_y", "BRAM_y"]
+    },
+        "load_5": {
+        "func_name": "load",
+        "dims": [1],
+        "args": ["DRAM_bias", "BRAM_bias"]
+    },
+        "load_1": {
+        "func_name": "load",
+        "dims": [128],
+        "args": ["DRAM_x", "BRAM_x"]
+    },
+        "load_2": {
+        "func_name": "load",
+        "dims": [128, 128],
+        "args": ["DRAM_A", "BRAM_A"]
+    },
+        "load_3": {
+        "func_name": "load",
+        "dims": [128, 64],
+        "args": ["DRAM_B", "BRAM_B"]
+    },
+        "load_4": {
+        "func_name": "load",
+        "dims": [64],
+        "args": ["DRAM_y", "BRAM_y"]
+    },
+        "load_5": {
+        "func_name": "load",
+        "dims": [1],
+        "args": ["DRAM_bias", "BRAM_bias"]
+    },
+        "vmm_1": {
+        "func_name": "vmm",
+        "dims": [128, 128],
+        "func_info": [["j", "i"], ["1", "1"], false, true],
+        "args": ["BRAM_A", "BRAM_x", "BRAM_xt_bias", "BRAM_xt"]
+    },
+        "vmm_2": {
+        "func_name": "mmv",
+        "dims": [128, 64],
+        "func_info": [["i", "j"], ["8", "1"], false, true],
+        "args": ["BRAM_B", "BRAM_y", "BRAM_yt_bias", "BRAM_yt"]
+    },
+        "dot_1": {
+        "func_name": "dot_product",
+        "dims": [128],
+        "func_info": ["1", false, true],
+        "args": ["BRAM_xt", "BRAM_yt", "BRAM_bias", "BRAM_result"]
+    },
+        "store": {
+        "func_name": "store",
+        "dims": [1],
+        "args": ["BRAM_result", "DRAM_result"]
+    }
+    },
+    "output_dram_names": ["DRAM_result"],
+    "FPGA_name": "xczu9eg-ffvb1156-2-e",
+    "clock_period": 10,
+    "task": ["csynth"],
+    "data_type": "ap_fixed<16,5>",
+    "top_func_name": "top"
+}
