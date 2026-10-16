@@ -15,8 +15,7 @@ Verified against the emitted C in llm/generate_code.py and its templates
 (matmul_template.cpp, grouped_mha_rope_template.cpp,
 sliding_window_attention_template.cpp, layer_norm_template.cpp,
 rms_norm_template.cpp, matrix_add_template.cpp, elementwise_mult_template.cpp,
-dropout_template.cpp, activation_template.cpp). Deliberate variants and caught
-bugs are documented in verification/FINDINGS_llm.md.
+dropout_template.cpp, activation_template.cpp).
 
 Op / arg conventions (as emitted by generate_code.py):
   load/store       args=[src, dst]                          copy prod(dims) elems
@@ -26,7 +25,7 @@ Op / arg conventions (as emitted by generate_code.py):
   layernorm        args=[in,gamma,beta,out]   dims=[S,DIM,eps]
   rmsnorm          args=[in,gamma,out]        dims=[S,DIM,eps]
   activation       args=[in,out]              dims=[S,DIM]  func_info=[tpl,act_name]
-  dropout          args=[in,out,prob,seed]    dims=[S,DIM]  (inference identity, see FINDINGS)
+  dropout          args=[in,out,prob,seed]    dims=[S,DIM]  (inference identity, see _op_dropout)
   matrix_add       args=[in1,in2,out]         dims=[S,DIM]
   elementwise_mult args=[in1,in2,out]         dims=[S,DIM]
 
@@ -133,8 +132,7 @@ def _op_activation(op, arrays):
 
 def _op_dropout(op, arrays):
     # Inference-time dropout is the identity. The emitted C actually applies an LCG
-    # mask + inverse-keep scaling (a train-time formula); documented in
-    # FINDINGS_llm.md. With inputs == 0 both agree (0 -> 0).
+    # mask + inverse-keep scaling (a train-time formula). With inputs == 0 both agree (0 -> 0).
     S, DIM = op["dims"]
     a, out = op["args"][0], op["args"][1]
     _write(arrays, out, _read(arrays, a, (S, DIM)))

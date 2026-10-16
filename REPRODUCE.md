@@ -37,7 +37,7 @@ Exact tool builds: [docs/TOOL_VERSIONS.md](docs/TOOL_VERSIONS.md). Target: ZCU10
 `make check` (`python -m verification.check_designs --sweep`) regenerates and byte-compares:
 
 - the 12,144 ML sweep configs, from `forgebench/<domain>/auto_generate_json.py` (`forgebench sweep-configs <domain>`);
-- the 30 examples and the 14 full-scale models, from `designs/configs/{examples,fullmodel}` (`forgebench generate`);
+- the 19 examples and the 14 full-scale models, from `designs/configs/{examples,fullmodel}` (`forgebench generate`);
 - the 26 Table 7 programs at `<32,10>`, from the verified design JSONs in `results/verification/table7/C_32_10__table7/configs`
   (`verification/experiments/prepare_table7_synth.py`). The 12 modularized Table 7 designs are hand-written; their sources are
   `designs/hls/modular_designs/<domain>/*_module*`.
@@ -128,5 +128,5 @@ Results: `results/catapult_vs_vitis/`.
 
 ## Changing a generator
 
-`make regression-save` before and `make regression-compare` after a generator change byte-compares a seeded sample of 279 designs
+`make regression-save` before and `make regression-compare` after a generator change byte-compares a seeded sample of 252 designs
 (sweep, operator variants, whole designs); `make check` covers every committed design.
