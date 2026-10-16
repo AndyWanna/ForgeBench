@@ -31,7 +31,7 @@ _impl1000/
 _run_logs/
 
 # --- large artifacts (live in the Zenodo release bundle, not git; see release/) ------
-# Kept on disk locally; history retains them under tag r1-july-harness / r1-public-snapshot.
+# Kept on disk in checkpoints/ for maintainers (make manifest, make bundle).
 ML_testsuite_part_*
 checkpoints/*/*.tar.gz
 checkpoints/*/*_part_*

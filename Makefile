@@ -19,7 +19,7 @@ help:
 	@echo "selfcheck            compile + run every whole-design config with g++ against a float golden   [g++]"
 	@echo "verify-fullmodel     C simulation of every Table 3 design vs the PyTorch references, OUT=<new dir> [ONLY=<regex>]   [Vitis, torch]"
 	@echo "regression-save / regression-compare   generator byte-compare around a code change (BASE=<file>)"
-	@echo "manifest             rebuild manifest/designs/*.csv (maintainers: FORGEBENCH_ARCHIVES=<raw lean archives>)"
+	@echo "manifest             rebuild manifest/designs/*.csv (maintainers: needs the raw lean archives in checkpoints/)"
 	@echo "bundle               assemble the Zenodo bundle in release/_bundle (maintainers)"
 
 install:

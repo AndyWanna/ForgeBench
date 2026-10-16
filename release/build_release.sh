@@ -5,12 +5,13 @@
 # Usage: bash release/build_release.sh [BUNDLE_DIR]      (default: release/_bundle)
 # Sources that do not exist are skipped with a warning (listed at the end), so the script
 # can be re-run as more results (Catapult, HLSFactory, tool eval, full-model) appear.
-# Override locations with env vars, e.g.  CKPT_DIR=/path/to/checkpoints/20260720
+# Inputs (maintainers only, not in git): the raw lean archives in checkpoints/ of this checkout, or of FORGEBENCH_ARCHIVES.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 OUT="${1:-release/_bundle}"
-CKPT_DIR="${CKPT_DIR:-${FORGEBENCH_ARCHIVES:-.}/checkpoints/20260720}"   # maintainers only: the raw lean archives the bundle is built from
+ARCH="${FORGEBENCH_ARCHIVES:-.}/checkpoints"
+CKPT_DIR="${CKPT_DIR:-$ARCH/20260720}"
 MISSING=()
 
 rm -rf "$OUT"; mkdir -p "$OUT"/{full_model,logs}
@@ -25,14 +26,13 @@ python3 release/assemble_reports.py --out "$OUT" && rm -rf "$OUT/_tree"
 # scale_csynth_r1_lean: July csynth reports of ResNet-18/34 (plain+tiled), saved before the build trees were deleted.
 have "$CKPT_DIR/scale_csynth_r1_lean.tar.gz" && cp "$CKPT_DIR/scale_csynth_r1_lean.tar.gz" "$OUT/full_model/"
 # Hanqiu's single-seed full-model runs on the pre-R2 sources (24 variants, incl. the only record that Llama-3-8B fails at <16,5>):
-# provenance only, not used by any paper claim. Removed from the tree; packaged from the last commit that has them.
-git archive --format=tar.gz -o "$OUT/full_model/fullmodel_single_seed_pre_r2.tar.gz" e9eae9a5db85707cb460399ac60adb65bbc6b61d verification/fullmodel/results verification/fullmodel/logs
+# provenance only, not used by any paper claim. Not in this repository; archived from the pre-release history (commit e9eae9a5).
+have "$ARCH/r2_cleanup/fullmodel_single_seed_pre_r2.tar.gz" && cp "$ARCH/r2_cleanup/fullmodel_single_seed_pre_r2.tar.gz" "$OUT/full_model/"
 
 # Not in the paper, removed from the tree in the release cleanup: verification runs of other formats and reruns (Table 7 at <16,5>,
 # mixed and float, R1 Table 7 runs, fix re-runs), the R1 C-sim development runs, the reduced-unroll Catapult synthesis, the impl run
-# status logs. Packaged from the last commit that has them.
-git archive --format=tar.gz -o "$OUT/logs/removed_from_repo_r2_cleanup.tar.gz" 82bbdd50 results/verification manifest/evidence \
-    results/catapult_vs_vitis/catapult_synth verification/experiments
+# status logs. Archived from the pre-release history (commit 82bbdd50).
+have "$ARCH/r2_cleanup/removed_from_repo_r2_cleanup.tar.gz" && cp "$ARCH/r2_cleanup/removed_from_repo_r2_cleanup.tar.gz" "$OUT/logs/"
 
 # (v)+(vi) verification / CO-SIM / Catapult / HLSFactory / tool-eval logs
 for d in verification/e2e results/catapult_vs_vitis results/hlsfactory/expected_output results/tool_eval; do
