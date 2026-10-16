@@ -1,0 +1,66 @@
+artifact: historical dnn/conv_A/project_1/solution1/solution1.log
+source_sha256_before_redaction: efa41de63a5e8883a072e7685dcfdad078e25af51161c457e8349d4a895cace4
+invocation: nested Vitis synthesis; exact historical invocation not recovered
+==============================================================
+Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+Tool Version Limit: 2024.05
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+==============================================================
+INFO: [HLS 200-1505] Using default flow_target 'vivado'
+INFO: [HLS 200-1510] Running: set_part xczu9eg-ffvb1156-2-e 
+INFO: [HLS 200-1611] Setting target device to 'xczu9eg-ffvb1156-2-e'
+INFO: [HLS 200-1510] Running: create_clock -period 10 -name default 
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 10ns.
+[middle omitted]
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1679:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1682:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1685:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1688:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1691:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1694:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1697:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1700:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1703:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1706:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1709:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1712:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1715:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1718:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1721:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1724:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1727:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1730:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1733:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1736:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1739:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1742:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1745:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1748:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_conv_test_kernel.cpp:1751:9)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:52:45)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:52:61)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:99:45)
+WARNING: [HLS 207-5292] unused parameter 'c1' (top_conv_test_kernel.cpp:99:53)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:99:61)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:135:54)
+WARNING: [HLS 207-5292] unused parameter 'c1' (top_conv_test_kernel.cpp:135:62)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:135:70)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:404:44)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:763:42)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:763:58)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:803:42)
+WARNING: [HLS 207-5292] unused parameter 'c1' (top_conv_test_kernel.cpp:803:50)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:803:58)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:851:51)
+WARNING: [HLS 207-5292] unused parameter 'c1' (top_conv_test_kernel.cpp:851:59)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:851:67)
+WARNING: [HLS 207-5292] unused parameter 'c0' (top_conv_test_kernel.cpp:1260:61)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:1260:77)
+WARNING: [HLS 207-5292] unused parameter 'c1' (top_conv_test_kernel.cpp:1303:69)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:1303:77)
+WARNING: [HLS 207-5292] unused parameter 'c1' (top_conv_test_kernel.cpp:1343:78)
+WARNING: [HLS 207-5292] unused parameter 'c2' (top_conv_test_kernel.cpp:1343:86)
+INFO: [HLS 200-111] Finished Source Code Analysis and Preprocessing: CPU user time: 5.86 seconds. CPU system time: 0.73 seconds. Elapsed time: 6.65 seconds; current allocated memory: 346.016 MB.
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:08; Allocated memory: 7.254 MB.

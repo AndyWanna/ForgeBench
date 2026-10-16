@@ -1,0 +1,50 @@
+[28/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/LegalizeDataflow.cpp.o
+[29/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/ConvertDataflowToFunc.cpp.o
+[30/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/BufferizeDataflow.cpp.o
+[31/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Directive/CreateHLSPrimitive.cpp.o
+[32/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/CreateDataflowFromTosa.cpp.o
+[33/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/EliminateMultiProducer.cpp.o
+[34/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/ParallelizeDataflowNode.cpp.o
+<WORK><PATH>/ParallelizeDataflowNode.cpp:22:13: warning: unused function 'applyLoopVectorization' [-Wunused-function]
+static bool applyLoopVectorization(AffineLoopBand &band,
+            ^
+1 warning generated.
+[35/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Dataflow/CreateDataflowFromLinalg.cpp.o
+[36/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Directive/ArrayPartition.cpp.o
+[37/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/AffineLoopOrderOpt.cpp.o
+[38/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/AffineLoopTile.cpp.o
+[39/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/RemoveVariableBound.cpp.o
+[40/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/AffineLoopUnrollJam.cpp.o
+[41/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/AffineLoopPerfection.cpp.o
+[42/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/MaterializeReduction.cpp.o
+[43/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/CreateLocalBuffer.cpp.o
+[44/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/CollapseMemrefUnitDims.cpp.o
+[45/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/LowerCopyToAffine.cpp.o
+[46/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/RaiseAffineToCopy.cpp.o
+[47/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/SimplifyAffineIf.cpp.o
+[48/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/CreateMemrefSubview.cpp.o
+[49/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/SimplifyCopy.cpp.o
+[50/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/AffineStoreForward.cpp.o
+[51/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/ReduceInitialInterval.cpp.o
+[52/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Tensor/LinalgAnalyzeModel.cpp.o
+[53/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Tensor/TosaFakeQuantize.cpp.o
+[54/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Tensor/ConvertTensorToLinalg.cpp.o
+[55/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Memory/BufferVectorize.cpp.o
+[56/73] Building CXX object lib/Dialect/HLS/CMakeFiles/obj.MLIRHLS.dir/HLS.cpp.o
+[57/73] Linking CXX static library lib/libMLIRHLS.a
+[58/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Directive/QoREstimation.cpp.o
+[59/73] Building CXX object tools/scalehls-translate/CMakeFiles/hida-translate.dir/scalehls-translate.cpp.o
+[60/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Tensor/TosaSimplifyGraph.cpp.o
+[61/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Tensor/LinalgFakeQuantize.cpp.o
+[62/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Loop/AffineLoopFusion.cpp.o
+[63/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/FuncDuplication.cpp.o
+[64/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Utils.cpp.o
+[65/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/FuncPreprocess.cpp.o
+[66/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/DesignSpaceExplore.cpp.o
+[67/73] Building CXX object lib/Transforms/CMakeFiles/obj.MLIRScaleHLSTransforms.dir/Passes.cpp.o
+[68/73] Linking CXX static library lib/libMLIRScaleHLSTransforms.a
+[69/73] Building CXX object tools/scalehls-opt/CMakeFiles/hida-opt.dir/scalehls-opt.cpp.o
+[70/73] Linking CXX executable bin/scalehls-opt
+[71/73] Building CXX object lib/Translation/CMakeFiles/obj.MLIRScaleHLSEmitHLSCpp.dir/EmitHLSCpp.cpp.o
+[72/73] Linking CXX static library lib/libMLIRScaleHLSEmitHLSCpp.a
+[73/73] Linking CXX executable bin/scalehls-translate

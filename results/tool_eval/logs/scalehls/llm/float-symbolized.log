@@ -1,0 +1,36 @@
+command: addr2line -Cf -e <BUILD>/bin/scalehls-opt 0x1a37c43 0x1a35b5e 0x1a3810a 0x19320d4 0x123ba93 0x167d081 0x167cfea 0x1886e12 0x184e924 0x16c2b71 0x16c468d 0x188be84 0x188c368 0x189135f 0x18229c2 0x1a13624 0x1a14103
+exit_code: 0
+llvm::sys::PrintStackTrace(llvm::raw_ostream&, int)
+??:?
+llvm::sys::RunSignalHandlers()
+??:?
+SignalHandler(int)
+Signals.cpp:?
+mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute)
+??:?
+mlir::scalehls::hls::ConstBufferOp::build(mlir::OpBuilder&, mlir::OperationState&, mlir::Type, mlir::ElementsAttr)
+??:?
+mlir::scalehls::hls::ConstBufferOp mlir::OpBuilder::create<mlir::scalehls::hls::ConstBufferOp, mlir::MemRefType, mlir::ElementsAttr>(mlir::Location, mlir::MemRefType&&, mlir::ElementsAttr&&)
+BufferizeDataflow.cpp:?
+(anonymous namespace)::ConvertGetGlobalToConstBuffer::matchAndRewrite(mlir::memref::GetGlobalOp, mlir::PatternRewriter&) const
+BufferizeDataflow.cpp:?
+mlir::PatternApplicator::matchAndRewrite(mlir::Operation*, mlir::PatternRewriter&, llvm::function_ref<bool (mlir::Pattern const&)>, llvm::function_ref<void (mlir::Pattern const&)>, llvm::function_ref<mlir::LogicalResult (mlir::Pattern const&)>)
+??:?
+mlir::applyPatternsAndFoldGreedily(llvm::MutableArrayRef<mlir::Region>, mlir::FrozenRewritePatternSet const&, mlir::GreedyRewriteConfig)
+??:?
+mlir::scalehls::applyFuncPreprocess(mlir::func::FuncOp, bool)
+??:?
+(anonymous namespace)::FuncPreprocess::runOnOperation()
+FuncPreprocess.cpp:?
+mlir::detail::OpToOpPassAdaptor::run(mlir::Pass*, mlir::Operation*, mlir::AnalysisManager, bool, unsigned int)
+??:?
+mlir::detail::OpToOpPassAdaptor::runPipeline(mlir::OpPassManager&, mlir::Operation*, mlir::AnalysisManager, bool, unsigned int, mlir::PassInstrumentor*, mlir::PassInstrumentation::PipelineParentInfo const*)
+??:?
+std::_Function_handler<void (), mlir::failableParallelForEach<__gnu_cxx::__normal_iterator<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo*, std::vector<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo, std::allocator<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo> > >, mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::$_14&>(mlir::MLIRContext*, __gnu_cxx::__normal_iterator<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo*, std::vector<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo, std::allocator<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo> > >, __gnu_cxx::__normal_iterator<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo*, std::vector<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo, std::allocator<mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::OpPMInfo> > >, mlir::detail::OpToOpPassAdaptor::runOnOperationAsyncImpl(bool)::$_14&)::{lambda()#1}>::_M_invoke(std::_Any_data const&)
+Pass.cpp:?
+std::_Function_handler<void (), llvm::ThreadPool::createTaskAndFuture(std::function<void ()>)::{lambda()#1}>::_M_invoke(std::_Any_data const&)
+Inliner.cpp:?
+llvm::ThreadPool::processTasks(llvm::ThreadPoolTaskGroup*)
+??:?
+void* llvm::thread::ThreadProxy<std::tuple<llvm::ThreadPool::grow(int)::$_0> >(void*)
+ThreadPool.cpp:?

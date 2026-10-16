@@ -1,0 +1,50 @@
+  static void build(::mlir::OpBuilder &odsBuilder, ::mlir::OperationState &odsState, ::mlir::TypeRange resultTypes, ::mlir::Type global_type, /*optional*/bool constant, ::llvm::StringRef sym_name, ::mlir::LLVM::Linkage linkage, /*optional*/bool dso_local, /*optional*/bool thread_local_, /*optional*/::mlir::Attribute value, /*optional*/::mlir::IntegerAttr alignment, uint32_t addr_space, /*optional*/::mlir::LLVM::UnnamedAddrAttr unnamed_addr, /*optional*/::mlir::StringAttr section, /*optional*/::mlir::SymbolRefAttr comdat, ::mlir::LLVM::DIGlobalVariableExpressionAttr dbg_expr, ::mlir::LLVM::Visibility visibility_ = mlir::LLVM::Visibility::Default);
+              ^
+<WORK>/build/stream-llvm/tools/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.h.inc:6939:15: note: candidate function not viable: requires at most 5 arguments, but 14 were provided
+  static void build(::mlir::OpBuilder &, ::mlir::OperationState &odsState, ::mlir::TypeRange resultTypes, ::mlir::ValueRange operands, ::llvm::ArrayRef<::mlir::NamedAttribute> attributes = {});
+              ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+2 warnings and 20 errors generated.
+[4388/4423] Building CXX object tools/polygeist/lib/polygeist/Passes/CMakeFiles/obj.MLIRPolygeistTransforms.dir/ConvertParallelToGPU.cpp.o
+FAILED: tools/polygeist/lib/polygeist/Passes/CMakeFiles/obj.MLIRPolygeistTransforms.dir/ConvertParallelToGPU.cpp.o 
+<PATH>/clang++ -DGTEST_HAS_RTTI=0 -DPOLYGEIST_PGO_ALTERNATIVE_ENV_VAR=\"POLYGEIST_PGO_ALTERNATIVE\" -DPOLYGEIST_PGO_DATA_DIR_ENV_VAR=\"POLYGEIST_PGO_DATA_DIR\" -DPOLYGEIST_PGO_DEFAULT_DATA_DIR=\"/var/tmp/polygeist/pgo/\" -D_DEBUG -D_GLIBCXX_ASSERTIONS -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -I<WORK>/build/stream-llvm/tools/polygeist/lib/polygeist/Passes -I<WORK><PATH>/Passes -I<WORK>/build/stream-llvm/include -I<WORK><PATH>/include -I<WORK>/build/stream-llvm/tools/mlir/include -I<WORK>/build/stream-llvm/tools/polygeist/include -I<WORK><PATH>/include -I<WORK><PATH>/include -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -pedantic -Wno-long-long -Wc++98-compat-extra-semi -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -pedantic -Wno-long-long -Wc++98-compat-extra-semi -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections -O3 -DNDEBUG   -D_GNU_SOURCE -D_DEBUG -D_GLIBCXX_ASSERTIONS -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS  -fno-exceptions -funwind-tables -fno-rtti -UNDEBUG -std=c++17 -MD -MT tools/polygeist/lib/polygeist/Passes/CMakeFiles/obj.MLIRPolygeistTransforms.dir/ConvertParallelToGPU.cpp.o -MF tools/polygeist/lib/polygeist/Passes/CMakeFiles/obj.MLIRPolygeistTransforms.dir/ConvertParallelToGPU.cpp.o.d -o tools/polygeist/lib/polygeist/Passes/CMakeFiles/obj.MLIRPolygeistTransforms.dir/ConvertParallelToGPU.cpp.o -c <WORK><PATH>/ConvertParallelToGPU.cpp
+In file included from <WORK><PATH>/ConvertParallelToGPU.cpp:30:
+<WORK><PATH>/BarrierUtils.h:112:41: error: no member named 'getElementType' in 'mlir::LLVM::LLVMPointerType'
+                                       .getElementType()),
+                                        ^
+<WORK><PATH>/ConvertParallelToGPU.cpp:281:20: error: no member named 'getElementType' in 'mlir::LLVM::LLVMPointerType'
+    auto type = PT.getElementType();
+                ~~ ^
+<WORK><PATH>/ConvertParallelToGPU.cpp:1282:19: warning: 'startswith' is deprecated: Use starts_with instead [-Wdeprecated-declarations]
+    if (!noopType.startswith("gpu_kernel.")) {
+                  ^~~~~~~~~~
+                  starts_with
+<WORK><PATH>/StringRef.h:261:19: note: 'startswith' has been explicitly marked deprecated here
+    [[nodiscard]] LLVM_DEPRECATED(
+                  ^
+<WORK><PATH>/Compiler.h:155:50: note: expanded from macro 'LLVM_DEPRECATED'
+#define LLVM_DEPRECATED(MSG, FIX) __attribute__((deprecated(MSG, FIX)))
+                                                 ^
+In file included from <WORK><PATH>/ConvertParallelToGPU.cpp:8:
+In file included from <WORK><PATH>/PassDetails.h:21:
+In file included from <WORK><PATH>/Ops.h:12:
+In file included from <WORK><PATH>/AffineOps.h:18:
+In file included from <WORK><PATH>/Arith.h:18:
+In file included from <WORK><PATH>/InferTypeOpInterface.h:18:
+<WORK><PATH>/Builders.h:494:11: error: no matching member function for call to 'build'
+    OpTy::build(*this, state, std::forward<Args>(args)...);
+    ~~~~~~^~~~~
+<WORK><PATH>/Utils.h:66:19: note: in instantiation of function template specialization 'mlir::OpBuilder::create<mlir::affine::AffineForOp, llvm::SmallVector<mlir::Value, 6> &, mlir::AffineMap, llvm::SmallVector<mlir::Value, 6> &, mlir::AffineMap, llvm::APInt>' requested here
+  return rewriter.create<affine::AffineForOp>(
+                  ^
+<WORK>/build/stream-llvm/tools/mlir/include/mlir/Dialect/Affine/IR/AffineOps.h.inc:623:15: note: candidate function not viable: no known conversion from 'llvm::APInt' to 'int64_t' (aka 'long') for 7th argument
+  static void build(::mlir::OpBuilder &odsBuilder, ::mlir::OperationState &odsState, ValueRange lbOperands, AffineMap lbMap, ValueRange ubOperands, AffineMap ubMap, int64_t step = 1, ValueRange iterArgs = std::nullopt, function_ref<void(OpBuilder &, Location, Value, ValueRange)> bodyBuilder = nullptr);
+              ^
+<WORK>/build/stream-llvm/tools/mlir/include/mlir/Dialect/Affine/IR/AffineOps.h.inc:622:15: note: candidate function not viable: no known conversion from 'llvm::SmallVector<mlir::Value, 6>' to 'int64_t' (aka 'long') for 3rd argument
+  static void build(::mlir::OpBuilder &odsBuilder, ::mlir::OperationState &odsState, int64_t lowerBound, int64_t upperBound, int64_t step = 1, ValueRange iterArgs = std::nullopt, function_ref<void(OpBuilder &, Location, Value, ValueRange)> bodyBuilder = nullptr);
+              ^
+1 warning and 3 errors generated.
+[4389/4423] Building CXX object tools/mlir/tools/mlir-opt/CMakeFiles/mlir-opt.dir/mlir-opt.cpp.o
+[4390/4423] Building CXX object tools/mlir/test/lib/Dialect/Test/CMakeFiles/MLIRTestDialect.dir/TestOpsSyntax.cpp.o
+[4391/4423] Building CXX object tools/mlir/test/lib/Dialect/Test/CMakeFiles/MLIRTestDialect.dir/TestDialect.cpp.o
+ninja: build stopped: subcommand failed.

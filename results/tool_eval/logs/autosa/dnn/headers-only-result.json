@@ -1,0 +1,15 @@
+{
+  "stage_reached": "parse",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier() && \"Name is not a simple identifier\"' failed.",
+  "status": "frontend_assertion",
+  "design_id": "dnn_0001",
+  "domain": "dnn",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "68642015661effbf5b49a27f8672b07d7b8c64e574b760034a0c7a62173dd07f",
+  "exit_code": 250,
+  "generated_kernels": [],
+  "input_edits": "diagnostic patch dnn_0001-unused-host-headers.patch; sha256=3fa667a0c60496beb83f1ef6d9a9753709a7392d3fdec5cfd21299d5a7595ce5"
+}

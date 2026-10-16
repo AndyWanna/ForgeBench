@@ -1,0 +1,50 @@
+===================================================
+Array: A
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 0
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 1
+copy_out: 0
+io_type: AUTOSA_EXT_IO
+io_dir: [0,1]
+===================================================
+Array: B
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 0
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 1
+copy_out: 0
+io_type: AUTOSA_EXT_IO
+io_dir: [1,0]
+===================================================
+Array: C
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 1
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 0
+copy_out: 0
+io_type: AUTOSA_INT_IO
+io_dir: [1,0]
+------------------------------
+Drain Group
+------------------------------
+copy_in: 0
+copy_out: 1
+io_type: AUTOSA_INT_IO
+io_dir: [1,0]
+================= IO Grouping Information =================
+Please find the generated file: <CONTROL>/src/kernel_kernel.cpp
+[AutoSA] Post-processing the generated code...
+CONTROL PASS: upstream matrix multiplication emitted HLS C++.

@@ -1,0 +1,13 @@
+tool,domain,designs_tried,stage_reached,rating,notes
+ScaleHLS,gemm,1,parse,none,Fresh unchanged gemm_0001; parse_failed; logs/scalehls/gemm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+ScaleHLS,dnn,1,parse,none,Fresh unchanged dnn_0001; parse_failed; logs/scalehls/dnn/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+ScaleHLS,llm,1,parse,none,Fresh unchanged llm_0001; parse_failed; logs/scalehls/llm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+HIDA,gemm,1,parse,none,Fresh unchanged gemm_0001; parse_failed; logs/hida/gemm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+HIDA,dnn,1,parse,none,Fresh unchanged dnn_0001; parse_failed; logs/hida/dnn/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+HIDA,llm,1,parse,none,Fresh unchanged llm_0001; parse_failed; logs/hida/llm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+AutoSA,gemm,1,parse,none,Fresh unchanged gemm_0001; frontend_assertion; logs/autosa/gemm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+AutoSA,dnn,1,parse,none,Fresh unchanged dnn_0001; frontend_assertion; logs/autosa/dnn/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+AutoSA,llm,1,parse,none,Fresh unchanged llm_0001; frontend_assertion; logs/autosa/llm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+StreamHLS,gemm,1,parse,none,Fresh unchanged gemm_0001; parse_failed; logs/streamhls/gemm/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+StreamHLS,dnn,1,parse,none,Fresh unchanged dnn_0001; parse_failed; logs/streamhls/dnn/run.log. Historical cohort unknown; one case is not domain-wide coverage.
+StreamHLS,llm,1,parse,none,Fresh unchanged llm_0001; parse_failed; logs/streamhls/llm/run.log. Historical cohort unknown; one case is not domain-wide coverage.

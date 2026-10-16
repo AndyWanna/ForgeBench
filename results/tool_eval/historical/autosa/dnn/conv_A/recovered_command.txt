@@ -1,0 +1,1 @@
+./autosa ./autosa_tests/large/cnn/kernel.c --config=./autosa_config/autosa_config.json --target=autosa_hls_c --output-dir=./autosa.tmp/output --host-serialize --hls
