@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Write/merge rows (file, size_bytes, sha256, zenodo_path) into release/bundle_files.csv.
 
-Usage: python release/make_manifest.py [--out release/bundle_files.csv] [--category NAME] PATH [PATH ...]
+Usage: python release/make_manifest.py [--out release/bundle_files.csv] [--category NAME] [--root DIR] PATH [PATH ...]
 Directories are walked recursively. Existing rows with the same `file` are replaced.
-`zenodo_path` is left as TODO until the human uploads the bundle.
+`zenodo_path` is the file's path relative to --root (its name in the Zenodo record); without --root it is left as TODO.
 """
 import argparse, csv, hashlib, os, sys
 
@@ -34,6 +34,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "bundle_files.csv"))
     ap.add_argument("--category", default="")
+    ap.add_argument("--root", default=None, help="bundle directory; zenodo_path = path relative to it")
     ap.add_argument("paths", nargs="+")
     a = ap.parse_args()
 
@@ -46,7 +47,8 @@ def main():
         old = rows.get(rel, {})
         rows[rel] = {"file": rel, "category": a.category or old.get("category", ""),
                      "size_bytes": os.path.getsize(p), "sha256": sha256(p),
-                     "zenodo_path": old.get("zenodo_path", "TODO")}
+                     "zenodo_path": (os.path.relpath(p, a.root).replace(os.sep, "/") if a.root
+                                     else old.get("zenodo_path", "TODO"))}
     with open(a.out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=HEADER, lineterminator="\n")
         w.writeheader()

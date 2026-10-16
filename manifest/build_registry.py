@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Build the non-sweep design registries: manifest/designs/{ops,modular,modular_cases}.csv.
+"""Build the non-sweep design registries: manifest/designs/{ops,modular,modular_cases,fullmodel}.csv.
 
-Scope rule: only designs the paper references are registered.
-  ops      Table 2 (per-operator verification: 17 operators)         -> ops.csv
-  modular  Sec. 4.4 / Table 7 (modularization test cases)            -> modular.csv, modular_cases.csv
-  (sweeps: Table 4/Figs 6-8/Table 5 -> build_manifest.py; full models: Table 3 -> fullmodel.csv;
-   tool evaluation: the tool-support table, Case Study 3 -> results/tool_eval/)
-Whole-design configs in designs/configs/examples/<gen>/ that the paper does not reference (e.g. ResNet/VGG blocks,
-attention_op_p*, testing_*) and the two unused modular designs (gemm/mlp, gemm/diff_dims_module_large) are not
-registered; they remain in the repo and in git history.
+Scope rule: only designs the paper evaluates are registered.
+  ops        operator verification (tab:verification-both, 17 operators)   -> ops.csv
+  modular    modularization test cases (tab:modularization_results)        -> modular.csv, modular_cases.csv
+  fullmodel  full model-level designs (tab:ml_model_suite)                 -> fullmodel.csv
+  (sweeps -> build_manifest.py; tool evaluation, Case Study 3 -> results/tool_eval/)
+The example configs in designs/configs/examples/<gen>/ (the VGG-19 / ResNet blocks of tab:supported_models, the MLP of the
+README) are shipped as examples, not registered.
 
 design_id = "<suite>/<domain>/<name>" (e.g. ops/gemm/dot_product__bias1, modular/gemm/diff_dims_p1).
 
@@ -233,12 +232,12 @@ def build_modular():
 
 
 
-# ------------------------------------------------------------------ full models (Table 3)
+# ------------------------------------------------------------------ full models (tab:ml_model_suite)
 FULLMODEL_RUNS = {"full": "resnet_full_32_10", "tiled": "resnet_tiled_16_5_trn"}   # results/verification/fullmodel/<run>/
 
 
 def build_fullmodel():
-    """One row per Table 3 project: sources, config, csynth metrics and the C-sim runs behind its row. Also the registry input of
+    """One row per full model-level design: sources, config, csynth report (in the data release) and the C-sim runs behind its row. Also the registry input of
     forgebench.modular_designs.synth (design_id, domain, name, hls_dir) for re-synthesizing the full models."""
     with open(os.path.join(REPO, "results", "fullmodel", "metrics_csynth.csv"), newline="") as f:
         synth = {r["design"]: r for r in csv.DictReader(f)}
@@ -259,8 +258,11 @@ def build_fullmodel():
         fmt = "fixed<16,5> (TRN/WRAP)" if "_16_5_" in name else "fixed<32,10,rnd,sat>"
         rows.append({"design_id": f"fullmodel/{name}", "domain": "fullmodel", "name": name, "model": model, "variant": variant,
                      "format": fmt, "config_path": rel(os.path.join(paths.CONFIGS, "fullmodel", name + ".json")), "hls_dir": rel(d),
-                     "csynth": "YES" if name in synth else "NO", "csim_runs": runs, "csim_seeds": seeds})
-    cols = ["design_id", "domain", "name", "model", "variant", "format", "config_path", "hls_dir", "csynth", "csim_runs", "csim_seeds"]
+                     "csynth": "YES" if name in synth else "NO",
+                     "csynth_report": f"reports/fullmodel/{name}/csynth.xml" if name in synth else "",
+                     "csim_runs": runs, "csim_seeds": seeds})
+    cols = ["design_id", "domain", "name", "model", "variant", "format", "config_path", "hls_dir", "csynth", "csynth_report",
+            "csim_runs", "csim_seeds"]
     return cols, rows
 
 

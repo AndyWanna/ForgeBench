@@ -1,50 +1,34 @@
 #!/usr/bin/env bash
-# Assemble the ForgeBench data release OUTSIDE git, then write SHA256SUMS and refresh
-# release/bundle_files.csv. The human uploads release/_bundle/ to Zenodo + a GitHub Release.
+# Assemble the ForgeBench data release OUTSIDE git, then write SHA256SUMS and rewrite release/bundle_files.csv.
+# The human uploads every file of release/_bundle/ to the Zenodo dataset record (DOI 10.5281/zenodo.23425257).
 #
 # Usage: bash release/build_release.sh [BUNDLE_DIR]      (default: release/_bundle)
-# Sources that do not exist are skipped with a warning (listed at the end), so the script
-# can be re-run as more results (tool evaluation) appear.
+# Zenodo records have no folders, so the bundle is flat: one tarball per suite, each with an inner SHA256SUMS, plus a top-level
+# SHA256SUMS of the tarballs (bare file names, so `sha256sum -c SHA256SUMS` works in the download directory).
 # Inputs (maintainers only, not in git): the raw lean archives in checkpoints/ of this checkout, or of FORGEBENCH_ARCHIVES.
-set -uo pipefail
+set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 OUT="${1:-release/_bundle}"
-ARCH="${FORGEBENCH_ARCHIVES:-.}/checkpoints"
-CKPT_DIR="${CKPT_DIR:-$ARCH/20260720}"
-MISSING=()
+PY="${PY:-python3}"
 
-rm -rf "$OUT"; mkdir -p "$OUT"/{full_model,logs}
+rm -rf "$OUT"; mkdir -p "$OUT"
 
-have() { [ -e "$1" ] || { MISSING+=("$1"); return 1; }; }
+# configs_<domain>.tar.gz, reports_<domain>.tar.gz (sweeps), reports_modular.tar.gz (tab:modularization_results),
+# reports_fullmodel.tar.gz (tab:ml_model_suite), reports_catapult_vs_vitis.tar.gz (fig:catapult_vs_vitis):
+# the trees the manifest paths describe, regenerated configs + lean reports, machine names scrubbed.
+"$PY" release/assemble_reports.py --out "$OUT"
+rm -rf "$OUT/_tree"
 
-# (i)-(iii) configs/ and reports/ trees as the manifest paths describe them (regenerated configs + lean csynth/impl/modular
-# reports from the July and R2 archives named in manifest/_common.py), one tarball per domain, each with an inner SHA256SUMS.
-python3 release/assemble_reports.py --out "$OUT" && rm -rf "$OUT/_tree"
-
-# (iv) full-model reports (Table 3). Configs and sources are in git (designs/{configs,hls}/fullmodel).
-# scale_csynth_r1_lean: July csynth reports of ResNet-18/34 (plain+tiled), saved before the build trees were deleted.
-have "$CKPT_DIR/scale_csynth_r1_lean.tar.gz" && cp "$CKPT_DIR/scale_csynth_r1_lean.tar.gz" "$OUT/full_model/"
-# Hanqiu's single-seed full-model runs on the pre-R2 sources (24 variants, incl. the only record that Llama-3-8B fails at <16,5>):
-# provenance only, not used by any paper claim. Not in this repository; archived from the pre-release history (commit e9eae9a5).
-have "$ARCH/r2_cleanup/fullmodel_single_seed_pre_r2.tar.gz" && cp "$ARCH/r2_cleanup/fullmodel_single_seed_pre_r2.tar.gz" "$OUT/full_model/"
-
-# Not in the paper, removed from the tree in the release cleanup: verification runs of other formats and reruns (Table 7 at <16,5>,
-# mixed and float, R1 Table 7 runs, fix re-runs), the R1 C-sim development runs, the reduced-unroll Catapult synthesis, the impl run
-# status logs. Archived from the pre-release history (commit 82bbdd50).
-have "$ARCH/r2_cleanup/removed_from_repo_r2_cleanup.tar.gz" && cp "$ARCH/r2_cleanup/removed_from_repo_r2_cleanup.tar.gz" "$OUT/logs/"
-
-# (v)+(vi) Catapult vs Vitis and tool-evaluation logs
-for d in results/catapult_vs_vitis results/tool_eval; do
-  if have "$d"; then tar -czf "$OUT/logs/$(echo "$d" | tr / _).tar.gz" "$d"; fi
-done
-have _run_logs && tar -czf "$OUT/logs/run_logs_r1_july.tar.gz" _run_logs
-have verification/_csim_ops_n1000 && tar -czf "$OUT/logs/verification_csim_ops_n1000.tar.gz" verification/_csim_ops_n1000
-
-( cd "$OUT" && find . -type f ! -name SHA256SUMS | sort | xargs sha256sum > SHA256SUMS )
-python3 release/make_manifest.py --out "${MANIFEST_OUT:-release/bundle_files.csv}" --category bundle "$OUT"
-
-echo; echo "Bundle: $OUT  ($(du -sh "$OUT" | cut -f1))"
-if [ ${#MISSING[@]} -gt 0 ]; then
-  echo "Skipped (not present yet):"; printf '  %s\n' "${MISSING[@]}"
+# Tool-evaluation results (Case Study 3, tab:tool-support), once they are in results/tool_eval/.
+if [ -n "$(ls -A results/tool_eval 2>/dev/null)" ]; then
+  tar -czf "$OUT/results_tool_eval.tar.gz" results/tool_eval
+else
+  echo "note: results/tool_eval/ is empty, not bundled"
 fi
+
+( cd "$OUT" && find . -maxdepth 1 -type f ! -name SHA256SUMS -printf '%f\n' | sort | xargs sha256sum > SHA256SUMS )
+rm -f release/bundle_files.csv
+"$PY" release/make_manifest.py --out release/bundle_files.csv --category bundle --root "$OUT" "$OUT"
+
+echo; echo "Bundle: $OUT  ($(du -sh "$OUT" | cut -f1), $(find "$OUT" -type f | wc -l) files)"

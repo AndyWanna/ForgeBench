@@ -70,7 +70,7 @@ manifest:
 	$(PY) manifest/rekey_results.py && $(PY) manifest/build_manifest.py --check-disk && $(PY) manifest/build_registry.py
 
 bundle:
-	bash release/build_release.sh
+	PY=$(PY) bash release/build_release.sh
 
 clean:
 	rm -rf paper_artifacts/out forgebench_out

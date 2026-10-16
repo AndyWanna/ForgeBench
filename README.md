@@ -101,9 +101,21 @@ Every design has an id and a status row in `manifest/designs/` (`gemm.csv`, `dnn
 
 ## Data release
 
-The raw tool outputs are archived separately (Zenodo, DOI: _to be added_): the lean csynth / implementation reports of every sweep
-design, the full-model and Table 7 reports, and the verification logs. `release/bundle_files.csv` lists every file with its size and
-SHA-256. Nothing in `make paper` or `make check` needs the data release.
+The raw tool reports are archived on Zenodo: [doi:10.5281/zenodo.23425257](https://doi.org/10.5281/zenodo.23425257).
+
+| File | Contents |
+|---|---|
+| `configs_{gemm,dnn,llm}.tar.gz` | the 12,144 sweep configs under their design ids (`configs/<domain>/<design_id>.json`) |
+| `reports_{gemm,dnn,llm}.tar.gz` | lean csynth (`csynth.xml`) and implementation (`export_impl.xml`, `power_routed.rpt`) reports of every sweep design |
+| `reports_modular.tar.gz` | csynth reports of the 38 modularization designs, with one `<function>_csynth.xml` per function |
+| `reports_fullmodel.tar.gz` | `csynth.xml` / `csynth.rpt` of the 14 full model-level designs |
+| `reports_catapult_vs_vitis.tar.gz` | Catapult `rtl.rpt` and Vitis `csynth.xml` of the 1,000 GEMM designs of the Catapult comparison |
+| `SHA256SUMS` | checksums of the files above (`sha256sum -c SHA256SUMS`); each tarball also contains a SHA256SUMS of its members |
+
+Extract the tarballs next to each other and every report path in `manifest/designs/*.csv` resolves. The machine name in the tool
+reports is replaced by `<host>`; nothing else is changed. `release/bundle_files.csv` lists every file with its size and SHA-256, and
+`make bundle` rebuilds the bundle (maintainers; it needs the raw lean archives). The verification results are in git
+(`results/verification/`). Nothing in `make paper` or `make check` needs the data release.
 
 ## Tools
 
