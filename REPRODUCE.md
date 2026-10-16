@@ -30,14 +30,19 @@ Exact tool builds: [docs/TOOL_VERSIONS.md](docs/TOOL_VERSIONS.md). Target: ZCU10
 | Table 7, modularization | `results/modular_designs/csynth_utilization.csv` | `make table7` | `out/tables/modularization_{results.csv,table.tex}` |
 | Verification tables (operators, co-sim, Catapult, Table 7 at `<32,10>`) | `results/verification/{operators,cosim,catapult,table7}/` | `make verification-tables` | `out/verification/verif_*.tex`; every number in `manifest/verification/*.csv` |
 | Catapult vs Vitis synthesis (1,000 GEMM designs) | `results/catapult_vs_vitis/metrics.csv` | `make catapult-vs-vitis` | `out/figs/catapult_vs_vitis.{png,pdf}` |
-| Table 4, sweep design space | `manifest/designs/{gemm,dnn,llm}.csv` (one row per design with its parameters) | — | — |
+| Table 4, sweep design space | `manifest/designs/{gemm,dnn,llm}.csv` (one row per design with its parameters); the values are the `SWEEP` dict of `forgebench/<domain>/auto_generate_json.py` | `forgebench sweep-configs <domain>` | the configs |
+| Synthesis / implementation outcome per domain (`tab:synth_summary`) and stages passed per design set (`tab:status`) | `manifest/designs/*.csv`, `manifest/ml_sweep/`, `manifest/verification/*.csv`, `results/catapult_vs_vitis/status_catapult.csv` | `make stage-tables` | `out/tables/{synth_summary,status_summary}.{csv,tex}` |
+| Supported models (`tab:supported_models`), *Block* column | VGG-19 / ResNet-18 / ResNet-50 blocks: `designs/configs/examples/dnn/`; GPT and LLaMA transformer blocks: `designs/configs/modular_designs/llm/{gpt_transformer_p1,llama_transformer_p2}.json` | `forgebench generate <config>` | — |
+| GEMM JSON example and its Vitis / Catapult code (`fig:jsondesign`, `fig:fb_hls_gen`) | `designs/configs/examples/gemm/gemm_96x512x128_{vitis,catapult}.json` | `forgebench generate <config>` (`make check` compares with `designs/hls/examples/gemm/`) | `top.cpp` (`gemm_ijk`) |
+| Python generation snippets (`fig:pythonblock`, `fig:pythonmodel`) | `forgebench/fullmodel/auto_generate_json.py` (`generate_llama_decode_block`, `generate_llama_architecture`) | — | — |
+| Source-to-source tool support (`tab:tool-support`), HLSFactory files (`fig:hlsfactory_opt`, `fig:hlsfactory_run`) | pending: `results/tool_eval/` (branch `tool-eval`) | — | — |
 
 ## 2. Designs and configs
 
 `make check` (`python -m verification.check_designs --sweep`) regenerates and byte-compares:
 
 - the 12,144 ML sweep configs, from `forgebench/<domain>/auto_generate_json.py` (`forgebench sweep-configs <domain>`);
-- the 19 examples and the 14 full-scale models, from `designs/configs/{examples,fullmodel}` (`forgebench generate`);
+- the 21 examples and the 14 full-scale models, from `designs/configs/{examples,fullmodel}` (`forgebench generate`);
 - the 26 Table 7 programs at `<32,10>`, from the verified design JSONs in `results/verification/table7/C_32_10__table7/configs`
   (`verification/experiments/prepare_table7_synth.py`). The 12 modularized Table 7 designs are hand-written; their sources are
   `designs/hls/modular_designs/<domain>/*_module*`.

@@ -2,7 +2,7 @@
 PY ?= python3
 .DEFAULT_GOAL := help
 
-.PHONY: help install install-verify paper table3 table7 section42 verification-tables catapult-vs-vitis check test selfcheck \
+.PHONY: help install install-verify paper table3 table7 section42 verification-tables catapult-vs-vitis stage-tables check test selfcheck \
         verify-fullmodel regression-save regression-compare manifest bundle clean
 
 help:
@@ -14,6 +14,7 @@ help:
 	@echo "  table7             Table 7 modularization"
 	@echo "  verification-tables  operator / co-sim / Catapult / Table 7 verification tables (+ manifest/verification/*.csv)"
 	@echo "  catapult-vs-vitis  Catapult vs Vitis synthesis of 1,000 GEMM designs (figure)"
+	@echo "  stage-tables       stages passed per design set (tab:synth_summary, tab:status)"
 	@echo "check                regenerate every committed design and sweep config; byte-compare with designs/"
 	@echo "test                 unit tests                                    [torch]"
 	@echo "selfcheck            compile + run every whole-design config with g++ against a float golden   [g++]"
@@ -28,7 +29,7 @@ install:
 install-verify:
 	$(PY) -m pip install -e '.[verify]'
 
-paper: table3 section42 table7 verification-tables catapult-vs-vitis
+paper: table3 section42 table7 verification-tables catapult-vs-vitis stage-tables
 
 table3:
 	$(PY) -m paper_artifacts.table3_fullmodel
@@ -45,6 +46,9 @@ verification-tables:
 catapult-vs-vitis:
 	mkdir -p paper_artifacts/out/figs
 	$(PY) -m paper_artifacts.catapult_vs_vitis plot --out results/catapult_vs_vitis --fig paper_artifacts/out/figs/catapult_vs_vitis.png
+
+stage-tables:
+	$(PY) -m paper_artifacts.stage_tables
 
 check:
 	$(PY) -m verification.check_designs --sweep
