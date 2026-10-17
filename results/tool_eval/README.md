@@ -440,7 +440,7 @@ Notes on the table:
   in float.
 * **Single convolutions: 0 of 3.** On the two AutoSA accepts (1×1 and unpadded 3×3), with the
   edits that remove each blocker found (headers, `#pragma scop`, `+=` spelled out, inlined
-  index temporaries, guard removed), **0 of 14 space-time candidates** produce a correct
+  index temporaries, guard removed), **0 of 20 space-time candidates** (10 per convolution) produce a correct
   kernel. They compute garbage, emit code that does not compile, hang in C simulation, or crash
   AutoSA.
 * **Padded 3×3:** AutoSA rejects it ("Non-uniform dependence detected").
@@ -672,7 +672,7 @@ git contains local paths, host names, licenses or build trees (checked by `valid
      passes the whole conv + BN + ReLU design.
    * "StreamHLS generates code but the output is not synthesizable" → it generates no code for
      the DNN design. For a padded convolution it generates code that computes wrong results.
-   * "AutoSA synthesizes only a subset" → not reproducible (0 of 1 design, 0 of 14 kernels);
+   * "AutoSA synthesizes only a subset" → not reproducible (0 of 1 design, 0 of 20 kernels);
      AutoSA's own example fails its check in the evaluated image.
    * "On LLM designs, every tool halts at parsing" → true for the generated fixed-point design;
      the parse failure is in the vendor `ap_fixed` headers, not an LLM operator. In float, HIDA
