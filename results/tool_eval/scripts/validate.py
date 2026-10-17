@@ -60,6 +60,11 @@ def main():
         assert (REPO / spec["config"]).is_file(), spec["config"]
         if spec["patch"]:
             assert (EVAL / spec["patch"]).is_file(), spec["patch"]
+        # Inputs committed as source (gemm_0004's three variants) must be exactly what was run.
+        if input_id.startswith("gemm_0004__"):
+            variant = "gemm_0004" + {"fixed": "", "float": "_float", "edited": "_edited"}[input_id.split("__")[1]]
+            assert sha256(EVAL / "designs" / variant / "top.cpp") == spec["sha256"], variant
+            assert sha256(EVAL / "designs" / variant / "config.json") == sha256(REPO / spec["config"]), variant
     run_ids = {run["id"] for run in minimal["runs"]}
     for row in results:
         assert row["run"] in run_ids or row["run"].rsplit("/", 1)[0] in run_ids, row["run"]
