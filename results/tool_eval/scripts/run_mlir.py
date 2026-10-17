@@ -13,8 +13,9 @@ import subprocess
 import uuid
 from pathlib import Path
 
-from common import sanitize, sha256, write_json, write_text
+from common import stop_container, sanitize, sha256, write_json, write_text
 from normalize_stream_dlti import normalize
+from stream_handoff import adapt as stream_handoff
 
 
 def first_error(output):
@@ -55,6 +56,11 @@ def main():
     parser.add_argument("--image", default="forgebench-tool-eval-build:20261016")
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--top", default="top")
+    parser.add_argument("--input-edits", default="none", help="name of the patch applied to the generated source")
+    parser.add_argument("--pipeline-options", default="",
+                        help="extra options appended to the tool's pass-pipeline options, e.g. place-external-buffer=false")
+    parser.add_argument("--stream-polygeist-handoff", action="store_true",
+                        help="StreamHLS only: apply stream_handoff.py and bufferize function arguments")
     args = parser.parse_args()
     design, work, include, out = (p.resolve() for p in (args.design, args.work, args.vitis_include, args.out))
     if not (include / "ap_fixed.h").is_file():
@@ -91,19 +97,22 @@ def main():
     if args.tool == "scalehls":
         commands += [
             ("transform", [backend + "/scalehls-opt", "/run/parsed.mlir",
-                           f"-scalehls-dse-pipeline=top-func={symbol} target-spec=/work/tools/scalehls/samples/polybench/config.json",
+                           f"-scalehls-dse-pipeline=top-func={symbol} target-spec=/work/tools/scalehls/samples/polybench/config.json"
+                           + (" " + args.pipeline_options if args.pipeline_options else ""),
                            "-o", "/run/transformed.mlir"]),
             ("codegen", [backend + "/scalehls-translate", "/run/transformed.mlir", "-scalehls-emit-hlscpp", "-o", "/run/emitted.cpp"]),
         ]
     elif args.tool == "hida":
         commands += [
-            ("transform", [backend + "/scalehls-opt", "/run/parsed.mlir", f"-hida-cpp-pipeline=top-func={symbol}", "-o", "/run/transformed.mlir"]),
+            ("transform", [backend + "/scalehls-opt", "/run/parsed.mlir", f"-hida-cpp-pipeline=top-func={symbol}" + (" " + args.pipeline_options if args.pipeline_options else ""), "-o", "/run/transformed.mlir"]),
             ("codegen", [backend + "/scalehls-translate", "/run/transformed.mlir", "-scalehls-emit-hlscpp", "-emit-vitis-directives", "-o", "/run/emitted.cpp"]),
         ]
     else:
         commands += [
             ("transform", [backend + "/streamhls-opt", "/run/compatible.mlir",
-                           f"-streamhls-kernel-pipeline=top-func={symbol} board-dsps=2520 graph-file=/run/graph report-file=/run/report optimize-schedule=false parallelize-nodes=false combined-optimization=false",
+                           f"-streamhls-kernel-pipeline=top-func={symbol} board-dsps=2520 graph-file=/run/graph report-file=/run/report optimize-schedule=false parallelize-nodes=false combined-optimization=false"
+                           + (" bufferize-func-args=true" if args.stream_polygeist_handoff else "")
+                           + (" " + args.pipeline_options if args.pipeline_options else ""),
                            "-o", "/run/transformed.mlir"]),
             ("codegen", [backend + "/streamhls-translate", "/run/transformed.mlir", "-emit-vivado-hls", "-allow-unregistered-dialect", f"-vitis-hls-top-func={symbol}", "-o", "/run/emitted.cpp"]),
         ]
@@ -112,7 +121,7 @@ def main():
                     ("/work", "<WORK>"), ("/run", "<RUN>"), ("/usr/include", "<SYSTEM_INCLUDE>")]
     result = {"design_id": args.design_id, "domain": args.domain,
               "tool": {"scalehls": "ScaleHLS", "hida": "HIDA", "streamhls": "StreamHLS"}[args.tool],
-              "source_sha256": before, "input_edits": "none", "image_id": image_id, "top_symbol": symbol,
+              "source_sha256": before, "input_edits": args.input_edits, "pipeline_options": args.pipeline_options, "image_id": image_id, "top_symbol": symbol,
               "stage_reached": "", "rating": "", "failure_category": "", "error_head": "", "stages": []}
     combined = []
     for stage, compiler in commands:
@@ -132,7 +141,7 @@ def main():
             run = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=args.timeout)
             code, raw = run.returncode, run.stdout
         except subprocess.TimeoutExpired as exc:
-            subprocess.run(["docker", "stop", "--time", "5", container], capture_output=True, timeout=15)
+            stop_container(container)
             code, raw, timed_out = 124, exc.stdout or b"", True
             if isinstance(raw, bytes):
                 raw = raw.decode(errors="replace")
@@ -143,6 +152,8 @@ def main():
         result["stages"].append({"stage": stage, "exit_code": code})
         if timed_out or code in (125, 126, 127):
             result.update(status="timeout" if timed_out else "environment_failure", error_head=first_error(clean))
+            if timed_out:
+                result.update(stage_reached=stage)   # like other failures: the stage attempted
             break
         result.update(stage_reached=stage)
         if code or re.search(r"\b(?:fatal )?error:|LLVM ERROR|Assertion .*failed", clean):
@@ -159,16 +170,22 @@ def main():
         if stage == "parse" and args.tool == "streamhls":
             before_ir = expected.read_text()
             after_ir = normalize(before_ir)
+            scope = "DLTI integer metadata payload widths only"
+            if args.stream_polygeist_handoff:
+                after_ir = stream_handoff(after_ir, symbol)
+                scope += "; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true"
             write_text(out / "compatible.mlir", after_ir)
-            result["ir_compatibility_adapter"] = {"script": "normalize_stream_dlti.py", "changed": before_ir != after_ir,
-                                                   "scope": "DLTI integer metadata payload widths only", "input_sha256": sha256(expected),
+            result["ir_compatibility_adapter"] = {"script": "normalize_stream_dlti.py"
+                                                            + (" + stream_handoff.py" if args.stream_polygeist_handoff else ""),
+                                                   "changed": before_ir != after_ir,
+                                                   "scope": scope, "input_sha256": sha256(expected),
                                                    "output_sha256": sha256(out / "compatible.mlir")}
     assert before == sha256(design / "top.cpp"), "The generated source changed"
     # A successful emitter still requires a separate Vitis run. Never infer
     # synthesis support from a zero tool exit or mere file creation.
     if result.get("status") == "codegen_passed":
         result.update(status="codegen_requires_synthesis", rating="")
-    header = f"tool: {result['tool']}\ndesign_id: {args.design_id}\nsource_sha256: {before}\ninput_edits: none\nimage_id: {image_id}\nfirst_error: {result['error_head']}\n"
+    header = f"tool: {result['tool']}\ndesign_id: {args.design_id}\nsource_sha256: {before}\ninput_edits: {args.input_edits}\nimage_id: {image_id}\nfirst_error: {result['error_head']}\n"
     full = header + "\n".join(combined)
     write_text(out / "full.log", full)
     lines = full.splitlines()

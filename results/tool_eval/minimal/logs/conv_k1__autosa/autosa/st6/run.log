@@ -1,0 +1,83 @@
+design_id: conv_k1__autosa
+domain: dnn
+input_edits: diagnostic patch conv_k1__autosa.patch; sha256=42ab65346b6b85eb01e179258ef0b66130ebacc76f92e123fe9cfbf284a21c16
+source_sha256: 7fc932690e5374ffd81c0e9482a6bced6f73f54f681eb3c9782ccc4e109c9895
+image: whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72
+command (inside pinned container): ./autosa <DESIGN>/top.cpp --config=./autosa_config/autosa_config.json --target=autosa_hls_c --output-dir=<WORK>/output --hls --pet-autodetect -I<DESIGN> -I<VITIS_INCLUDE> -I<SYSTEM_INCLUDE>/c++/9 -I<SYSTEM_INCLUDE>/x86_64-linux-gnu/c++/9 --no-pet-autodetect '--sa-sizes={kernel[]->space_time[6];kernel[]->array_part[14,16,14,16];kernel[]->latency[2,2,4]}'
+exit_code: 0
+status: codegen_requires_synthesis
+[AutoSA] Extract RAR dep for the array access: { [S_0[i, j, kh, kw, ci, co] -> __pet_ref_2[]] -> input[o0, o1, o2] }
+[AutoSA] Candidate 0: [0,0,0,1,0,0]
+[AutoSA] Candidate 1: [0,0,1,0,0,0]
+[AutoSA] Candidate 2: [0,0,0,0,0,1]
+[AutoSA] Found more than one legal RAR deps. Candidate 1 is used by default.
+[AutoSA] Extract RAR dep for the array access: { [S_0[i, j, kh, kw, ci, co] -> __pet_ref_3[]] -> kernel[o0, o1, o2, o3] }
+[AutoSA] Candidate 0: [0,0,1,0,0,0]
+[AutoSA] Candidate 1: [0,0,0,1,0,0]
+[AutoSA] Candidate 2: [0,1,0,0,0,0]
+[AutoSA] Candidate 3: [1,0,0,0,0,0]
+[AutoSA] Found more than one legal RAR deps. Candidate 3 is used by default.
+[AutoSA] 10 systolic arrays generated.
+[AutoSA] Apply compute management.
+[AutoSA] Apply array partitioning.
+[AutoSA] Apply latency hiding.
+[AutoSA] The innermost time loop is parallel. Latency hiding is optional.
+[AutoSA] Apply SIMD vectorization.
+[AutoSA] -----------------------------------------------
+[AutoSA] Current band member position: 2
+[AutoSA] -----------------------------------------------
+[AutoSA] -----------------------------------------------
+[AutoSA] Current band member position: 3
+[AutoSA] -----------------------------------------------
+[AutoSA] No candidate loops found!
+[AutoSA] Apply communication management.
+================= IO Grouping Information =================
+===================================================
+Array: input
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 0
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 1
+copy_out: 0
+io_type: AUTOSA_INT_IO
+io_dir: [1,0]
+===================================================
+Array: kernel
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 0
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 1
+copy_out: 0
+io_type: AUTOSA_INT_IO
+io_dir: [1,0]
+===================================================
+Array: output
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 1
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 0
+copy_out: 0
+io_type: AUTOSA_EXT_IO
+io_dir: [0,1]
+------------------------------
+Drain Group
+------------------------------
+copy_in: 0
+copy_out: 1
+io_type: AUTOSA_INT_IO
+io_dir: [1,0]
+================= IO Grouping Information =================
+Please find the generated file: <WORK>/output/src/top_kernel.cpp
+[AutoSA] Post-processing the generated code...

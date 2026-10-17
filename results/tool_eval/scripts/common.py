@@ -3,6 +3,7 @@ import hashlib
 import difflib
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -41,6 +42,14 @@ def sanitize_xml(text, replacements=()):
     # Placeholders such as <PATH> would otherwise become unbalanced XML tags.
     text = sanitize(text, [(old, new.replace("<", "&lt;").replace(">", "&gt;")) for old, new in replacements])
     return re.sub(r"<(PATH|HOST|USER)>", r"&lt;\1&gt;", text)
+
+
+def stop_container(name):
+    """Stop a timed-out tool container; kill it if a loaded machine makes `docker stop` slow."""
+    try:
+        subprocess.run(["docker", "stop", "--time", "5", name], capture_output=True, timeout=60)
+    except subprocess.TimeoutExpired:
+        subprocess.run(["docker", "kill", name], capture_output=True, timeout=60)
 
 
 def write_json(path, value):

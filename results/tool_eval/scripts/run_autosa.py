@@ -13,7 +13,7 @@ import subprocess
 import uuid
 from pathlib import Path
 
-from common import AUTOSA_IMAGE, sanitize, sha256, write_json, write_text
+from common import stop_container, AUTOSA_IMAGE, sanitize, sha256, write_json, write_text
 
 
 def classify(returncode, output, generated):
@@ -50,6 +50,8 @@ def main():
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--synthesis-define", action="store_true", help="pass the normal HLS __SYNTHESIS__ macro")
     parser.add_argument("--input-patch", type=Path, help="record the patch when running an adapted diagnostic input")
+    parser.add_argument("--autosa-arg", action="append", default=[], help="extra AutoSA option, e.g. --sa-sizes=...")
+    parser.add_argument("--stdin", default=None, help="answers to AutoSA's interactive prompts, one per line")
     args = parser.parse_args()
     design, include, out = args.design.resolve(), args.vitis_include.resolve(), args.out.resolve()
     if not (design / "top.cpp").is_file() or not (include / "ap_fixed.h").is_file():
@@ -65,8 +67,10 @@ def main():
                 "-I/usr/include/c++/9", "-I/usr/include/x86_64-linux-gnu/c++/9"]
     if args.synthesis_define:
         compiler.append("-D__SYNTHESIS__")
+    compiler += args.autosa_arg
     container = "forgebench-autosa-" + uuid.uuid4().hex[:12]
-    command = ["docker", "run", "--rm", "--name", container, "--network", "none", "--user", f"{os.getuid()}:{os.getgid()}",
+    command = ["docker", "run", "--rm", *(["-i"] if args.stdin is not None else []),
+               "--name", container, "--network", "none", "--user", f"{os.getuid()}:{os.getgid()}",
                "--mount", f"type=bind,src={design},dst=/design,readonly",
                "--mount", f"type=bind,src={include},dst=/vitis/include,readonly",
                "--mount", f"type=bind,src={out},dst=/work",
@@ -74,14 +78,16 @@ def main():
                "-c", 'exec "$@"', "bash", *compiler]
     before = sha256(design / "top.cpp")
     try:
+        # Without --stdin, prompts read from a closed stdin and get arbitrary answers.
         run = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             text=True, timeout=args.timeout)
+                             input=args.stdin.replace("\\n", "\n") if args.stdin is not None else None,
+                             text=True, errors="replace", timeout=args.timeout)
         returncode, raw = run.returncode, run.stdout
     except subprocess.TimeoutExpired as exc:
         raw = exc.stdout or b""
         if isinstance(raw, bytes):
             raw = raw.decode(errors="replace")
-        subprocess.run(["docker", "stop", "--time", "5", container], capture_output=True, timeout=15)
+        stop_container(container)
         returncode = 124
     assert before == sha256(design / "top.cpp"), "The generated source changed"
     replacements = [(design, "<DESIGN>"), (include, "<VITIS_INCLUDE>"), (out, "<WORK>"),
@@ -96,7 +102,7 @@ def main():
     edits = f"diagnostic patch {args.input_patch.name}; sha256={sha256(args.input_patch)}" if args.input_patch else "none"
     result.update(design_id=args.design_id, domain=args.domain, tool="AutoSA",
                   image=AUTOSA_IMAGE, source_sha256=before, exit_code=returncode,
-                  generated_kernels=kernels, input_edits=edits)
+                  generated_kernels=kernels, input_edits=edits, autosa_args=args.autosa_arg, autosa_stdin=args.stdin)
     header = (f"design_id: {args.design_id}\ndomain: {args.domain}\ninput_edits: {edits}\n"
               f"source_sha256: {before}\nimage: {AUTOSA_IMAGE}\n"
               f"command (inside pinned container): {sanitize(shlex.join(compiler), replacements)}\n"

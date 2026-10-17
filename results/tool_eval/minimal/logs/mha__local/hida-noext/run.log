@@ -1,0 +1,27 @@
+tool: HIDA
+design_id: mha__local
+source_sha256: 99f721ecb40add20726064b0fb6c6d3ceabf9506eb16fe0929d9e4c8f6b99bfd
+input_edits: mha__local.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: <RUN>/parsed.mlir:83:11: error: operand #0 does not dominate this use
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_fS0_S0_S0_S0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/hida/bin/scalehls-opt <RUN>/parsed.mlir '-hida-cpp-pipeline=top-func=_Z3topPA128_fS0_S0_S0_S0_ place-external-buffer=false' -o <RUN>/transformed.mlir
+exit_code: 1
+<RUN>/parsed.mlir:83:11: error: operand #0 does not dominate this use
+          affine.store %0, %alloca[%arg6, %arg7 + %arg5 * 16] : memref<8x128xf32>
+          ^
+<RUN>/parsed.mlir:83:11: note: see current operation: "affine.store"(%6, %arg4, %arg6, %arg7, %arg5) {map = affine_map<(d0, d1, d2) -> (d0, d1 + d2 * 16)>} : (f32, memref<8x128xf32, #hls.mem<bram_t2p>>, index, index, index) -> ()
+<RUN>/parsed.mlir:76:16: note: operand defined here (op in a parent region)
+          %0 = affine.for %arg8 = 0 to 8 iter_args(%arg9 = %cst_0) -> (f32) {
+               ^
+<RUN>/parsed.mlir:198:13: error: operand #0 does not dominate this use
+            affine.store %3, %arg4[%arg8, %arg9 + %arg7 * 16 + (%arg6 * symbol(%1)) * 16] : memref<8x128xf32>
+            ^
+<RUN>/parsed.mlir:198:13: note: see current operation: "affine.store"(%10, %arg4, %arg8, %arg9, %arg7, %arg6, %8) {map = affine_map<(d0, d1, d2, d3)[s0] -> (d0, d1 + d2 * 16 + (d3 * s0) * 16)>} : (f32, memref<8x128xf32, #hls.mem<bram_t2p>>, index, index, index, index, index) -> ()
+<RUN>/parsed.mlir:191:18: note: operand defined here (op in a parent region)
+            %3 = affine.for %arg10 = 0 to 8 iter_args(%arg11 = %cst) -> (f32) {
+                 ^

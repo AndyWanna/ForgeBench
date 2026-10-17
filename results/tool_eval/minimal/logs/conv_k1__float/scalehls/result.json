@@ -1,0 +1,25 @@
+{
+  "design_id": "conv_k1__float",
+  "domain": "dnn",
+  "tool": "ScaleHLS",
+  "source_sha256": "cfa200b3fb9aa1ef1a8120bed68edc1e7de33ee1c8303117afa8d895f6245657",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA14_A14_fPA16_A1_A1_fS1_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute): Assertion `name && value && \"expected valid attribute name and value\"' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed"
+}

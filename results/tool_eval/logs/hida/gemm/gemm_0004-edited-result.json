@@ -1,0 +1,29 @@
+{
+  "design_id": "gemm_0004__edited",
+  "domain": "gemm",
+  "tool": "HIDA",
+  "source_sha256": "50a62c7823067ee380bc003cc8112565de2b29a4618d4cc8b6f9f5de17710667",
+  "input_edits": "gemm_0004__edited.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPfPA64_fS1_S_S_S_",
+  "stage_reached": "codegen",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    }
+  ],
+  "status": "codegen_requires_synthesis"
+}

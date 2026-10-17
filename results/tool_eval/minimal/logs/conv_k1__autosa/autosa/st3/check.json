@@ -1,0 +1,5 @@
+{
+  "functional_check": "TIMEOUT",
+  "max_error": "",
+  "detail": "simulation did not finish in 300 s"
+}

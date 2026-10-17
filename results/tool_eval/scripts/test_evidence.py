@@ -1,5 +1,6 @@
 """Tests for errors that could otherwise turn missing evidence into a result."""
 import unittest
+from pathlib import Path
 
 import xml.etree.ElementTree as ET
 
@@ -8,6 +9,10 @@ from collect import annotate
 from normalize_stream_dlti import normalize
 from run_autosa import classify
 from run_mlir import first_error, has_mlir_definition, top_symbol_from_ast
+from stream_handoff import adapt as stream_handoff
+from collect_tables import category
+from minimal_check import harness, signature
+from minimal_inputs import base_key
 
 
 class EvidenceTests(unittest.TestCase):
@@ -15,6 +20,41 @@ class EvidenceTests(unittest.TestCase):
         text = '#dlti.dl_entry<!llvm.ptr<270>, dense<32> : vector<4xi32>>, #dlti.dl_entry<i64, dense<64> : vector<2xi32>>'
         self.assertEqual(normalize(text), text.replace("xi32>", "xi64>"))
         self.assertEqual(normalize("%x = arith.constant 32 : i32"), "%x = arith.constant 32 : i32")
+
+    def test_check_signature_and_harness(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            header = Path(tmp) / "top.h"
+            header.write_text("typedef float data_t;\nvoid top(data_t DRAM_A[64][64], data_t DRAM_y[1]);\n")
+            params = signature(header)
+        self.assertEqual(params, [("DRAM_A", [64, 64]), ("DRAM_y", [1])])
+        main = harness(params, {"DRAM_y"}, {}, 2, 1)
+        # A NaN reference invalidates the trial instead of passing silently.
+        self.assertIn("isnan", main)
+        self.assertIn("INVALID", main)
+
+    def test_sweep_configs_get_distinct_bases(self):
+        a = {"config": "results/tool_eval/designs/gemm_0001/config.json", "data_type": "float"}
+        b = {"config": "results/tool_eval/designs/dnn_0001/config.json", "data_type": "float"}
+        self.assertNotEqual(base_key(a), base_key(b))
+
+    def test_failure_categories_are_rule_based(self):
+        row = {"error_head": "loc(\"<VITIS_INCLUDE>/etc/ap_fixed_base.h\":828:9): error", "detail": ""}
+        self.assertEqual(category(row)[0], "F1")
+        row = {"error_head": "'math.exp' op operand #0 must be floating-point-like, but got '!llvm.struct<...>'", "detail": ""}
+        self.assertEqual(category(row)[0], "F5")
+        self.assertEqual(category({"error_head": "segfault in some pass", "detail": ""})[0], "")
+
+    def test_stream_handoff_drops_only_uncalled_helpers(self):
+        module = ("module {\n  func.func @top() {\n    %0 = memref.alloca() : memref<4xf32>\n    return\n  }\n"
+                  "  func.func @helper() {\n    return\n  }\n}\n")
+        adapted = stream_handoff(module, "top")
+        self.assertIn("memref.alloc() : memref<4xf32>", adapted)
+        self.assertNotIn("@helper", adapted)
+        with self.assertRaises(ValueError):
+            stream_handoff(module.replace("    return\n  }\n  func", "    call @helper() : () -> ()\n    return\n  }\n  func", 1), "top")
+        declared = module.replace("}\n", "}\n  func.func private @ext(f32) -> f32\n", 1)
+        self.assertIn("func.func private @ext(f32) -> f32", stream_handoff(declared, "top"))
 
     def test_feature_attribution_requires_vendor_enum_evidence(self):
         result = {"status": "parse_failed", "error_head": "ap_fixed_base.h: error", "failure_category": ""}

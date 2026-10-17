@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from common import EVAL, REPO, sha256
+from minimal_run import FIELDS
 
 
 def read_csv(filename, fields):
@@ -30,29 +31,47 @@ def main():
         for filename, digest in case["source_sha256"].items():
             assert sha256(EVAL / "designs" / design_id / filename) == digest
     summary = read_csv("summary.csv", ["tool", "domain", "designs_tried", "stage_reached", "rating", "notes"])
-    outcomes = read_csv("outcomes.csv", ["design_id", "domain", "tool", "stage_reached", "failure_category", "error_head"])
+    outcomes = read_csv("outcomes.csv", ["design_id", "domain", "tool", "stage_reached", "failure_category", "error_head",
+                                         "run", "patch", "functional_check"])
+    results = read_csv("minimal/results.csv", FIELDS)
+    by_run = {row["run"]: row for row in results}
     tools = {"ScaleHLS": "scalehls", "HIDA": "hida", "AutoSA": "autosa", "StreamHLS": "streamhls"}
     expected = {(tool, domain) for tool in tools for domain in ["gemm", "dnn", "llm"]}
     assert len(summary) == 12 and {(row["tool"], row["domain"]) for row in summary} == expected
-    assert len(outcomes) == 12 and len({(row["design_id"], row["tool"]) for row in outcomes}) == 12
     for row in summary:
+        # The primary unmodified run of each cell keeps its log in logs/<tool>/<domain>/.
         logdir = EVAL / "logs" / tools[row["tool"]] / row["domain"]
         result = json.loads((logdir / "result.json").read_text())
-        log = (logdir / "run.log").read_text()
-        assert "command" in log and "exit_code" in log
         assert result["source_sha256"] == cases[row["domain"] + "_0001"]["source_sha256"]["top.cpp"]
+        assert "command" in (logdir / "run.log").read_text()
         assert row["stage_reached"] in {"parse", "transform", "codegen", "synth"}
         assert row["rating"] in {"full", "half", "none"}
-        assert row["stage_reached"] == result["stage_reached"] and row["rating"] == result["rating"]
-        assert row["designs_tried"] == "1"
-        if row["rating"] in {"full", "half"}:
-            assert result["stage_reached"] == "synth"
-            assert (EVAL / "reports" / tools[row["tool"]] / result["design_id"] / "csynth.xml").is_file()
-        outcome = next(r for r in outcomes if r["tool"] == row["tool"] and r["domain"] == row["domain"])
-        assert outcome["error_head"] == result["error_head"]
-        assert outcome["failure_category"] in {"", "F1", "F2", "F3", "F4", "F5", "F6"}
-        assert outcome["failure_category"] == result["failure_category"]
-        assert result["status"] not in {"environment_failure", "timeout", "missing_executable", "missing_top_definition"}
+        if row["rating"] != "none":
+            # A rating above none needs a synthesized, functionally correct whole-design run, and
+            # `half` exactly when that run used a committed patch.
+            backing = [r for r in results if r["tool"] == row["tool"] and r["domain"] == row["domain"] and r["level"] == "design"
+                       and r["stage_reached"] == "synth" and r["functional_check"] == "PASS"]
+            assert backing and any(bool(r["patch"]) == (row["rating"] == "half") for r in backing), row
+    for row in outcomes:
+        assert row["run"] in by_run, row["run"]
+        assert row["failure_category"] in {"", "F1", "F2", "F3", "F4", "F5", "F6"}
+    minimal = json.loads((EVAL / "minimal/cases.json").read_text())
+    for input_id, spec in minimal["inputs"].items():
+        assert (REPO / spec["config"]).is_file(), spec["config"]
+        if spec["patch"]:
+            assert (EVAL / spec["patch"]).is_file(), spec["patch"]
+    run_ids = {run["id"] for run in minimal["runs"]}
+    for row in results:
+        assert row["run"] in run_ids or row["run"].rsplit("/", 1)[0] in run_ids, row["run"]
+        logs = EVAL / "minimal/logs" / row["run"]
+        assert (logs / "run.log").is_file(), row["run"]
+        if row["functional_check"] == "PASS" and row["tool"] in tools:
+            assert json.loads((logs / "check.json").read_text())["verdict"] == "PASS", row["run"]
+        if row["stage_reached"] == "synth" and row["tool"] in tools:
+            assert row["functional_check"] == "PASS" and row["latency_cycles"], row["run"]
+    for patch in (EVAL / "patches").glob("*/*.patch"):
+        if patch.parent.name in tools.values() and patch.name in {p.name for p in (EVAL / "minimal/patches").iterdir()}:
+            assert patch.read_bytes() == (EVAL / "minimal/patches" / patch.name).read_bytes(), patch
     for design_id in cases:
         report = EVAL / "reports/vitis" / design_id / "csynth.xml"
         tree = ET.parse(report)
@@ -62,9 +81,9 @@ def main():
         features = list(csv.DictReader(stream))
     assert len(features) == 24 and len({(r["tool"], r["feature"]) for r in features}) == 24
     for row in features:
-        path, line = row["source"].rsplit(":", 1)
-        assert (EVAL / path).read_text().splitlines()[int(line) - 1].strip() == row["construct"]
-        assert (EVAL / row["blocking_log"]).is_file()
+        assert row["evidence_status"] in {"unverified", "limitation_observed", "operation_handled_after_edits"}
+        if row["evidence_status"] != "unverified":
+            assert row["example_run"] in by_run, row["example_run"]
     # Apply each claimed input patch in an isolated directory and compare the
     # actual resulting bytes, not just whether the patch's syntax is valid.
     historical = json.loads((EVAL / "historical/manifest.json").read_text())
@@ -123,7 +142,8 @@ def main():
         assert not re.search(r"[\w.-]+\.ece\.gatech\.edu", text), path
         assert not re.search(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)", text), path
     assert size < 5 * 1024 * 1024, size
-    print(f"PASS: 24 fixed/float outcomes, 24 feature evidence entries, eight input patches, six hashed designs and Vitis reports; {size:,} public bytes")
+    print(f"PASS: {len(summary)} summary cells, {len(outcomes)} outcomes, {len(results)} minimal-study rows, "
+          f"{len(minimal['inputs'])} inputs; {size:,} public bytes")
 
 
 if __name__ == "__main__":

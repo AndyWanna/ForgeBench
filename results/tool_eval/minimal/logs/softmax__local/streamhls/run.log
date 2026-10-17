@@ -1,0 +1,48 @@
+tool: StreamHLS
+design_id: softmax__local
+source_sha256: 8f889d756dcc00e608739de4e22c55cbb8d21c2934b49e66a1876b8fdb0c289d
+input_edits: softmax__local.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: streamhls-opt: <WORK><PATH>/AffineMemAccess.cpp:1293: mlir::AffineMap mlir::streamhls::getMinimalAccessPattern(mlir::Operation *): Assertion `false && "relevantLoops.size() != mapOperands.size()"' failed.
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_fS0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPA128_fS0_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 139
+streamhls-opt: <WORK><PATH>/AffineMemAccess.cpp:1293: mlir::AffineMap mlir::streamhls::getMinimalAccessPattern(mlir::Operation *): Assertion `false && "relevantLoops.size() != mapOperands.size()"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir "-streamhls-kernel-pipeline=top-func=_Z3topPA128_fS0_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true" -o <RUN>/transformed.mlir
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  streamhls-opt 0x000055b8f4b2cf57
+1  streamhls-opt 0x000055b8f4b2aabe
+2  streamhls-opt 0x000055b8f4b2d60a
+3  libc.so.6     0x00007f0c3c8fd520
+4  libc.so.6     0x00007f0c3c9519bc pthread_kill + 300
+5  libc.so.6     0x00007f0c3c8fd476 raise + 22
+6  libc.so.6     0x00007f0c3c8e37f3 abort + 211
+7  libc.so.6     0x00007f0c3c8e371b
+8  libc.so.6     0x00007f0c3c8f4e96
+9  streamhls-opt 0x000055b8f2bcb090
+10 streamhls-opt 0x000055b8f2bd9f93
+11 streamhls-opt 0x000055b8f2bdc8c6
+12 streamhls-opt 0x000055b8f2bb921f
+13 streamhls-opt 0x000055b8f484b1d4
+14 streamhls-opt 0x000055b8f484b971
+15 streamhls-opt 0x000055b8f4850dfe
+16 streamhls-opt 0x000055b8f484d10b
+17 streamhls-opt 0x000055b8f484b318
+18 streamhls-opt 0x000055b8f484b971
+19 streamhls-opt 0x000055b8f484dfe2
+20 streamhls-opt 0x000055b8f2b4c974
+21 streamhls-opt 0x000055b8f2b4bbe4
+22 streamhls-opt 0x000055b8f4a32ac8
+23 streamhls-opt 0x000055b8f2b46cea
+24 streamhls-opt 0x000055b8f2b46e86
+25 streamhls-opt 0x000055b8f2b47132
+26 streamhls-opt 0x000055b8f0824d0e
+27 libc.so.6     0x00007f0c3c8e4d90
+28 libc.so.6     0x00007f0c3c8e4e40 __libc_start_main + 128
+29 streamhls-opt 0x000055b8f0824ba5

@@ -1,441 +1,632 @@
-# Source-to-source tool evaluation
+# Source-to-source tool evaluation (Case Study 3, Table 9)
 
-This directory contains a **fresh, explicitly identified evaluation**, plus
-recovered historical AutoSA artifacts. It is not a reconstruction of the July
-evaluation. The original ScaleHLS, HIDA, and StreamHLS installations and run
-artifacts were deleted, and their historical commits and input cohorts are
-unknown. New runs must not be presented as those original measurements.
+This directory backs Table 9 (`tab:tool-support`) of `Forgebench_FPT_Journal_2026_R2.pdf`
+(Case Study 3; `sec/results.tex`, `table/testcases_table.tex`). It covers ScaleHLS, HIDA,
+AutoSA and StreamHLS on ForgeBench-generated GEMM, DNN and LLM designs. It follows
+`todo_tool_eval.md` item by item. No manuscript file was modified; where the evidence differs
+from the paper, the difference is stated here, with a suggested revision in
+[§7](#7-suggestions-for-revising-the-paper).
 
-The paper under review is `Forgebench_FPT_Journal_2026_R2.pdf`, Case Study 3,
-Table 9 (`tab:tool-support`); the corresponding manuscript files are
-`sec/results.tex` and `table/testcases_table.tex`. No manuscript files were
-modified. Corrections and unresolved claims are recorded here for review.
+Every result below comes from a committed command, input and log. All tables inside
+`GENERATED` blocks are produced by [`scripts/report_tables.py`](scripts/report_tables.py) from
+[`minimal/results.csv`](minimal/results.csv) and [`summary.csv`](summary.csv); none is typed by
+hand.
 
-## Result at a glance
+## 1. What was verified, and the results
 
-**The fresh evaluation does not reproduce any ● or ◐ cell of Table 9.** On the
-unchanged generated designs, every tool stops in its C/C++ front end, in all
-three domains. Changing only `data_type` to `float` lets ScaleHLS, HIDA and
-StreamHLS import the designs, but each then fails in its transformation
-pipeline. No tool reaches code generation or synthesis on any input.
+Two levels were tested, in all three domains, with all four tools:
 
-| Tool | Paper GEMM / DNN / LLM | Fresh `ap_fixed<16,5>` (stage, rating) | Fresh `float` (stage, rating) |
+* **Whole generated designs** (end to end): the sweep designs `gemm_0001`, `gemm_0004`,
+  `dnn_0001` and `llm_0001`, each in three forms:
+  * as generated (`ap_fixed<16,5>`);
+  * generated with the generator's `float` option;
+  * `float` plus a committed patch.
+* **Single operators**: the smallest designs the generator can produce for one operator:
+  * GEMM in all six loop orders;
+  * convolution 1×1, 3×3 without padding, and 3×3 with padding;
+  * RMSNorm, softmax, multi-head attention (MHA), and MHA with RoPE.
+
+  Each is tested as generated, in `float`, and with patches.
+
+"Correct" means the tool's emitted C++ matches the unmodified generated `float` design on 5
+random input sets, with max |ref − out| / max(1, |ref|) < 1e-4 over every output element
+(`scripts/minimal_check.py`). Only correct output is synthesized. A tool output that synthesizes
+but computes the wrong result is counted as a failure.
+
+<!-- BEGIN GENERATED: overview -->
+| Tool | GEMM whole design | GEMM single op | DNN whole design | DNN single ops | LLM whole design | LLM single ops |
+|---|---|---|---|---|---|---|
+| ScaleHLS | ✅ `gemm_0004` with edits | ✅ 2/6: gemm_ikj, gemm_kij; ❌ gemm_ijk (wrong results), gemm_jik (wrong results), gemm_jki (wrong results), gemm_kji (wrong results) | ❌ wrong results | ✅ 3/3: conv_k1, conv_k3p0, conv_k3 | ❌ DSE timeout | ✅ 2/4: rmsnorm, softmax; ❌ mha (wrong results), mha_rope (wrong results) |
+| HIDA | ❌ emitted code unusable | ✅ 6/6: gemm_ijk, gemm_ikj, gemm_jik, gemm_jki, gemm_kij, gemm_kji | ❌ emitted code unusable | ✅ 3/3: conv_k1, conv_k3p0, conv_k3 | ✅ `llm_0001` with edits | ✅ 4/4: rmsnorm, softmax, mha, mha_rope |
+| StreamHLS | ❌ crash in transform | ✅ 2/6: gemm_ikj, gemm_kij; ❌ gemm_ijk (crash in transform), gemm_jik (crash in transform), gemm_jki (crash in transform), gemm_kji (crash in transform) | ❌ crash in transform | ✅ 2/3: conv_k1, conv_k3p0; ❌ conv_k3 (wrong results) | ❌ crash in transform | ❌ 0/4; ❌ rmsnorm (crash in transform), softmax (crash in transform), mha (crash in transform), mha_rope (crash in transform) |
+| AutoSA | ❌ F1 (vendor ap_fixed / C++ header implementation) | ❌ 0/2; ❌ gemm_ijk (emitted code unusable), gemm_ikj (emitted code unusable) | ❌ F1 (vendor ap_fixed / C++ header implementation) | ❌ 0/3; ❌ conv_k1 (wrong results), conv_k3p0 (emitted code unusable), conv_k3 (F2 (loop nest outside the single uniform band AutoSA requires)) | ❌ F1 (vendor ap_fixed / C++ header implementation) | ❌ 0/4; ❌ rmsnorm (kernel hangs), softmax (kernel hangs), mha (crash in parse), mha_rope (F1 (vendor ap_fixed / C++ header implementation)) |
+<!-- END GENERATED: overview -->
+
+**Whole designs versus single operators:**
+
+* **DNN:** no tool passes the whole generated design end to end, either as generated or with
+  edits. Single convolution operators do pass:
+  * HIDA and ScaleHLS on all three convolutions, including the padded 3×3;
+  * StreamHLS on the two unpadded ones.
+* **LLM:** no tool passes the whole generated design as generated (fixed point or float). With
+  edits, HIDA passes the whole `llm_0001` (attention + RoPE + LayerNorm) end to end; ScaleHLS's
+  DSE did not finish within 30 minutes; StreamHLS and AutoSA fail. Per operator:
+  * HIDA passes all four LLM operators;
+  * ScaleHLS passes RMSNorm and softmax;
+  * StreamHLS and AutoSA pass none.
+* **GEMM:** no tool passes the whole generated design as generated. With edits, ScaleHLS passes
+  the whole `gemm_0004` (the `vm_order = ji` sibling of `gemm_0001`) end to end. HIDA's
+  emitted top level turns the one-element output port `DRAM_result[1]` into a by-value scalar,
+  so the result never reaches the caller. Per operator:
+  * HIDA passes all six loop orders;
+  * ScaleHLS and StreamHLS pass the two orders with the reduction loop innermost;
+  * AutoSA passes none.
+* **AutoSA** produces no correct kernel at any level. Its own documented example,
+  `autosa_tests/mm`, also fails its built-in golden check in the pinned image ("Failed with
+  4096 errors!"; [`minimal/logs/autosa_control_mm/`](minimal/logs/autosa_control_mm/autosa/run.log)).
+  So no AutoSA result can be validated in this environment.
+
+Detailed results follow. Every row links its exact input and patch; logs are in
+`minimal/logs/<input>/<tool>/`.
+
+<!-- BEGIN GENERATED: whole -->
+| Design | Input | Tool | Stage reached | Result | Why it failed |
+|---|---|---|---|---|---|
+| `gemm_0001` | generated `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt` |
+| `gemm_0001` | generated `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt` |
+| `gemm_0001` | generated `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc(callsite("<VITIS_INCLUDE>/etc/ap_private.h":2210:9 at "<VITIS_INCLUDE>/etc/ap_private.h":6766:28)): err...` |
+| `gemm_0001` | generated `ap_fixed<16,5>` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `gemm_0001` | generated `float` | ScaleHLS | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `gemm_0001` | generated `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `gemm_0001` | generated `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
+| `gemm_0001` | generated `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `gemm_0001` | generated `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) | ScaleHLS | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 2.5) |
+| `gemm_0001` | generated `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:216:196: error: cannot convert ‘float*’ to ‘float’` |
+| `gemm_0001` | generated `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
+| `gemm_0004` | generated `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt` |
+| `gemm_0004` | generated `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt` |
+| `gemm_0004` | generated `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc(callsite("<VITIS_INCLUDE>/etc/ap_private.h":2210:9 at "<VITIS_INCLUDE>/etc/ap_private.h":6766:28)): err...` |
+| `gemm_0004` | generated `ap_fixed<16,5>` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `gemm_0004` | generated `float` | ScaleHLS | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `gemm_0004` | generated `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `gemm_0004` | generated `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
+| `gemm_0004` | generated `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `gemm_0004` | generated `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) | ScaleHLS | synth | ✅ synthesized, correct |  |
+| `gemm_0004` | generated `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
+| `gemm_0004` | generated `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
+| `dnn_0001` | generated `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1288:5): error:  + visiting unknonwn sub decl stmt` |
+| `dnn_0001` | generated `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1288:5): error:  + visiting unknonwn sub decl stmt` |
+| `dnn_0001` | generated `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | `cgeist: <WORK><PATH>/ValueCategory.cc:154: void ValueCategory::store(mlir::Location, mlir::OpBuilder &, Val...` |
+| `dnn_0001` | generated `ap_fixed<16,5>` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `dnn_0001` | generated `float` | ScaleHLS | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `dnn_0001` | generated `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `dnn_0001` | generated `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| `dnn_0001` | generated `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `dnn_0001` | generated `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) | ScaleHLS | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 1.02) |
+| `dnn_0001` | generated `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:407:258: error: cannot convert ‘float (*)[16][1][1]’ to ‘float (*)[16]’` |
+| `dnn_0001` | generated `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| `llm_0001` | generated `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1639:5): error:  + visiting unknonwn sub decl stmt` |
+| `llm_0001` | generated `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1639:5): error:  + visiting unknonwn sub decl stmt` |
+| `llm_0001` | generated `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | `cgeist: <WORK><PATH>/ValueCategory.cc:154: void ValueCategory::store(mlir::Location, mlir::OpBuilder &, Val...` |
+| `llm_0001` | generated `ap_fixed<16,5>` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `llm_0001` | generated `float` | ScaleHLS | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `llm_0001` | generated `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
+| `llm_0001` | generated `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| `llm_0001` | generated `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+| `llm_0001` | generated `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) | ScaleHLS | transform | ❌ stops at transform | transformation (DSE) did not finish within the run's time limit |
+| `llm_0001` | generated `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) | HIDA | codegen | ❌ stops at codegen | `<RUN>/transformed.mlir:622:10: error: 'hls.dataflow.buffer' op only support depth of 1` |
+| `llm_0001` | generated `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) + `place-external-buffer=false` | HIDA | synth | ✅ synthesized, correct |  |
+| `llm_0001` | generated `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| `gemm_0001` | generated `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:216:196: error: cannot convert ‘float*’ to ‘float’` |
+| `gemm_0004` | generated `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
+| `dnn_0001` | generated `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 0.664) |
+<!-- END GENERATED: whole -->
+
+<!-- BEGIN GENERATED: operators -->
+| Domain | Operator | Tool | Best result | Input of that attempt | Why it failed |
+|---|---|---|---|---|---|
+| gemm | `gemm_ijk` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ijk__local.patch`](minimal/patches/gemm_ijk__local.patch) | wrong results (max_error 10.8) |
+| gemm | `gemm_ijk` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_ijk__local.patch`](minimal/patches/gemm_ijk__local.patch) |  |
+| gemm | `gemm_ijk` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_ijk__local.patch`](minimal/patches/gemm_ijk__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_ijk` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ijk__autosa.patch`](minimal/patches/gemm_ijk__autosa.patch) + `sa-sizes space_time[0];array_part[16,16,16];latency[4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:465:28: error: ‘fifo_BRAM_B_in’ was not declared in this scope` |
+| gemm | `gemm_ikj` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](minimal/patches/gemm_ikj__local.patch) |  |
+| gemm | `gemm_ikj` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](minimal/patches/gemm_ikj__local.patch) |  |
+| gemm | `gemm_ikj` | StreamHLS | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](minimal/patches/gemm_ikj__local.patch) + `--stream-polygeist-handoff` |  |
+| gemm | `gemm_jik` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_jik__local.patch`](minimal/patches/gemm_jik__local.patch) | wrong results (max_error 10.5) |
+| gemm | `gemm_jik` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_jik__local.patch`](minimal/patches/gemm_jik__local.patch) |  |
+| gemm | `gemm_jik` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_jik__local.patch`](minimal/patches/gemm_jik__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_jki` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_jki__local.patch`](minimal/patches/gemm_jki__local.patch) | wrong results (max_error 10.3) |
+| gemm | `gemm_jki` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_jki__local.patch`](minimal/patches/gemm_jki__local.patch) |  |
+| gemm | `gemm_jki` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_jki__local.patch`](minimal/patches/gemm_jki__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_kij` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](minimal/patches/gemm_kij__local.patch) |  |
+| gemm | `gemm_kij` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](minimal/patches/gemm_kij__local.patch) |  |
+| gemm | `gemm_kij` | StreamHLS | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](minimal/patches/gemm_kij__local.patch) + `--stream-polygeist-handoff` |  |
+| gemm | `gemm_kji` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_kji__local.patch`](minimal/patches/gemm_kji__local.patch) | wrong results (max_error 10.3) |
+| gemm | `gemm_kji` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_kji__local.patch`](minimal/patches/gemm_kji__local.patch) |  |
+| gemm | `gemm_kji` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_kji__local.patch`](minimal/patches/gemm_kji__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_ikj` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ikj__autosa.patch`](minimal/patches/gemm_ikj__autosa.patch) + `sa-sizes space_time[0];array_part[16,16,16];latency[4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:465:28: error: ‘fifo_BRAM_B_in’ was not declared in this scope` |
+| dnn | `conv_k1` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](minimal/patches/conv_k1__sunkguard.patch) |  |
+| dnn | `conv_k1` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](minimal/patches/conv_k1__sunkguard.patch) |  |
+| dnn | `conv_k1` | StreamHLS | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](minimal/patches/conv_k1__sunkguard.patch) + `--stream-polygeist-handoff` |  |
+| dnn | `conv_k1` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k1__autosa.patch`](minimal/patches/conv_k1__autosa.patch) + `sa-sizes space_time[0];array_part[14,14,16,16];latency[2,2,4]` | wrong results (max_error 1.82e+35) |
+| dnn | `conv_k3p0` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k3p0__sunkguard.patch`](minimal/patches/conv_k3p0__sunkguard.patch) |  |
+| dnn | `conv_k3p0` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k3p0__sunkguard.patch`](minimal/patches/conv_k3p0__sunkguard.patch) |  |
+| dnn | `conv_k3p0` | StreamHLS | ✅ synthesized, correct | generated `float` + [`conv_k3p0__noguard_reorder.patch`](minimal/patches/conv_k3p0__noguard_reorder.patch) + `--stream-polygeist-handoff` |  |
+| dnn | `conv_k3p0` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k3p0__autosa.patch`](minimal/patches/conv_k3p0__autosa.patch) + `sa-sizes space_time[0];array_part[12,12,16,3];latency[4,4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:398:22: error: ‘fifo_kernel_in’ was not declared in this scope` |
+| dnn | `conv_k3` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k3__sunkguard.patch`](minimal/patches/conv_k3__sunkguard.patch) |  |
+| dnn | `conv_k3` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k3__sunkguard.patch`](minimal/patches/conv_k3__sunkguard.patch) |  |
+| dnn | `conv_k3` | StreamHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k3__sunkguard.patch`](minimal/patches/conv_k3__sunkguard.patch) + `--stream-polygeist-handoff` | wrong results (max_error 5.14) |
+| dnn | `conv_k3` | AutoSA | ❌ stops at setup | generated `float` + [`conv_k3__autosa_guard.patch`](minimal/patches/conv_k3__autosa_guard.patch) | F2: loop nest outside the single uniform band AutoSA requires; `what():  [AutoSA] Error: Non-uniform dependence detected.` |
+| llm | `rmsnorm` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`rmsnorm__local.patch`](minimal/patches/rmsnorm__local.patch) |  |
+| llm | `rmsnorm` | HIDA | ✅ synthesized, correct | generated `float` + [`rmsnorm__rowacc_split.patch`](minimal/patches/rmsnorm__rowacc_split.patch) + `place-external-buffer=false` |  |
+| llm | `rmsnorm` | StreamHLS | ❌ stops at transform | generated `float` + [`rmsnorm__local.patch`](minimal/patches/rmsnorm__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| llm | `rmsnorm` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`rmsnorm__autosa.patch`](minimal/patches/rmsnorm__autosa.patch) + `sa-sizes space_time[0];array_part[8,16];latency[4]` | emitted kernel hangs in C simulation |
+| llm | `softmax` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`softmax__local.patch`](minimal/patches/softmax__local.patch) |  |
+| llm | `softmax` | HIDA | ✅ synthesized, correct | generated `float` + [`softmax__rowacc_split.patch`](minimal/patches/softmax__rowacc_split.patch) + `place-external-buffer=false` |  |
+| llm | `softmax` | StreamHLS | ❌ stops at transform | generated `float` + [`softmax__local.patch`](minimal/patches/softmax__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/AffineMemAccess.cpp:1293: mlir::AffineMap mlir::streamhls::getMinimalAccessPatt...` |
+| llm | `softmax` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`softmax__autosa.patch`](minimal/patches/softmax__autosa.patch) + `sa-sizes space_time[0];array_part[8,16];latency[4]` | emitted kernel hangs in C simulation |
+| llm | `mha` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`mha__attn.patch`](minimal/patches/mha__attn.patch) | wrong results (max_error 0.0914) |
+| llm | `mha` | HIDA | ✅ synthesized, correct | generated `float` + [`mha__attn.patch`](minimal/patches/mha__attn.patch) + `place-external-buffer=false` |  |
+| llm | `mha` | StreamHLS | ❌ stops at transform | generated `float` + [`mha__local.patch`](minimal/patches/mha__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| llm | `mha` | AutoSA | ❌ stops at parse | generated `float` + [`mha__autosa_scores.patch`](minimal/patches/mha__autosa_scores.patch) | `collect2: error: ld returned 1 exit status` |
+| llm | `mha_rope` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`mha_rope__attn.patch`](minimal/patches/mha_rope__attn.patch) | wrong results (max_error 0.0991) |
+| llm | `mha_rope` | HIDA | ✅ synthesized, correct | generated `float` + [`mha_rope__attn.patch`](minimal/patches/mha_rope__attn.patch) + `place-external-buffer=false` |  |
+| llm | `mha_rope` | StreamHLS | ❌ stops at transform | generated `float` + [`mha_rope__local.patch`](minimal/patches/mha_rope__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| llm | `mha_rope` | AutoSA | ❌ stops at parse | generated `ap_fixed<16,5>` | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
+<!-- END GENERATED: operators -->
+
+## 2. TODO item 1: one piece of evidence per table cell
+
+### 2.1 Designs fed to each tool
+
+| Level | Inputs | Where |
+|---|---|---|
+| Whole designs (Table 9's cohort) | `gemm_0001`, `dnn_0001`, `llm_0001`: the first design of each manifest (`manifest/designs/{gemm,dnn,llm}.csv`) | configs and unmodified generated sources in [`designs/<id>/`](designs/); hashes in [`designs/manifest.json`](designs/manifest.json) |
+| Whole designs, `float` option | the same three, `data_type = float` | [`designs/<id>_float/`](designs/), [`designs/float_manifest.json`](designs/float_manifest.json) |
+| Whole design, loop-order sibling | `gemm_0004` (`vm_order` = `ji`/`ji`; otherwise identical to `gemm_0001`) | sweep config `designs/configs/ml_sweep/gemm/GEMM_config_M64_K64_N64_UM1_UK1_UN1_GORDna_VM1ji_VM2ji_...json` |
+| Single operators | the 13 configs in [`minimal/configs/`](minimal/configs/) | generated by `forgebench generate` |
+
+Every tool input, including each edited one, is listed in [`minimal/cases.json`](minimal/cases.json)
+as a ForgeBench config, a data type, and an optional patch against the generated source. Its
+`top.cpp` hash is recorded there too. `scripts/minimal_inputs.py` regenerates all 67 inputs
+with ForgeBench's own generator and refuses any hash mismatch. No input is a hand-written kernel.
+
+### 2.2 Tool versions
+
+[`versions.json`](versions.json) pins the sources and executable hashes:
+
+| Tool | Repository | Commit / dependency |
+|---|---|---|
+| ScaleHLS | [UIUC-ChenLab/scalehls](https://github.com/UIUC-ChenLab/scalehls) | `b69f334c9c122fad3759fcf388d3f039689b6fc0`; Polygeist `737290e9`, LLVM/MLIR 16.0.0git `cf0ff67a` |
+| HIDA | [UIUC-ChenLab/ScaleHLS-HIDA](https://github.com/UIUC-ChenLab/ScaleHLS-HIDA) | `fd79f6c946593c290d6d285c2a2efcab72fbe9c6`; same Polygeist/LLVM as ScaleHLS |
+| AutoSA | [UCLA-VAST/AutoSA](https://github.com/UCLA-VAST/AutoSA) | `b61a1b4132d631600696feba59eb606acb34d304` (upstream HEAD), image `whbldhwj/autosa@sha256:b9318c50…`; Clang 9.0.1, PET 0.11.3, ISL 0.22 |
+| StreamHLS | [UCLA-VAST/Stream-HLS](https://github.com/UCLA-VAST/Stream-HLS) | `00c6219a82fc710492f4eb44e4f34836dfb19e08`; LLVM/MLIR 18.1.2 `26a1d660`; C front end Polygeist `77c04bb2` with LLVM 18.0.0git `26eb4285` |
+| Vitis HLS | AMD | 2024.1, part `xczu9eg-ffvb1156-2-e`, 10 ns |
+
+The tools that were run for the paper's original table, and their versions, are unknown; see
+[§8](#8-what-is-missing-and-discrepancies).
+
+### 2.3 `summary.csv`
+
+[`summary.csv`](summary.csv) has one row per tool × domain, with the TODO's columns. It rates the
+**whole generated designs**:
+* `full` = synthesizes with correct results and no source edit;
+* `half` = the same after the committed non-algorithmic patch;
+* `none` = otherwise.
+
+<!-- BEGIN GENERATED: summary -->
+| Tool | GEMM | DNN | LLM |
 |---|---|---|---|
-| ScaleHLS | ● / ○ / ○ | parse ○ / parse ○ / parse ○ | transform ○ / transform ○ / transform ○ |
-| HIDA | ● / ○ / ○ | parse ○ / parse ○ / parse ○ | transform ○ / transform ○ / transform ○ |
-| AutoSA | ◐ / ◐ / ○ | parse ○ / parse ○ / parse ○ | parse ○ / parse ○ / parse ○ |
-| StreamHLS | ◐ / ○ / ○ | parse ○ / parse ○ / parse ○ | transform ○ / transform ○ / transform ○ |
+| ScaleHLS | ◐ half (synth) | ○ none (codegen) | ○ none (transform) |
+| HIDA | ○ none (codegen) | ○ none (codegen) | ◐ half (synth) |
+| AutoSA | ○ none (parse) | ○ none (parse) | ○ none (parse) |
+| StreamHLS | ○ none (transform) | ○ none (transform) | ○ none (transform) |
+<!-- END GENERATED: summary -->
 
-`stage_reached` is the stage that was attempted and failed (see stage semantics
-below). The paper's prose claims that differ from these results are: "On GEMM,
-all four tools reach synthesis"; "ScaleHLS and HIDA advance only to the
-transform level" on DNN (fresh: parse for the fixed-point input; transform only
-after the float change); "StreamHLS generates code but the output is not
-synthesizable" (fresh: no code is generated); and "AutoSA synthesizes only a
-subset of designs" (fresh: 0 of 1). The LLM row ("every tool halts at parsing")
-agrees with the fixed-point results. The fresh cohort is one design per domain
-and the tool revisions are current upstream, so these results do not show that
-the July results were wrong. They do show that the July results cannot be
-reproduced from the generated sources and that their inputs are unknown (see
-[Recovered historical evidence](#recovered-historical-evidence-and-discrepancies)).
-Each upstream tool passes its own example (`logs/environment/control-*.log`),
-so these failures are not caused by broken builds.
+The per-operator ratings are in [`minimal/summary_operators.csv`](minimal/summary_operators.csv).
+`float_summary.csv`, `float_outcomes.csv` and `float_runs.json` record the first, separate run of
+the three unmodified `float` designs (`scripts/collect_float.py`). They agree with the `float`
+rows of §1.
 
-## Fresh experiment
+### 2.4 One log per cell
 
-The fixed cohort is the first design in each released sweep manifest:
+* `logs/<tool>/<domain>/` holds the primary run on each unmodified generated design
+  (`run.log`, `result.json`), its float run (`float-*`), and the edited whole-design runs
+  (`<design>-edited-*`).
+* Every other run, at both levels, has `run.log`, `result.json` and, where code was emitted,
+  `check.json` in `minimal/logs/<input>/<tool>/`.
 
-| Domain | Design ID | Input |
-|---|---|---|
-| GEMM | `gemm_0001` | Option-1 composition of vector/matrix products and a dot product, dimensions 64 |
-| DNN | `dnn_0001` | Convolution with batch normalization and ReLU; 16 input/output channels, 56-by-56 input, kernel size 1 |
-| LLM | `llm_0001` | Grouped multi-head attention with RoPE and LayerNorm; sequence 8, dimension 128, 8 heads, head dimension 16 |
+Logs are trimmed to the command, the first error, and the last ~50 lines. Full transcripts are
+in the tarball (§6.2).
 
-These are whole generated sweep designs using `ap_fixed<16,5>`, including
-their generated load/store functions, memory interfaces, and pragmas. There is
-one input per domain per tool, not an exhaustive sweep and not a full ResNet or
-32-layer LLaMA model. In particular, GEMM's first manifest case is a composed
-linear-algebra workload, not an isolated three-loop matrix multiplication.
+### 2.5 The edits behind each ◐ result
 
-[`designs/manifest.json`](designs/manifest.json) records the generator commit,
-original config paths, config hashes, and hashes of every retained generator
-output. The exact configs and unmodified sources are in `designs/<design_id>/`.
-`scripts/prepare.py` regenerates them using ForgeBench's own generator in an
-external working directory. No verification shim, handwritten replacement
-kernel, type substitution, or operator removal is used in the primary runs.
+Every patch is against the source ForgeBench generates with the `float` option. Each edited
+source was checked to compute exactly the same result as the generated design before any tool
+saw it. `patches/<tool>/` holds the patch of every correct, synthesized result of that tool
+(copied by `scripts/collect_tables.py`; `validate.py` checks they are identical to
+`minimal/patches/`).
 
-[`summary.csv`](summary.csv) has the requested twelve tool/domain rows;
-[`outcomes.csv`](outcomes.csv) has twelve design/tool rows. The richer
-[`runs.json`](runs.json) and per-cell `result.json` files retain status, exit
-codes, source hashes, and image identity. Every cell links to a command and
-transcript under `logs/<tool>/<domain>/`.
+**Whole designs:**
 
-**Stage semantics:** `parse` includes importing C/C++ into MLIR or AutoSA's
-front-end representation. On failure it denotes the stage attempted, not a
-successful parse. `transform` and `codegen` likewise identify an attempted
-stage; the JSON `status` distinguishes passing from failing it. `synth` is
-reserved for completed Vitis C synthesis with a nonempty report. A zero
-frontend exit with no output, a timeout, or a missing executable is not evidence
-of tool support. `full` requires synthesis without source edits; `half` requires
-synthesis after documented non-algorithmic edits. No QoR improvement or
-functional-equivalence claim follows from synthesis alone.
+* **ScaleHLS, GEMM:** [`patches/scalehls/gemm_0004__edited.patch`](patches/scalehls/gemm_0004__edited.patch), on `gemm_0004`.
+  1. The ten `BRAM_*` buffers move from file scope into `top()`. ScaleHLS and HIDA convert every
+     global array into a constant buffer (`ConvertGetGlobalToConstBuffer`), and a written global
+     with no initializer then asserts.
+  2. The dot product's `BRAM_result[0] = 0;` moves into the first iteration of its loop
+     (`if (i == 0) …`). ScaleHLS's DSE crashes on a store outside any loop that a later loop
+     reads.
 
-All three unmodified inputs passed direct Vitis HLS 2024.1.2 C synthesis on
-`xczu9eg-ffvb1156-2-e`, clock period 10 ns. Their reports are in
-`reports/vitis/<design_id>/csynth.xml` and measurements in
-[`baseline_vitis.csv`](baseline_vitis.csv). These baseline passes do not count
-as source-to-source tool passes.
+  `gemm_0004` is used rather than `gemm_0001` because ScaleHLS miscompiles the `ij` order
+  (point 4 of §3.5).
+* **HIDA, LLM:** [`patches/hida/llm_0001__edited.patch`](patches/hida/llm_0001__edited.patch), plus the HIDA option
+  `place-external-buffer=false`.
+  1. Global buffers move into `top()`.
+  2. The attention's scalar accumulators (`context`, `sum_exp`, `max_score`) and LayerNorm's
+     (`sum`, `var_sum`) become one slot per row.
+  3. Each zero-initialization moves into its own loop ahead of its reduction.
+  4. The run-time `groups` argument is specialized to the constant 1 the call site passes.
+  5. The softmax maximum is written as a value select.
 
-## User-requested float comparison
+  HIDA's emitter cannot print loop-carried scalars (`float v21 = float v22 + v20;`), and the
+  run-time `groups` makes the head index non-affine.
 
-The same three configurations were regenerated with only `data_type` changed
-to `float`. Dimensions, operations, memory hierarchy, and scheduling settings
-in the configs are unchanged. The float sources are unedited generator output
-under `designs/<parent_id>_float/`; their provenance is in
-[`designs/float_manifest.json`](designs/float_manifest.json). Exact generated
-source differences are retained under `patches/float/`. This precision change
-is **not** a minor non-algorithmic adapter or a numerical-equivalence claim.
+**The paper's own ◐ cells** (AutoSA GEMM, AutoSA DNN, StreamHLS GEMM):
 
-The separate [`float_summary.csv`](float_summary.csv),
-[`float_outcomes.csv`](float_outcomes.csv), and
-[`float_baseline_vitis.csv`](float_baseline_vitis.csv) must not be substituted
-for the fixed-point experiment. All three float originals also pass direct
-Vitis C synthesis.
+* **AutoSA:** no edit set produces a correct kernel; see §3.2. The recovered historical AutoSA
+  inputs are rewrites (`float`, removed interfaces, changed loop nests), not minor edits:
+  [`patches/autosa/*-historical-rewrite.patch`](patches/autosa/).
+* **StreamHLS GEMM:** the whole design fails. The single-operator GEMM passes with
+  [`patches/streamhls/gemm_ikj__local.patch`](patches/streamhls/gemm_ikj__local.patch) (buffers into
+  `top()`), the `ikj`/`kij` loop order, and the lossless IR handoff
+  [`scripts/stream_handoff.py`](scripts/stream_handoff.py). The handoff changes `memref.alloca` to
+  `memref.alloc`, drops uncalled helper functions, and enables `bufferize-func-args`. It is needed
+  because StreamHLS's kernel pipeline expects torch-mlir's IR, not Polygeist's.
 
-ScaleHLS and HIDA import all three float inputs, but fail during transformation.
-The symbolized backtraces identify `ConvertGetGlobalToConstBuffer`, which passes
-`global.getConstantInitValue()` to `hls.const_buffer` without checking whether
-an initializer exists. The imported BRAM globals have `= uninitialized` in
-MLIR, producing the assertion “expected valid attribute name and value”. This
-is an observed global-memory conversion limitation (F3), not a failure to
-represent `float`. See `logs/<tool>/<domain>/float-symbolized.log` and the pinned
-[ScaleHLS conversion source](https://github.com/UIUC-ChenLab/scalehls/blob/b69f334c9c122fad3759fcf388d3f039689b6fc0/lib/Transforms/Dataflow/BufferizeDataflow.cpp#L128).
-The generated C++ globals have normal C++ static-storage semantics; the
-`uninitialized` wording describes the imported MLIR, not a claim that the C++
-generator uses uninitialized global storage.
+## 3. TODO item 2: answers to the table questions
 
-AutoSA still asserts while visiting C++ headers. The float generator retains
-its standard includes, including the unused `ap_fixed.h`; changing the scalar
-type alone does not remove that header compatibility problem. This unchanged
-float experiment does not remove headers or replace HLS math calls.
+### 3.1 Meaning of the F1–F6 ticks
 
-**What data types are supported?** Type representation and whole-source
-compatibility are different questions. The pinned ScaleHLS/HIDA emitters
-explicitly handle `f32`/`float`, `f64`/`double`, index, and integer types; see
-their `lib/Translation/EmitHLSCpp.cpp`. The StreamHLS Vivado emitter likewise
-handles floating-point and integer scalar types in
-`lib/Translation/EmitVivadoHLS.cpp`. All four upstream controls use floating-point
-kernels. None of this guarantees that all C++ library implementations or all
-operations on those types can be imported, transformed, and synthesized.
-In particular, emitting `ap_int` for an integer IR value does not establish
-the ability to import an arbitrary vendor `ap_fixed` C++ class implementation.
+The prose calls F1–F6 limitation categories, but the header says "HLS Support". Only the
+**support** reading is consistent with the table itself. AutoSA, the only polyhedral tool, is
+also the only one with a cross in F2 (dynamic loop nests): that is a missing capability, not an
+absent limitation. **Use "✓ = the tool supports this feature" and fix the caption**; mark
+untested entries "–".
 
-To regenerate and run the float comparison:
+Under that reading, the measured evidence is below. "Agrees" compares each observation with the
+paper's mark.
 
-```bash
-python results/tool_eval/scripts/prepare_float.py --work "$tool_eval_work/generated-float"
-python results/tool_eval/scripts/run_mlir.py scalehls \
-  results/tool_eval/designs/gemm_0001_float --domain gemm --design-id gemm_0001_float \
-  --work "$tool_eval_work" --vitis-include "$VITIS_HLS_INCLUDE" \
-  --out "$tool_eval_work/runs-float/scalehls/gemm_0001_float"
-```
+<!-- BEGIN GENERATED: features -->
+| Tool | Mark | Paper | Evidence | Agrees (tick = supports) | Example | Diagnostic |
+|---|---|---|---|---|---|---|
+| ScaleHLS | F1 (HLS-tool-specific constructs) | ✓ | limitation observed | no | `gemm_0001__fixed` | `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stm...` |
+| ScaleHLS | F2 (Dynamic loop nests) | ✓ | unverified | — |  |  |
+| ScaleHLS | F3 (Memory and function hierarchy) | ✗ | limitation observed | yes | `gemm_0001__float` | `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::S...` |
+| ScaleHLS | F4 (LLM operations) | ✗ | operation handled after edits | no | `rmsnorm__local` |  |
+| ScaleHLS | F5 (Fixed-point math intrinsics) | ✗ | unverified | — |  |  |
+| ScaleHLS | F6 (Complete pragma support) | ✗ | unverified | — |  |  |
+| HIDA | F1 (HLS-tool-specific constructs) | ✓ | limitation observed | no | `gemm_0001__fixed` | `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stm...` |
+| HIDA | F2 (Dynamic loop nests) | ✓ | limitation observed | no | `mha__noscalar_split` | `<RUN>/parsed.mlir:195:20: error: 'affine.load' op index must be a dimension or symbol iden...` |
+| HIDA | F3 (Memory and function hierarchy) | ✗ | limitation observed | yes | `gemm_0001__float` | `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::S...` |
+| HIDA | F4 (LLM operations) | ✗ | operation handled after edits | no | `mha_rope__attn` |  |
+| HIDA | F5 (Fixed-point math intrinsics) | ✗ | unverified | — |  |  |
+| HIDA | F6 (Complete pragma support) | ✗ | unverified | — |  |  |
+| AutoSA | F1 (HLS-tool-specific constructs) | ✓ | limitation observed | no | `gemm_0001__fixed` | `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `N...` |
+| AutoSA | F2 (Dynamic loop nests) | ✗ | limitation observed | yes | `conv_k3__autosa_guard` | `what():  [AutoSA] Error: Non-uniform dependence detected.` |
+| AutoSA | F3 (Memory and function hierarchy) | ✗ | unverified | — |  |  |
+| AutoSA | F4 (LLM operations) | ✗ | unverified | — |  |  |
+| AutoSA | F5 (Fixed-point math intrinsics) | ✗ | unverified | — |  |  |
+| AutoSA | F6 (Complete pragma support) | ✗ | unverified | — |  |  |
+| StreamHLS | F1 (HLS-tool-specific constructs) | ✓ | limitation observed | no | `gemm_0001__fixed` | `loc(callsite("<VITIS_INCLUDE>/etc/ap_private.h":2210:9 at "<VITIS_INCLUDE>/etc/ap_private....` |
+| StreamHLS | F2 (Dynamic loop nests) | ✓ | unverified | — |  |  |
+| StreamHLS | F3 (Memory and function hierarchy) | ✗ | unverified | — |  |  |
+| StreamHLS | F4 (LLM operations) | ✗ | unverified | — |  |  |
+| StreamHLS | F5 (Fixed-point math intrinsics) | ✗ | limitation observed | yes | `softmax__fixed` | `loc("<DESIGN>/top.cpp":45:28): error: 'math.exp' op operand #0 must be floating-point-like...` |
+| StreamHLS | F6 (Complete pragma support) | ✗ | unverified | — |  |  |
+<!-- END GENERATED: features -->
 
-Repeat for each tool/domain, using `run_autosa.py` for AutoSA. Run the float
-Vitis baselines with `run_vitis.py`, then `collect_float.py --work ...`.
-ScaleHLS uses its upstream PolyBench DSE configuration (220-DSP resource limit)
-in these attempts; Vitis uses the common ZCU102/10 ns target. No matched-budget
-QoR improvement is claimed.
+Notes on the table:
+* The F1 ticks are contradicted for every tool: all four fail on the vendor `ap_fixed`/C++
+  implementation.
+* The F4 crosses are contradicted for HIDA and ScaleHLS: once the C-level constructs are removed,
+  both compute LLM operators correctly (HIDA all four, ScaleHLS the norms).
+* Marks with no direct observation stay "unverified". A construct merely appearing in the source
+  is not a test.
 
-## Recovered historical evidence and discrepancies
+### 3.2 AutoSA on DNN: how many designs out of how many?
 
-The old AutoSA workspace contains `diff_dims_p1` (GEMM) and `conv_A` (DNN).
-Their pristine generated `top.cpp` files were recovered from ForgeBench commit
-`d2a26d3dd9c351678fa7b9a04775464325639e1f`, not from the modified working copies.
-Configs are under `designs/historical/`; provenance is in
-[`historical/manifest.json`](historical/manifest.json).
+* **Whole designs: 0 of 1.** `dnn_0001` fails while parsing the C++ headers, in fixed point and
+  in float.
+* **Single convolutions: 0 of 3.** On the two AutoSA accepts (1×1 and unpadded 3×3), with the
+  edits that remove each blocker found (headers, `#pragma scop`, `+=` spelled out, inlined
+  index temporaries, guard removed), **0 of 14 space-time candidates** produce a correct
+  kernel. They compute garbage, emit code that does not compile, hang in C simulation, or crash
+  AutoSA.
+* **Padded 3×3:** AutoSA rejects it ("Non-uniform dependence detected").
+* **AutoSA's own example** fails its golden check in the same image.
+* **Historical:** the recovered DNN attempt did not use the ForgeBench design (§8).
 
-* **GEMM:** the recovered Vitis run completed synthesis of
-  `top_gemm_new_ijk_bias_kernel.cpp` as `kernel0`, then failed co-simulation with
-  `malloc(): unsorted double linked list corrupted` and `COSIM 212-360`. Its
-  `csynth.xml` is retained under `reports/historical/autosa/diff_dims_p1/`.
-  The corresponding hand-adapted input uses `float` instead of `ap_fixed`,
-  removes generated memory interfaces and load/store functions, changes the
-  loop nesting, and supplies a standalone host harness. The recovered rewrite
-  cannot substantiate the paper's claim of only minor non-algorithmic changes.
-  The exact historical AutoSA command producing this output was not recovered.
-* **DNN:** no successful `csynth.xml` was recovered. Two synthesis projects
-  record `LLVM ERROR: IO failure on output stream: No space left on device`.
-  That is an infrastructure failure, not evidence that the DNN is unsupported.
-  The last top-level transcript terminates during source analysis with
-  `command 'ap_source' returned error code`; its nested compiler log is empty.
-  These are distinct historical attempts and are retained separately.
-* **DNN provenance:** the recovered `autosa.tmp/output/src/cmd` invokes the
-  upstream `autosa_tests/large/cnn/kernel.c`, whose recovered output header
-  defines 640 output channels, 512 input channels, and a 56-by-56 output.
-  Those dimensions do not match ForgeBench `conv_A` (64 channels, 14-by-14).
-  Other local input variants also change layout, input shape, padding behavior,
-  and precision. Directory co-location is insufficient to count these as
-  successful transformations of `conv_A`.
+The "subset" in the paper cannot be reproduced.
 
-`patches/autosa/*-historical-rewrite.patch` makes the recovered changes
-reviewable against the pristine generated sources. These are **evidence of
-rewrites**, not approved minor adapters or claimed equivalent implementations.
-The DNN patch names the recovered variant explicitly; it is not asserted to be
-the input that produced either of the recovered generated kernels. There is
-no recovered StreamHLS GEMM patch. Inventing one would not repair the historical
-provenance gap.
+### 3.3 StreamHLS on DNN: what is the Vitis error?
 
-## Answers to the five table questions
+There is none to report:
+* **Whole design:** StreamHLS generates no code for `dnn_0001` at all. Its kernel pipeline
+  crashes in transformation (`ilist_iterator` sentinel assertion), with or without edits.
+* **Single convolutions:** it emits correct, synthesizable code for the two unpadded ones. For
+  the padded 3×3, the code it emits compiles but computes wrong results (max_error 5.14; almost
+  every output differs). The padding guard puts the input read under an `affine.if`, and its
+  buffer-to-FIFO conversion mishandles that.
 
-1. **Meaning of F1–F6 ticks:** the active table header says “HLS Support”, so
-   the natural reading is “supports the feature”; the prose instead calls the
-   columns limitation categories and never defines the tick polarity. The
-   intended historical convention cannot be established from the available
-   artifacts. Only the support reading is internally consistent: AutoSA, the
-   one polyhedral tool, is the only tool with a cross in F2 (dynamic loop
-   nests), and that is a support gap, not an absent limitation. Under that
-   reading, however, the F1 ticks for all four tools are contradicted by the
-   fresh runs: every MLIR-based tool fails importing Vitis's `ap_fixed`
-   implementation (F1-attributed in `outcomes.csv`). Use an explicit support
-   convention in a revised caption:
-   “A tick denotes a demonstrated feature probe pass; a cross denotes a
-   demonstrated failure; a dash denotes untested or blocked by an earlier
-   failure.” Do not mechanically invert the current marks.
-2. **AutoSA DNN subset size:** the historical numerator and denominator are
-   unknown. There are zero demonstrated successful full generated DNN inputs
-   in the recovered artifacts. In the fresh cohort AutoSA synthesizes 0 of 1
-   DNN designs (`dnn_0001` and its float variant both fail in the front end).
-   A historical subset count must not be assigned from the presence of
-   unrelated generated CNN code.
-3. **StreamHLS DNN Vitis error:** no historical StreamHLS output or Vitis log
-   survived. In the fresh runs StreamHLS generates no code for the DNN design:
-   the fixed-point input fails in its Polygeist front end
-   (`ValueCategory::store` assertion `toStore.isReference`), and the float
-   input fails in `streamhls-opt` (`ilist_iterator` sentinel assertion). So no
-   Vitis error exists to report, and the claim that StreamHLS generates
-   unsynthesizable code is not backed.
-4. **LLM parsing failures:** the exact first diagnostic for each tool is in
-   `outcomes.csv` and its per-cell log. The AutoSA raw-input failure is
-   `clang::NamedDecl::getName()` / “Name is not a simple identifier” while
-   visiting a C++ header. It is not an observed failure of RoPE, attention,
-   LayerNorm, or another LLM operator. ScaleHLS and HIDA reject an `EnumDecl`
-   in `ap_fixed_base.h:1639` while importing the LLM input; the GEMM and DNN
-   cases hit other local enums in the same header. StreamHLS's Polygeist
-   front end aborts with `ValueCategory::store` assertion `toStore.isReference`
-   (DNN fails the same way; GEMM instead fails earlier on an invalid
-   `arith.ori` lowered from `ap_private.h`). The last expressions it reports
-   before the abort are `ap_private`/`ap_int_base` operator calls in the vendor
-   headers, but the assertion does not name the construct, so
-   `failure_category` stays blank. These are failures in
-   importing vendor fixed-point C++ implementation code, not demonstrated
-   failures of the named LLM operations. With `float`, the LLM design gets past
-   import in ScaleHLS, HIDA and StreamHLS and fails in transformation instead,
-   so in the float variant "halts at parsing" holds only for AutoSA.
-5. **Evidence for every F mark:** broad marks cannot be established by a
-   shared early failure. F2–F6 require independent probes that actually reach
-   dynamic-loop handling, hierarchy, LLM operators, fixed-point intrinsics,
-   and pragma preservation. Their presence in the source is not a test of
-   support. Leave these marks unverified where no isolated probe exists;
-   `failure_category` is blank when the diagnostic cannot establish one.
-   [`feature_evidence.csv`](feature_evidence.csv) inventories all 24 existing
-   marks, links example constructs and blocking logs, and distinguishes the
-   observed F1 vendor-header failures from unverified features. F1 attribution
-   is narrow: it does not mean every HLS-specific construct is unsupported.
+So "generates code, but the output is not synthesizable" is not what was observed: the observed
+failure is "does not generate code" (whole design) or "generates wrong code" (padded operator).
 
-The fresh unchanged-input results and the recovered rewrites do not by
-themselves establish the original GEMM synthesis, AutoSA DNN subset, or
-StreamHLS DNN codegen claims. Any revised statement must name the evaluated
-cohort, precision, revisions, and tested input path. The original cohort and
-its precise tool versions remain missing.
+### 3.4 LLM: what does each tool stop on when parsing?
 
-## Tool versions and build environment
+On the generated fixed-point `llm_0001`, every tool stops in its C/C++ front end, as the paper
+says, but on the vendor fixed-point implementation, not on an LLM operator:
 
-[`versions.json`](versions.json) pins the fresh tool sources and executable
-hashes. The relevant sources are:
-
-| Tool | Repository | Fresh commit / dependency |
-|---|---|---|
-| ScaleHLS | [UIUC-ChenLab/scalehls](https://github.com/UIUC-ChenLab/scalehls) | `b69f334c9c122fad3759fcf388d3f039689b6fc0` |
-| HIDA | [UIUC-ChenLab/ScaleHLS-HIDA](https://github.com/UIUC-ChenLab/ScaleHLS-HIDA) | `fd79f6c946593c290d6d285c2a2efcab72fbe9c6` |
-| AutoSA | [UCLA-VAST/AutoSA](https://github.com/UCLA-VAST/AutoSA) | `b61a1b4132d631600696feba59eb606acb34d304` |
-| StreamHLS | [UCLA-VAST/Stream-HLS](https://github.com/UCLA-VAST/Stream-HLS) | `00c6219a82fc710492f4eb44e4f34836dfb19e08` |
-
-ScaleHLS and HIDA both pin Polygeist
-`737290e9c8fc87473a101472ea66b2e0e33634d2` and its LLVM/MLIR 16.0.0git fork
-`cf0ff67a7b051ed44b7d689eec73b12990676013`; they share that dependency build.
-StreamHLS pins LLVM/MLIR 18.1.2 at
-`26a1d6601d727a96f4301d0d8647b5a42760ae0c`. Its optional C/C++ front end is
-Polygeist `77c04bb2a7a2406ca9480bcc9e729b07d2c8d077`, compiled against its own
-LLVM/MLIR 18.0.0git dependency `26eb4285b56edd8c897642078d91f16ff0fd3472`.
-Building this Polygeist against 18.1.2 failed because of incompatible LLVM/MLIR
-APIs; that setup attempt is retained in the archive, not counted as a benchmark
-failure. This front-end selection is an explicit fresh-run choice; StreamHLS
-does not pin Polygeist itself. The frontend/backend handoff is checked using
-the upstream control.
-
-AutoSA runs in the upstream documented image pinned by content digest:
-`whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72`.
-Its reported front-end versions are Clang `9.0.1-12`, PET
-`pet-0.11.3-4-gf21882c`, and ISL `isl-0.22-GMP`. Its source tree has two
-pre-existing differences from the named commit: whitespace-only changes in
-`src/autosa_codegen.cpp`, and changed dimensions in an upstream CNN example.
-The image digest, rather than a claim of a completely clean source checkout,
-identifies the executable environment. The upstream matrix-multiplication
-control successfully emits HLS C++.
-
-The MLIR build image is Ubuntu 22.04 with Clang/LLD 14, CMake 3.22, Ninja,
-GCC's C++ headers, Python, GMP, Boost, and zlib. The script uses optimized LLVM
-builds with assertions enabled, X86 only, and no Python bindings. All compiler
-build trees stay outside git. The unified builds disable an explicit Ninja
-link pool because the pinned external projects otherwise register that pool
-twice. StreamHLS's CMake forces Debug; its standalone compilation uses
-`-O1 -g0` to avoid large debug objects while retaining assertions.
-HIDA's two CMake executable targets are renamed to avoid collisions with
-imported ScaleHLS targets; the executable filenames and compiler algorithms
-are unchanged. The exact build-only patch is
-[`patches/build/hida-target-names.patch`](patches/build/hida-target-names.patch).
-
-The primary MLIR front-end invocation uses normal C++ mode and real Vitis
-headers. `__SYNTHESIS__` is not defined: a standard Clang syntax-only check
-accepts the unmodified GEMM source in normal mode, whereas defining the macro
-requires Vitis-specific built-ins and introduces unrelated header errors.
-No vendor headers or license material are redistributed.
-
-The runners discover the top function's mangled C++ name using a Clang AST
-query. This changes only the command-line selector, not the input. They also
-require Clang's resource headers, reject compiler errors even with exit code
-zero, and check for the requested function definition in MLIR. Initial setup
-attempts with missing resource headers or a plain `-function=top` selector
-emitted empty modules; those attempts are excluded, not counted as codegen
-passes. Regression tests cover these false-positive risks.
-
-AutoSA supplemental diagnostics remove only unused `iostream`, `fstream`,
-and `cstdlib` includes, with the exact patches in `patches/autosa/`. Both normal
-and synthesis-macro header modes are tested. The latter errors on `__fp16`
-declarations and vendor built-ins; this mode is a compatibility diagnostic,
-not the primary result or an LLM-operator test. The patches do not earn a
-`half` rating without a successful full flow.
-
-StreamHLS's configured post-import pipeline uses the default disabled solver
-optimizations; AMPL/Gurobi are not supplied by the build image. A front-end
-failure occurs before those options matter. Optimization quality and the
-licensed solver flow are not evaluated here.
-
-## Re-running
-
-Run from the ForgeBench repository root. Use a new external working directory
-on a filesystem with enough space for LLVM builds, and a licensed Vitis HLS
-installation on `PATH`. Set `VITIS_HLS_INCLUDE` to its `include` directory.
-The evidence scripts require Python 3.9 or newer; the generator also needs
-NumPy. The recorded generation used
-Python 3.9.13 and NumPy 1.24.4. Follow the repository's normal installation
-requirements when installing ForgeBench as a package.
-
-```bash
-tool_eval_repo=$PWD
-tool_eval_work=$(mktemp -d)
-bash results/tool_eval/scripts/checkout_tools.sh "$tool_eval_work"
-docker build -t forgebench-tool-eval-build:20261016 \
-  -f results/tool_eval/scripts/Dockerfile.build results/tool_eval/scripts
-
-# Invoke with 'scale' (also builds HIDA), 'stream', and 'stream-frontend'.
-# Independent builds may run concurrently if resources permit.
-for mode in scale stream stream-frontend; do
-docker run --rm --network none --user "$(id -u):$(id -g)" \
-  --mount "type=bind,src=$tool_eval_work,dst=/work" \
-  --mount "type=bind,src=$tool_eval_repo/results/tool_eval/scripts,dst=/scripts,readonly" \
-  -e JOBS=24 forgebench-tool-eval-build:20261016 bash /scripts/build_mlir.sh "$mode"
-done
-
-python results/tool_eval/scripts/prepare.py --work "$tool_eval_work/generated"
-
-# For each of scalehls, hida, streamhls and each domain's design directory:
-python results/tool_eval/scripts/run_mlir.py scalehls \
-  results/tool_eval/designs/gemm_0001 --domain gemm --design-id gemm_0001 \
-  --work "$tool_eval_work" --vitis-include "$VITIS_HLS_INCLUDE" \
-  --out "$tool_eval_work/runs/scalehls/gemm_0001"
-
-python results/tool_eval/scripts/run_autosa.py results/tool_eval/designs/gemm_0001 \
-  --domain gemm --design-id gemm_0001 --vitis-include "$VITIS_HLS_INCLUDE" \
-  --out "$tool_eval_work/runs/autosa-final/gemm_0001"
-```
-
-Repeat the tool commands for `dnn_0001` and `llm_0001`. The runners refuse to
-overwrite existing run directories and preserve unchanged inputs. Inspect
-`result.json`; a script finishing is not itself evidence that the tool passed.
-If code generation succeeds, the MLIR runner explicitly reports
-`codegen_requires_synthesis`; it does not silently award synthesis credit.
-
-For byte-identical regeneration, use the generator commit recorded in
-`designs/manifest.json`. The retained input hashes are the authoritative link
-between the generated code and the runs. Randomized testbench data is kept
-outside git; no C simulation or equivalence claim is made for this evaluation.
-
-`run_vitis.py` takes the full generated design directory (including its DRAM
-text files) and a fresh `--out` directory. `diagnose_autosa.py --work ...
---vitis-include ...` runs the supplemental header diagnostics. Upstream controls
-are provided as `control_autosa.sh` and `control_mlir.sh`; their inputs are not
-part of the ForgeBench result cohort. `recover_autosa.py` optionally reimports
-the old workspace if it is available; the public historical snapshots do not
-require that workspace to inspect.
-
-For example, run an upstream control with:
-
-```bash
-python results/tool_eval/scripts/run_control.py scalehls \
-  --work "$tool_eval_work" --out "$tool_eval_work/controls/scalehls"
-```
-
-Repeat for the other three tools. A control validates import/transformation/
-emission, not FPGA synthesis, functional equivalence, or performance.
-
-After all twelve runs and the three baselines are available, `collect.py
---work ...` generates the tables and redacted public excerpts (`collect_float.py
---work ...` does the same for the float runs). Then run:
-
-```bash
-python -m unittest discover -s results/tool_eval/scripts -p test_evidence.py -v
-python results/tool_eval/scripts/feature_evidence.py
-python results/tool_eval/scripts/validate.py
-```
-
-## Remaining evidence and archive
-
-The original twelve-cell historical cohort, original versions of the three
-deleted tools, historical StreamHLS Vitis error, successful AutoSA DNN
-numerator/denominator, and a validated StreamHLS GEMM minor-edit patch remain
-unrecoverable from the supplied material. Independent F1–F6 pass/fail probes
-are also required before retaining all 24 feature marks. These gaps must remain
-visible even after the fresh twelve-cell evaluation is complete.
-
-The historical GEMM synthesis report is not a matched QoR comparison: its
-floating-point rewrite differs from the generated fixed-point design. The
-fresh Vitis reports establish input synthesizability and baseline resource
-numbers, not a speedup for any source-to-source tool.
-
-Full redacted transcripts and build logs are staged in the external working
-directory's `archive/` and packaged outside git by `scripts/archive_logs.py
---work ... --out <outside-git>/tool_eval_logs.tar.gz`. The tarball's name,
-SHA-256 and size are in [`archive.json`](archive.json); it is not in git and
-must be added to the Zenodo bundle separately. Only small excerpts, configs,
-sources, patches, and XML reports belong here. The release bundle already
-includes `results/tool_eval/`; compiler trees and raw private machine logs must
-not be added to it.
-
-The repository's top-level `.gitignore` ignores `*.log`; the
-`.gitignore` in this directory re-includes it so the per-cell transcripts under
-`logs/` are tracked.
-
-### Status against the TODO
-
-| TODO item | Status |
+| Tool | First error |
 |---|---|
-| 1. Designs fed to each tool | Done for the fresh cohort (`designs/manifest.json`); historical cohort unknown |
-| 1. Tool versions | Done for the fresh runs (`versions.json`); historical versions unknown |
-| 1. `summary.csv`, one log per cell | Done (12 rows, `logs/<tool>/<domain>/`) |
-| 1. Minor-edit patches for ◐ cells | No fresh cell earned ◐. Historical AutoSA rewrites are in `patches/autosa/` and are not minor; no StreamHLS GEMM patch exists |
-| 2. Open questions | Answered above, with the gaps stated |
-| 3. `outcomes.csv` | Done (12 rows; float variant in `float_outcomes.csv`) |
-| 4. Scripts and environment | Done (`scripts/`, build image `scripts/Dockerfile.build`, AutoSA image digest) |
-| 5. csynth reports | Original-Vitis reports for all six inputs; no tool output reached synthesis, so there are no tool reports to compare against |
-| 5. Full logs tarball | Built outside git (`archive.json`) |
+| ScaleHLS, HIDA | Polygeist rejects a local `enum` inside Vitis's `ap_fixed_base.h:1639` ("visiting unknown sub decl stmt") |
+| StreamHLS | its Polygeist asserts in `ValueCategory::store` while lowering `ap_private`/`ap_int_base` operators; on fixed-point softmax it gets further and fails on `'math.exp' op operand #0 must be floating-point-like, but got '!llvm.struct<...>'`, i.e. `hls::exp` on an `ap_fixed` value (F5) |
+| AutoSA | Clang 9 asserts in `NamedDecl::getName()` while visiting the C++ headers |
+
+With the generator's `float` option, all tools except AutoSA get past parsing on every LLM
+design. They fail later, for the reasons in §1, and HIDA passes with edits.
+
+### 3.5 The construct behind each mark (one example each)
+
+| Mark | Construct (example input) | Error |
+|---|---|---|
+| F1 | `typedef ap_fixed<16,5> data_t;` (every fixed-point design) | ScaleHLS/HIDA: `ap_fixed_base.h:828: visiting unknown sub decl stmt`; StreamHLS: invalid `arith.ori` lowered from `ap_private.h`; AutoSA: `NamedDecl::getName()` assertion |
+| F2 | `int groups` run-time parameter → `heads_per_group = num_heads / groups` (`mha__noscalar_split`) | HIDA: `'affine.load' op index must be a dimension or symbol identifier` |
+| F2 | padding guard `if (in_row >= 0 && …)` (`conv_k3__autosa_guard`) | AutoSA: `Non-uniform dependence detected` |
+| F3 | file-scope `data_t BRAM_*[…];` written by `top()` (every generated design, float) | ScaleHLS/HIDA: `Attributes.cpp:28 … expected valid attribute name and value` (`ConvertGetGlobalToConstBuffer`) |
+| F3 | one-element output port `DRAM_result[1]` (`gemm_0001__edited`) | HIDA emits it as a by-value `float`; the result is lost |
+| F5 | `hls::exp` on `ap_fixed` (`softmax__fixed`) | StreamHLS: `'math.exp' op operand #0 must be floating-point-like` |
+
+Beyond the F-categories, three tool defects decide most cells:
+
+1. **ScaleHLS silently miscompiles** any loop nest where a loop-invariant operand is hoisted
+   above the innermost loop. The output synthesizes but is wrong (GEMM `ijk`/`jik`/`jki`/`kji`,
+   `gemm_0001`, `dnn_0001`, attention). It is correct whenever the reduction loop is innermost.
+   The verdicts match the earlier exploratory runs, although its DSE picks a different tiling
+   each time.
+2. **HIDA's C++ emitter** cannot print loop-carried scalars (`iter_args`). Polygeist creates them
+   from scalar accumulators and from array elements zeroed right before their reduction loop.
+3. **StreamHLS's kernel pipeline** expects torch-mlir's linalg-derived IR:
+   * perfect loop bands;
+   * `memref.alloc`;
+   * one function;
+   * no guarded reads;
+   * no row reductions in its performance model.
+
+   Most C-derived IR violates one of these.
+
+## 4. TODO item 3: per-design outcomes
+
+[`outcomes.csv`](outcomes.csv) has one row per design × tool attempt, with the TODO's
+columns `design_id,domain,tool,stage_reached,failure_category,error_head`, plus `run`, `patch` and
+`functional_check`. `failure_category` is assigned by explicit rules in
+`scripts/collect_tables.py` (vendor headers → F1, non-affine/run-time bounds → F2, global buffers
+→ F3, `math.exp` on `ap_fixed` → F5). It is blank when the diagnostic is a tool crash that no
+category explains. `error_head` is the first error line, or "wrong results: max_error …" for
+output that computes the wrong result.
+
+## 5. TODO item 4: re-runnable scripts and environment
+
+**Environment:**
+* Tools are built from the pinned commits by `scripts/checkout_tools.sh` and
+  `scripts/build_mlir.sh`, inside `scripts/Dockerfile.build` (Ubuntu 22.04, Clang/LLD 14,
+  CMake, Ninja; image `forgebench-tool-eval-build:20261016`).
+* AutoSA runs in the pinned upstream image.
+* Vitis HLS 2024.1 must be on `PATH`, with `VITIS_HLS_INCLUDE` set to its `include` directory.
+* Python ≥ 3.9 with NumPy (for the generator).
+
+```bash
+tool_eval_work=$(mktemp -d)                                 # outside git, ~40 GB for the tool builds
+bash results/tool_eval/scripts/checkout_tools.sh "$tool_eval_work"
+docker build -t forgebench-tool-eval-build:20261016 -f results/tool_eval/scripts/Dockerfile.build results/tool_eval/scripts
+for mode in scale stream stream-frontend; do                # 'scale' also builds HIDA
+  docker run --rm --network none --user "$(id -u):$(id -g)" \
+    --mount "type=bind,src=$tool_eval_work,dst=/work" \
+    --mount "type=bind,src=$PWD/results/tool_eval/scripts,dst=/scripts,readonly" \
+    -e JOBS=24 forgebench-tool-eval-build:20261016 bash /scripts/build_mlir.sh "$mode"
+done
+cd results/tool_eval/scripts
+python minimal_inputs.py --work "$tool_eval_work/minimal"   # regenerate and patch all 67 inputs; checks hashes
+python minimal_run.py --work "$tool_eval_work/minimal" --tools-work "$tool_eval_work" \
+  --vitis-include "$VITIS_HLS_INCLUDE" --jobs 12           # every run in minimal/cases.json; resumable
+python collect_tables.py && python feature_evidence.py && python report_tables.py --write
+python -m unittest discover -s . -p test_evidence.py && python validate.py
+```
+
+**Scripts:**
+
+| Script | Role |
+|---|---|
+| `run_mlir.py`, `run_autosa.py`, `run_vitis.py` | Single runs: one tool on one design directory. They record the stage reached, the first error, and the input hash, and refuse a zero exit with empty output as a pass. |
+| `minimal_run.py --only <regex>` | Re-runs any subset of the matrix. |
+| `minimal_check.py` | The functional comparison. It reads the generated `top.h`, so it works for any ForgeBench design. |
+
+The primary unmodified runs of §2.4 were made with the same runners (`prepare.py`,
+`collect.py`).
+
+## 6. TODO item 5: QoR and full logs
+
+### 6.1 Synthesis results
+
+Correct tool output, synthesized with Vitis HLS 2024.1 for ZCU102 at 10 ns, compared with Vitis
+on the same unmodified generated `float` design:
+
+<!-- BEGIN GENERATED: qor -->
+| Input | Tool | Latency (cycles) | Speed-up vs. Vitis | Est. clock (ns) | BRAM | DSP | FF | LUT |
+|---|---|---|---|---|---|---|---|---|
+| `gemm_0004__edited` | ScaleHLS | 750 | 38.67× | 7.016 | 32 | 118 | 29381 | 21201 |
+| `llm_0001__edited` | HIDA (`place-external-buffer=false`) | 164804 | 3.68× | 7.240 | 17 | 78 | 10201 | 17893 |
+| `gemm_ijk__local` | HIDA | 4460564 | 0.06× | 13.737 | 8 | 5 | 3476 | 3842 |
+| `gemm_ikj__local` | ScaleHLS | 6227 |  | 7.016 | 342 | 215 | 38686 | 53362 |
+| `gemm_ikj__local` | HIDA | 4460561 |  | 13.737 | 8 | 5 | 3412 | 3940 |
+| `gemm_ikj__local` | StreamHLS (`--stream-polygeist-handoff`) | 790541 |  | 7.313 | 56 | 5 | 1302 | 1798 |
+| `gemm_jik__local` | HIDA | 4460561 |  | 13.737 | 8 | 5 | 3444 | 3972 |
+| `gemm_jki__local` | HIDA | 4460567 |  | 13.737 | 8 | 5 | 3438 | 4135 |
+| `gemm_kij__local` | ScaleHLS | 6227 |  | 7.016 | 342 | 215 | 38686 | 53374 |
+| `gemm_kij__local` | HIDA | 4460567 |  | 13.737 | 8 | 5 | 3374 | 4103 |
+| `gemm_kij__local` | StreamHLS (`--stream-polygeist-handoff`) | 794640 |  | 7.313 | 64 | 5 | 1241 | 1752 |
+| `gemm_kji__local` | HIDA | 4460560 |  | 13.737 | 8 | 5 | 3465 | 4187 |
+| `conv_k1__sunkguard` | ScaleHLS | 3215 | 17.65× | 12.874 | 2912 | 80 | 155965 | 202559 |
+| `conv_k1__sunkguard` | HIDA | 53732 | 1.06× | 7.300 | 6 | 7 | 2957 | 3318 |
+| `conv_k1__sunkguard` | StreamHLS (`--stream-polygeist-handoff`) | 56464 | 1.01× | 7.016 | 49 | 5 | 1137 | 2117 |
+| `conv_k3p0__sunkguard` | ScaleHLS | 62437 | 5.44× | 15.774 | 256 | 50 | 35797 | 58855 |
+| `conv_k3p0__sunkguard` | HIDA | 337714 | 1.01× | 7.300 | 8 | 5 | 3885 | 4498 |
+| `conv_k3__sunkguard` | ScaleHLS | 38908 | 12.41× | 9.169 | 448 | 68 | 29906 | 73238 |
+| `conv_k3__sunkguard` | HIDA | 458357 | 1.05× | 7.300 | 8 | 7 | 3986 | 4596 |
+| `conv_k1__noguard` | HIDA | 103528 | 0.55× | 7.300 | 6 | 8 | 3059 | 3466 |
+| `conv_k1__noguard_reorder` | ScaleHLS | 2037 | 27.86× | 9.018 | 3136 | 226 | 408013 | 383772 |
+| `conv_k1__noguard_reorder` | HIDA | 53732 | 1.06× | 7.300 | 6 | 7 | 2957 | 3318 |
+| `conv_k1__noguard_reorder` | StreamHLS (`--stream-polygeist-handoff`) | 156816 | 0.36× | 7.313 | 51 | 5 | 1236 | 2203 |
+| `conv_k3p0__noguard` | HIDA | 665893 | 0.51× | 7.300 | 8 | 6 | 3914 | 4715 |
+| `conv_k3p0__noguard_reorder` | ScaleHLS | 10424 | 32.58× | 7.016 | 384 | 160 | 35949 | 54089 |
+| `conv_k3p0__noguard_reorder` | HIDA | 337714 | 1.01× | 7.300 | 8 | 5 | 3885 | 4498 |
+| `conv_k3p0__noguard_reorder` | StreamHLS (`--stream-polygeist-handoff`) | 1000784 | 0.34× | 7.313 | 68 | 5 | 1399 | 2964 |
+| `conv_k3__sunkguard_reorder` | ScaleHLS | 35954 | 13.43× | 7.272 | 1568 | 76 | 135257 | 266020 |
+| `conv_k3__sunkguard_reorder` | HIDA | 458357 | 1.05× | 7.300 | 8 | 7 | 3986 | 4596 |
+| `rmsnorm__local` | ScaleHLS | 1564 | 4.24× | 7.057 | 64 | 28 | 3965 | 5218 |
+| `softmax__local` | ScaleHLS | 1198 | 6.26× | 7.894 | 0 | 53 | 142068 | 142500 |
+| `rmsnorm__rowacc_split` | ScaleHLS | 1729 | 3.84× | 7.057 | 68 | 26 | 3754 | 5250 |
+| `rmsnorm__rowacc_split` | HIDA (`place-external-buffer=false`) | 4444 | 1.49× | 7.057 | 1 | 5 | 916 | 1009 |
+| `softmax__rowacc_split` | ScaleHLS | 1596 | 4.70× | 7.350 | 12 | 44 | 159383 | 143358 |
+| `softmax__rowacc_split` | HIDA (`place-external-buffer=false`) | 5448 | 1.38× | 7.057 | 3 | 9 | 1283 | 2291 |
+| `mha__attn` | HIDA (`place-external-buffer=false`) | 155538 | 3.92× | 7.057 | 10 | 22 | 3862 | 5167 |
+| `mha_rope__attn` | HIDA (`place-external-buffer=false`) | 157112 | 4.03× | 7.240 | 13 | 78 | 9031 | 16693 |
+
+Vitis on the unmodified generated designs:
+
+| Design | Type | Latency (cycles) | Est. clock (ns) | BRAM | DSP | FF | LUT |
+|---|---|---|---|---|---|---|---|
+| `gemm_0001` | `ap_fixed<16,5>` | 12485 | 7.300 | 14 | 3 | 2717 | 4177 |
+| `gemm_0001` | `float` | 12625 | 7.300 | 26 | 5 | 3470 | 4449 |
+| `gemm_0004` | `ap_fixed<16,5>` | 12485 | 7.300 | 14 | 3 | 3139 | 4473 |
+| `gemm_0004` | `float` | 29005 | 7.300 | 26 | 5 | 3654 | 4729 |
+| `dnn_0001` | `ap_fixed<16,5>` | 1154734 | 7.300 | 164 | 7 | 5265 | 8850 |
+| `dnn_0001` | `float` | 1167518 | 7.300 | 299 | 14 | 4715 | 6297 |
+| `llm_0001` | `ap_fixed<16,5>` | 180348 | 7.300 | 75 | 58 | 28087 | 33529 |
+| `llm_0001` | `float` | 607028 | 7.300 | 125 | 145 | 24010 | 33867 |
+| `gemm_ijk` | `ap_fixed<16,5>` | 274475 | 7.300 | 14 | 1 | 2135 | 3431 |
+| `gemm_ijk` | `float` | 274480 | 7.300 | 28 | 5 | 2759 | 3650 |
+| `conv_k1` | `ap_fixed<16,5>` | 56747 | 7.300 | 11 | 1 | 2151 | 3903 |
+| `conv_k1` | `float` | 56752 | 7.300 | 21 | 5 | 2775 | 4122 |
+| `conv_k3p0` | `ap_fixed<16,5>` | 339564 | 7.300 | 14 | 1 | 2214 | 4423 |
+| `conv_k3p0` | `float` | 339569 | 7.300 | 28 | 5 | 2838 | 4642 |
+| `conv_k3` | `ap_fixed<16,5>` | 474142 | 7.300 | 14 | 1 | 2248 | 4215 |
+| `conv_k3` | `float` | 482962 | 7.300 | 28 | 5 | 2872 | 4434 |
+| `rmsnorm` | `ap_fixed<16,5>` | 4750 | 7.300 | 5 | 2 | 6506 | 8176 |
+| `rmsnorm` | `float` | 6638 | 7.300 | 9 | 5 | 2871 | 3383 |
+| `softmax` | `ap_fixed<16,5>` | 5505 | 7.300 | 4 | 3 | 4146 | 4675 |
+| `softmax` | `float` | 7505 | 7.300 | 8 | 9 | 3006 | 4134 |
+| `mha` | `ap_fixed<16,5>` | 192087 | 7.300 | 62 | 36 | 19611 | 20319 |
+| `mha` | `float` | 610355 | 7.300 | 110 | 112 | 16361 | 20386 |
+| `mha_rope` | `ap_fixed<16,5>` | 210548 | 7.300 | 67 | 56 | 21796 | 25304 |
+| `mha_rope` | `float` | 633052 | 7.300 | 111 | 145 | 19273 | 29004 |
+<!-- END GENERATED: qor -->
+
+* **Settings are not matched:** ScaleHLS's DSE uses its own PolyBench resource specification,
+  and StreamHLS runs without its AMPL/Gurobi schedule solver. These are therefore not
+  matched-resource comparisons.
+* **Where the reports are:**
+  * `csynth.xml` of the unmodified sweep designs: `reports/vitis/<id>/`.
+  * `csynth.xml` of every tool run: in the tarball, since the repository is kept under 5 MB.
+
+### 6.2 Full logs
+
+The full redacted transcripts (primary runs, controls, builds, every minimal-study run) are in
+`tool_eval_logs.tar.gz`, built outside git by `scripts/archive_logs.py`. Its name, SHA-256 and
+size are in [`archive.json`](archive.json), and it is intended for the Zenodo bundle. Nothing in
+git contains local paths, host names, licenses or build trees (checked by `validate.py`).
+
+## 7. Suggestions for revising the paper
+
+1. **Table 9 cells: rate what the tools actually do, and say at which level.** With the paper's
+   own legend:
+   * **Whole generated designs, as generated:** ○ for every tool and domain.
+   * **Whole generated designs with minor non-algorithmic edits, float:**
+     * GEMM: ◐ ScaleHLS; ○ HIDA, StreamHLS, AutoSA.
+     * DNN: ○ for all.
+     * LLM: ◐ HIDA; ○ ScaleHLS, StreamHLS, AutoSA.
+   * **Single operators with minor edits** (optional sub-row; strengthens the point):
+     * HIDA ◐ on every operator tried;
+     * ScaleHLS ◐ on GEMM (reduction-innermost orders), convolutions and norms;
+     * StreamHLS ◐ on GEMM (reduction-innermost orders) and the unpadded convolutions;
+     * AutoSA ○.
+
+   The current ● for ScaleHLS/HIDA GEMM is not supported: no tool synthesizes an unmodified
+   generated design.
+2. **Prose of Case Study 3:**
+   * "On GEMM, all four tools reach synthesis" → only after edits, in float, and for three tools.
+     ScaleHLS and StreamHLS also need the reduction loop innermost. AutoSA produces no correct
+     kernel.
+   * "ScaleHLS and HIDA advance only to the transform level" on DNN → true for the generated
+     design. After small edits both compute every single convolution correctly, but neither
+     passes the whole conv + BN + ReLU design.
+   * "StreamHLS generates code but the output is not synthesizable" → it generates no code for
+     the DNN design. For a padded convolution it generates code that computes wrong results.
+   * "AutoSA synthesizes only a subset" → not reproducible (0 of 1 design, 0 of 14 kernels);
+     AutoSA's own example fails its check in the evaluated image.
+   * "On LLM designs, every tool halts at parsing" → true for the generated fixed-point design;
+     the parse failure is in the vendor `ap_fixed` headers, not an LLM operator. In float, HIDA
+     compiles the whole attention + LayerNorm design correctly after edits.
+3. **Caption and setup:**
+   * define the tick polarity ("✓ = supported");
+   * state the tool commits (§2.2), the data type used for each result, and that results were
+     checked for functional equivalence;
+   * define ◐ concretely: the edits are documented, non-algorithmic, and listed in the artifact.
+4. **F-marks:** keep only marks that have an observation (§3.1, §3.5), and add the example
+   construct for each.
+   * F1: change to ✗ for all tools.
+   * F2: add HIDA ✗ (observed).
+   * F3: ✗ is supported for ScaleHLS/HIDA.
+   * F5: ✗ is observed for StreamHLS.
+   * F4: ✗ is contradicted for HIDA and ScaleHLS.
+   * Mark the rest "–" (untested), or drop them.
+5. **Add the stronger finding:** silent miscompilation. ScaleHLS emits synthesizable C++ that
+   computes the wrong result for common loop orders (GEMM `ijk`, attention). StreamHLS does the
+   same for padded convolutions. Without a functional check these would have been counted as
+   successes. That is a concrete argument for ForgeBench's generated designs *with* golden
+   references, more convincing than parse failures.
+6. **Say what blocks the tools:** most failures are vendor C++ (`ap_fixed`), file-scope
+   buffers, loop-carried scalars, and run-time trip counts. These are C/HLS idioms, not the
+   operators. This supports the paper's message that the tools cannot be applied out of the box,
+   and is more precise than "deeper hierarchies and modern operators".
+
+## 8. What is missing, and discrepancies
+
+* **The original evaluation cannot be reconstructed.** Its cohort, tool versions and
+  run artifacts were deleted. The results here are a fresh evaluation and must not be presented
+  as the July measurements.
+* **The recovered AutoSA artifacts (historical) are rewrites:**
+  * GEMM `diff_dims_p1`: synthesized as `kernel0` but failed co-simulation (`malloc(): unsorted
+    double linked list corrupted`). Its input is a `float`, interface-free, re-nested rewrite;
+    see [`patches/autosa/diff_dims_p1-historical-rewrite.patch`](patches/autosa/diff_dims_p1-historical-rewrite.patch)
+    and `reports/historical/`.
+  * DNN `conv_A`: no successful synthesis. Two attempts ran out of disk; the recovered command
+    used AutoSA's own `autosa_tests/large/cnn/kernel.c`, whose dimensions do not match
+    `conv_A`. Provenance: [`historical/manifest.json`](historical/manifest.json).
+* **Two upstream controls were weaker than they looked:**
+  * AutoSA's control only checked that a file was emitted; its golden check fails.
+  * StreamHLS's control used the base pipeline; its dataflow kernel pipeline needs the IR
+    handoff.
+
+  The earlier version of this report relied on both controls; this version supersedes it.
+* **Coverage limits:**
+  * one sweep design per domain (plus `gemm_0004`);
+  * batch norm, activations other than ReLU, LayerNorm alone, sliding-window attention and the
+    full ResNet/LLaMA models were not tested separately;
+  * all passing results are in `float`, because no tool accepts the generated `ap_fixed` code;
+  * re-typing emitted float code to `ap_fixed` would not reproduce ForgeBench's arithmetic, so
+    no fixed-point result is claimed.
+* **ScaleHLS's DSE is not deterministic.** Its tiling differs between runs, and so do the
+  numbers in §6.1. The pass/fail verdicts were stable across reruns. Some ScaleHLS runs needed
+  30-minute DSE or 4-hour synthesis limits (`minimal/cases.json`).
+* **Note for the generator:** a conv config with `with_bias = false` must list three `args`. A
+  fourth is accepted silently and produces a call that does not compile.

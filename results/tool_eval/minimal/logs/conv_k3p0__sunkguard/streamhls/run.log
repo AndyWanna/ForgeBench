@@ -1,0 +1,20 @@
+tool: StreamHLS
+design_id: conv_k3p0__sunkguard
+source_sha256: de2a360bdc7fe87c5fd6e677b65c98807cfedfaf9cd28805fd15a166cb683b58
+input_edits: conv_k3p0__sunkguard.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 0
+Permutation DesignSpaceSize: 622080
+Parallelization DesignSpaceSize: 5184000000
+Total DesignSpaceSize: 3224862720000000
+
+stage: codegen
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-translate <RUN>/transformed.mlir -emit-vivado-hls -allow-unregistered-dialect -vitis-hls-top-func=_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f -o <RUN>/emitted.cpp
+exit_code: 0

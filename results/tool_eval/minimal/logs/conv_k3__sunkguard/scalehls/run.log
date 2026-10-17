@@ -1,0 +1,78 @@
+tool: ScaleHLS
+design_id: conv_k3__sunkguard
+source_sha256: 880dfcef3a0acc42e2bb8e6d29ae8ba3348b444c6d5fa88acf9634f0b0868e06
+input_edits: conv_k3__sunkguard.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA14_A14_fPA16_A3_A3_fS1_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/scale/bin/scalehls-opt <RUN>/parsed.mlir '-scalehls-dse-pipeline=top-func=_Z3topPA14_A14_fPA16_A3_A3_fS1_ target-spec=<WORK><PATH>/config.json' -o <RUN>/transformed.mlir
+exit_code: 0
+
+stage: codegen
+command (inside build image): <WORK>/build/scale/bin/scalehls-translate <RUN>/transformed.mlir -scalehls-emit-hlscpp -o <RUN>/emitted.cpp
+exit_code: 0
+
+first_synthesis_error: 
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Oct 17 01:09:14 2026
+[middle omitted]
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_6' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_7' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_8' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_9' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_10' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_11' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_12' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_5_13' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_2' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_3' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_4' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_5' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_6' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_7' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_8' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_9' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_10' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_11' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_12' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_6_13' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_2' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_3' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_4' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_5' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_6' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_7' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_8' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_9' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_10' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_11' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_12' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s/v2_7_13' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s' to 's_axilite & ap_ctrl_hs'.
+INFO: [RTGEN 206-100] Bundling port 'return' to AXI-Lite port ctrl.
+INFO: [RTGEN 206-104] Estimated max fanout for 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s' is 9984 from HDL expression: (1'b1 == ap_CS_fsm_state4)
+INFO: [RTGEN 206-100] Finished creating RTL model for 'p_Z3topPA14_A14_fPA16_A3_A3_fS1_s'.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fS1__v3_RAM_T2P_BRAM_1R1W' using block RAMs.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.93 seconds. CPU system time: 0.14 seconds. Elapsed time: 1.19 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 0.94 seconds. CPU system time: 0.15 seconds. Elapsed time: 1.11 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 35.9 seconds. CPU system time: 0.13 seconds. Elapsed time: 36.12 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for p_Z3topPA14_A14_fPA16_A3_A3_fS1_s.
+INFO: [VLOG 209-307] Generating Verilog RTL for p_Z3topPA14_A14_fPA16_A3_A3_fS1_s.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 109.07 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:06:06; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 359.4 seconds. Total CPU system time: 4.88 seconds. Total elapsed time: 370.79 seconds; peak allocated memory: 0.000 MB.

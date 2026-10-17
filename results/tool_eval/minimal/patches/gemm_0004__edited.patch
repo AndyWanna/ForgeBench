@@ -1,0 +1,49 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -12,16 +12,6 @@
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_x[64];
+-data_t BRAM_A[64][64];
+-data_t BRAM_B[64][64];
+-data_t BRAM_y[64];
+-data_t BRAM_bias[1];
+-data_t BRAM_result[1];
+-data_t BRAM_xA_bias[64];
+-data_t BRAM_xA[64];
+-data_t BRAM_xAB_bias[64];
+-data_t BRAM_xAB[64];
+ 
+ void load_64_float(data_t input[64], data_t output[64])
+ {
+@@ -116,6 +106,17 @@
+     #pragma HLS interface m_axi port=DRAM_y offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_bias offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_result offset=slave bundle=mem2
++    data_t BRAM_x[64];
++    data_t BRAM_A[64][64];
++    data_t BRAM_B[64][64];
++    data_t BRAM_y[64];
++    data_t BRAM_bias[1];
++    data_t BRAM_result[1];
++    data_t BRAM_xA_bias[64];
++    data_t BRAM_xA[64];
++    data_t BRAM_xAB_bias[64];
++    data_t BRAM_xAB[64];
++
+ 
+     load_64_float(DRAM_x, BRAM_x);
+     load_64_64_float(DRAM_A, BRAM_A);
+@@ -168,10 +169,9 @@
+ // Begin: Inline implementation of DOT_PRODUCT
+ //////////////////////////////////////////
+ 
+-BRAM_result[0] = 0;
+-
+ for (int i = 0; i < 64; i++) {
+ #pragma HLS unroll factor=1
++    if (i == 0) BRAM_result[0] = 0;
+     BRAM_result[0] += BRAM_xAB[i] * BRAM_y[i];
+ }
+ //////////////////////////////////////////

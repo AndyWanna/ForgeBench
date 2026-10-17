@@ -1,0 +1,29 @@
+{
+  "design_id": "mha_rope__attn_qkvsplit",
+  "domain": "llm",
+  "tool": "HIDA",
+  "source_sha256": "b51de97b4cd6cd2c2ed995f1df18e51c915ac0b8bfa10051896015dfc4e78d92",
+  "input_edits": "mha_rope__attn_qkvsplit.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_S0_S0_S0_",
+  "stage_reached": "codegen",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "<RUN>/transformed.mlir:563:10: error: 'hls.dataflow.buffer' op only support depth of 1",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 1
+    }
+  ],
+  "status": "codegen_failed"
+}

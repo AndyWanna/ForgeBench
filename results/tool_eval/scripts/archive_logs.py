@@ -13,6 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--minimal-work", type=Path, help="the --work directory of minimal_run.py, to include its transcripts")
     args = parser.parse_args()
     work, out = args.work.resolve(), args.out.resolve()
     if out == REPO or REPO in out.parents:
@@ -20,6 +21,11 @@ def main():
     if out.exists():
         raise SystemExit("Refusing to overwrite an existing archive")
     archive = work / "archive"
+    if args.minimal_work:
+        source = args.minimal_work.resolve() / "archive/minimal"
+        for log in sorted(source.rglob("*")):
+            if log.is_file():
+                write_text(archive / "minimal" / log.relative_to(source), log.read_text())
     # Keep excluded setup attempts explicitly separate from benchmark results.
     for name in ["scalehls-empty-selector", "scalehls-missing-resources"]:
         for log in (work / "runs" / name).glob("*/*.log"):
@@ -31,6 +37,7 @@ def main():
                "historical/: recovered older AutoSA transcripts, not fresh measurements.\n"
                "diagnostic/: explicitly edited/header-mode experiments.\n"
                "excluded-setup/: missing-header or wrong-function-selector attempts; NOT benchmark outcomes.\n"
+               "minimal/: the minimal-edit study (whole designs and single operators; see minimal/cases.json).\n"
                "build*.log: includes failed setup attempts as well as verified builds.\n"
                "No compiler build trees, vendor headers, licenses, credentials, or raw private logs are included.\n")
     members = []

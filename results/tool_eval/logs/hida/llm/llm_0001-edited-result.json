@@ -1,0 +1,29 @@
+{
+  "design_id": "llm_0001__edited",
+  "domain": "llm",
+  "tool": "HIDA",
+  "source_sha256": "3fb9d818bd4af4f9b35ac177d310286fe42fa6d7291082d78840d07df384b751",
+  "input_edits": "llm_0001__edited.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_S0_S0_S0_PfS1_",
+  "stage_reached": "codegen",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "<RUN>/transformed.mlir:622:10: error: 'hls.dataflow.buffer' op only support depth of 1",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 1
+    }
+  ],
+  "status": "codegen_failed"
+}

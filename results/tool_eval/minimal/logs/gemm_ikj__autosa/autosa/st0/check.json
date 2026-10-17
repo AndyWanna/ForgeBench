@@ -1,0 +1,5 @@
+{
+  "functional_check": "COMPILE_ERROR",
+  "max_error": "",
+  "detail": "<SRC>/top_kernel.cpp:465:28: error: \u2018fifo_BRAM_B_in\u2019 was not declared in this scope"
+}

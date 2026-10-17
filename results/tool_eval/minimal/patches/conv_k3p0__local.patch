@@ -1,0 +1,23 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -12,9 +12,6 @@
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_input[16][14][14];
+-data_t BRAM_weight[16][16][3][3];
+-data_t BRAM_output[16][12][12];
+ 
+ void load_16_14_14_float(data_t input[16][14][14], data_t output[16][14][14])
+ {
+@@ -121,6 +118,10 @@
+     #pragma HLS interface m_axi port=DRAM_input offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_weight offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_output offset=slave bundle=mem2
++    data_t BRAM_input[16][14][14];
++    data_t BRAM_weight[16][16][3][3];
++    data_t BRAM_output[16][12][12];
++
+ 
+     load_16_14_14_float(DRAM_input, BRAM_input);
+     load_16_16_3_3_float(DRAM_weight, BRAM_weight);

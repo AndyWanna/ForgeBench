@@ -1,0 +1,78 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -1,19 +1,8 @@
++#include <math.h>
+ 
+-#include <stdio.h>
+-#include <iostream>
+-#include <fstream>
+-#include <cstdlib>
+-#include <ap_fixed.h>
+-#include <hls_math.h>
+-#include <stdlib.h>
+-#include <cstdint>
+-#include <hls_math.h>
+-using namespace std;
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_input[8][128];
+-data_t BRAM_output[8][128];
+ 
+ void load_8_128_float(data_t input[8][128], data_t output[8][128])
+ {
+@@ -31,25 +20,26 @@
+     data_t output[8][128]
+ )
+ {
+-    // Compute softmax along the hidden dimension for each row.
+-    for (int i = 0; i < 8; i++) {
+-        // Subtract the row max before exp (shift-invariant, so mathematically identical): every exp argument is <= 0,
+-        // so exp itself cannot overflow in fixed point.
+-        data_t max_val = input[i][0];
+-        for (int j = 1; j < 128; j++) {
+-            if (input[i][j] > max_val) max_val = input[i][j];
+-        }
++    data_t max_val[8];
++    data_t sum[8];
++    for (int i = 0; i < 8; i++) max_val[i] = input[i][0];
++    for (int i = 0; i < 8; i++)
++        for (int j = 1; j < 128; j++)
++            max_val[i] = (input[i][j] > max_val[i]) ? (data_t)input[i][j] : (data_t)max_val[i];
++    for (int i = 0; i < 8; i++) sum[i] = 0;
++    for (int i = 0; i < 8; i++)
++        for (int j = 0; j < 128; j++)
++            output[i][j] = expf(input[i][j] - max_val[i]);
++#pragma scop
++    for (int i = 0; i < 8; i++)
++        for (int j = 0; j < 128; j++)
++            sum[i] = sum[i] + output[i][j];
++#pragma endscop
++    for (int i = 0; i < 8; i++)
++        for (int j = 0; j < 128; j++)
++            output[i][j] /= sum[i];
++}
+ 
+-        data_t sum = 0;
+-        for (int j = 0; j < 128; j++) {
+-            output[i][j] = hls::exp(input[i][j] - max_val);
+-            sum += output[i][j];
+-        }
+-        for (int j = 0; j < 128; j++) {
+-            output[i][j] /= sum;
+-        }
+-    }
+-}
+ 
+ void store_8_128_float(data_t input[8][128], data_t output[8][128])
+ {
+@@ -64,6 +54,9 @@
+ {
+     #pragma HLS interface m_axi port=DRAM_input offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_output offset=slave bundle=mem2
++    data_t BRAM_input[8][128];
++    data_t BRAM_output[8][128];
++
+ 
+     load_8_128_float(DRAM_input, BRAM_input);
+     softmax_8_128_float(BRAM_input, BRAM_output);

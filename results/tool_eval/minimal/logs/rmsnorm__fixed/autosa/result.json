@@ -1,0 +1,17 @@
+{
+  "stage_reached": "parse",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier() && \"Name is not a simple identifier\"' failed.",
+  "status": "frontend_assertion",
+  "design_id": "rmsnorm__fixed",
+  "domain": "llm",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "6f72509ca32127246c4fb2ae8357688020b7fe2dc5a7c3a7ad4559ff4027315f",
+  "exit_code": 250,
+  "generated_kernels": [],
+  "input_edits": "none",
+  "autosa_args": [],
+  "autosa_stdin": null
+}

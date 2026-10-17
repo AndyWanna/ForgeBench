@@ -1,0 +1,41 @@
+tool: StreamHLS
+design_id: gemm_0004__float
+source_sha256: eca1fe0efafd98f8bb8b8fe5f13921cda987c3bf490017c160b27dae7a2deb64
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPfPA64_fS1_S_S_S_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPfPA64_fS1_S_S_S_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 139
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir "-streamhls-kernel-pipeline=top-func=_Z3topPfPA64_fS1_S_S_S_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true" -o <RUN>/transformed.mlir
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  streamhls-opt 0x000055584fd2af57
+1  streamhls-opt 0x000055584fd28abe
+2  streamhls-opt 0x000055584fd2b60a
+3  libc.so.6     0x00007f6e1453e520
+4  streamhls-opt 0x000055584de1a830
+5  streamhls-opt 0x000055584ddd2394
+6  streamhls-opt 0x000055584ddb7138
+7  streamhls-opt 0x000055584fa491d4
+8  streamhls-opt 0x000055584fa49971
+9  streamhls-opt 0x000055584fa4edfe
+10 streamhls-opt 0x000055584fa4b10b
+11 streamhls-opt 0x000055584fa49318
+12 streamhls-opt 0x000055584fa49971
+13 streamhls-opt 0x000055584fa4bfe2
+14 streamhls-opt 0x000055584dd4a974
+15 streamhls-opt 0x000055584dd49be4
+16 streamhls-opt 0x000055584fc30ac8
+17 streamhls-opt 0x000055584dd44cea
+18 streamhls-opt 0x000055584dd44e86
+19 streamhls-opt 0x000055584dd45132
+20 streamhls-opt 0x000055584ba22d0e
+21 libc.so.6     0x00007f6e14525d90
+22 libc.so.6     0x00007f6e14525e40 __libc_start_main + 128
+23 streamhls-opt 0x000055584ba22ba5

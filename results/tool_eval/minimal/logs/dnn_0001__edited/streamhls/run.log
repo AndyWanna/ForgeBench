@@ -1,0 +1,35 @@
+tool: StreamHLS
+design_id: dnn_0001__edited
+source_sha256: e0107c9732e4e7c036afcf5f62b2f011007f4f5de90fbdafe560920ca37d5814
+input_edits: dnn_0001__edited.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm::ilist_detail::node_options<mlir::Block, true, false, void, false>, false, false>::operator*() const [OptionsT = llvm::ilist_detail::node_options<mlir::Block, true, false, void, false>, IsReverse = false, IsConst = false]: Assertion `!NodePtr->isKnownSentinel()' failed.
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA56_A56_fPA16_A1_A1_fPfPA16_fPA58_A58_f -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPA56_A56_fPA16_A1_A1_fPfPA16_fPA58_A58_f board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 139
+streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm::ilist_detail::node_options<mlir::Block, true, false, void, false>, false, false>::operator*() const [OptionsT = llvm::ilist_detail::node_options<mlir::Block, true, false, void, false>, IsReverse = false, IsConst = false]: Assertion `!NodePtr->isKnownSentinel()' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  streamhls-opt 0x000055ee58b12f57
+1  streamhls-opt 0x000055ee58b10abe
+2  streamhls-opt 0x000055ee58b1360a
+3  libc.so.6     0x00007f26bab38520
+4  libc.so.6     0x00007f26bab8c9bc pthread_kill + 300
+5  libc.so.6     0x00007f26bab38476 raise + 22
+6  libc.so.6     0x00007f26bab1e7f3 abort + 211
+7  libc.so.6     0x00007f26bab1e71b
+8  libc.so.6     0x00007f26bab2fe96
+9  streamhls-opt 0x000055ee56b82d7f
+10 streamhls-opt 0x000055ee588311d4
+11 streamhls-opt 0x000055ee58831971
+12 streamhls-opt 0x000055ee58836dfe
+13 streamhls-opt 0x000055ee58836edf
+14 streamhls-opt 0x000055ee58756a52
+15 streamhls-opt 0x000055ee58abbf2d
+16 streamhls-opt 0x000055ee58abcc75
+17 libc.so.6     0x00007f26bab8aa83
+18 libc.so.6     0x00007f26bac1ba94 clone + 68
