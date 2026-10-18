@@ -31,7 +31,7 @@ random input sets, with max |ref − out| / max(1, |ref|) < 1e-4 over every outp
 but computes the wrong result is counted as a failure.
 
 <!-- BEGIN GENERATED: overview -->
-| Tool | GEMM whole design | GEMM single op | DNN whole design | DNN single ops | LLM whole design | LLM single ops |
+| Tool | GEMM whole end-to-end design | GEMM single op | DNN whole end-to-end design | DNN single ops | LLM whole end-to-end design | LLM single ops |
 |---|---|---|---|---|---|---|
 | ScaleHLS | ✅ `gemm_0004` with edits | ✅ 2/6: gemm_ikj, gemm_kij; ❌ gemm_ijk (wrong results), gemm_jik (wrong results), gemm_jki (wrong results), gemm_kji (wrong results) | ❌ wrong results | ✅ 3/3: conv_k1, conv_k3p0, conv_k3 | ❌ DSE timeout | ✅ 2/4: rmsnorm, softmax; ❌ mha (wrong results), mha_rope (wrong results) |
 | HIDA | ❌ emitted code unusable | ✅ 6/6: gemm_ijk, gemm_ikj, gemm_jik, gemm_jki, gemm_kij, gemm_kji | ❌ emitted code unusable | ✅ 3/3: conv_k1, conv_k3p0, conv_k3 | ✅ `llm_0001` with edits | ✅ 4/4: rmsnorm, softmax, mha, mha_rope |
@@ -439,7 +439,7 @@ The "subset" in the paper cannot be reproduced.
 ### 3.3 StreamHLS on DNN: what is the Vitis error?
 
 There is none to report:
-* **Whole design:** StreamHLS generates no code for `dnn_0001` at all. Its kernel pipeline
+* **Whole end-to-end design:** StreamHLS generates no code for `dnn_0001` at all. Its kernel pipeline
   crashes in transformation (`ilist_iterator` sentinel assertion), with or without edits.
 * **Single convolutions:** it emits correct, synthesizable code for the two unpadded ones. For
   the padded 3×3, the code it emits compiles but computes wrong results (max_error 5.14; almost
@@ -447,7 +447,7 @@ There is none to report:
   buffer-to-FIFO conversion mishandles that.
 
 So "generates code, but the output is not synthesizable" is not what was observed: the observed
-failure is "does not generate code" (whole design) or "generates wrong code" (padded operator).
+failure is "does not generate code" (whole end-to-end design) or "generates wrong code" (padded operator).
 
 ### 3.4 LLM: what does each tool stop on when parsing?
 
