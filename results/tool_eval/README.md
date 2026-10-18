@@ -3,9 +3,7 @@
 This directory backs Table 9 (`tab:tool-support`) of `Forgebench_FPT_Journal_2026_R2.pdf`
 (Case Study 3; `sec/results.tex`, `table/testcases_table.tex`). It covers ScaleHLS, HIDA,
 AutoSA and StreamHLS on ForgeBench-generated GEMM, DNN and LLM designs. It follows
-`todo_tool_eval.md` item by item. No manuscript file was modified; where the evidence differs
-from the paper, the difference is stated here, with a suggested revision in
-[§7](#7-suggestions-for-revising-the-paper).
+`todo_tool_eval.md` item by item. 
 
 Every result below comes from a committed command, input and log. All tables inside
 `GENERATED` blocks are produced by [`scripts/report_tables.py`](scripts/report_tables.py) from
