@@ -253,7 +253,7 @@ saw it. `patches/<tool>/` holds the patch of every correct, synthesized result o
 (copied by `scripts/collect_tables.py`; `validate.py` checks they are identical to
 `minimal/patches/`).
 
-**Whole designs:**
+**Whole end-to-end designs:**
 
 Both whole-design passes start from the design generated with the generator's `float` option
 (`typedef float data_t;` instead of `ap_fixed<16,5>`). As generated, every tool stops while
@@ -423,7 +423,7 @@ Notes on the table:
 
 ### 3.2 AutoSA on DNN: how many designs out of how many?
 
-* **Whole designs: 0 of 1.** `dnn_0001` fails while parsing the C++ headers, in fixed point and
+* **Whole end-to-end designs: 0 of 1.** `dnn_0001` fails while parsing the C++ headers, in fixed point and
   in float.
 * **Single convolutions: 0 of 3.** On the two AutoSA accepts (1×1 and unpadded 3×3), with the
   edits that remove each blocker found (headers, `#pragma scop`, `+=` spelled out, inlined
