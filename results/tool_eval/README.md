@@ -370,17 +370,6 @@ design.
   depth of 1`). The option `place-external-buffer=false` keeps them on chip. It is a documented
   HIDA pipeline option; the source is not changed for it.
 
-**The paper's own ◐ cells** (AutoSA GEMM, AutoSA DNN, StreamHLS GEMM):
-
-* **AutoSA:** no edit set produces a correct kernel; see §3.2. The recovered historical AutoSA
-  inputs are rewrites (`float`, removed interfaces, changed loop nests), not minor edits:
-  [`patches/autosa/*-historical-rewrite.patch`](patches/autosa/).
-* **StreamHLS GEMM:** the whole design fails. The single-operator GEMM passes with
-  [`patches/streamhls/gemm_ikj__local.patch`](patches/streamhls/gemm_ikj__local.patch) (buffers into
-  `top()`), the `ikj`/`kij` loop order, and the lossless IR handoff
-  [`scripts/stream_handoff.py`](scripts/stream_handoff.py). The handoff changes `memref.alloca` to
-  `memref.alloc`, drops uncalled helper functions, and enables `bufferize-func-args`. It is needed
-  because StreamHLS's kernel pipeline expects torch-mlir's IR, not Polygeist's.
 
 ## 3. TODO item 2: answers to the table questions
 
