@@ -72,6 +72,8 @@ but computes the wrong result is counted as a failure.
 Detailed results follow. Every row links its exact input and patch; logs are in
 `minimal/logs/<input>/<tool>/`.
 
+**End-to-end Design Table**
+
 <!-- BEGIN GENERATED: whole -->
 | Design | Input | Tool | Stage reached | Result | Why it failed |
 |---|---|---|---|---|---|
@@ -124,6 +126,8 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | `gemm_0004` | `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
 | `dnn_0001` | `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 0.664) |
 <!-- END GENERATED: whole -->
+
+**Operator Table**
 
 <!-- BEGIN GENERATED: operators -->
 | Domain | Operator | Tool | Best result | Input of that attempt | Why it failed |
