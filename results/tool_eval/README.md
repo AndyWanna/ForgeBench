@@ -207,8 +207,6 @@ with ForgeBench's own generator and refuses any hash mismatch. No input is a han
 | StreamHLS | [UCLA-VAST/Stream-HLS](https://github.com/UCLA-VAST/Stream-HLS) | `00c6219a82fc710492f4eb44e4f34836dfb19e08`; LLVM/MLIR 18.1.2 `26a1d660`; C front end Polygeist `77c04bb2` with LLVM 18.0.0git `26eb4285` |
 | Vitis HLS | AMD | 2024.1, part `xczu9eg-ffvb1156-2-e`, 10 ns |
 
-The tools that were run for the paper's original table, and their versions, are unknown; see
-[§8](#8-what-is-missing-and-discrepancies).
 
 ### 2.3 `summary.csv`
 
