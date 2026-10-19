@@ -150,12 +150,26 @@ def main():
         assert len(members) == archive["files"], tarball
         for member in members:
             check_private(stream.extractfile(member).read().decode(errors="replace"), member.name)
+    # The tools' emitted HLS is kept out of the size budget too, but must match its index and results.csv.
+    generated = EVAL / "generated_hls"
+    with (generated / "index.csv").open() as stream:
+        index = list(csv.DictReader(stream))
+    recorded = {row["run"]: row for row in results}
+    listed = {generated / "index.csv"}
+    for row in index:
+        assert recorded[row["run"]]["stage_reached"] in {"codegen", "synth"}, row["run"]
+        assert row["functional_check"] == recorded[row["run"]]["functional_check"], row["run"]
+        for name, digest in zip(row["files"].split(), row["sha256"].split(), strict=True):
+            assert sha256(generated / row["path"] / name) == digest, (row["path"], name)
+            listed.add(generated / row["path"] / name)
+    assert {path for path in generated.rglob("*") if path.is_file()} == listed
     size = 0
     for path in EVAL.rglob("*"):
         if not path.is_file() or "__pycache__" in path.parts or path == tarball:
             continue
         assert not path.is_symlink()
-        size += path.stat().st_size
+        if generated not in path.parents:
+            size += path.stat().st_size
         assert path.stat().st_size < 1024 * 1024, path
         check_private(path.read_text(), path)
     assert size < 5 * 1024 * 1024, size

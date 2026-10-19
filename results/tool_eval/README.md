@@ -527,6 +527,7 @@ python minimal_inputs.py --work "$tool_eval_work/minimal"   # regenerate and pat
 python minimal_run.py --work "$tool_eval_work/minimal" --tools-work "$tool_eval_work" \
   --vitis-include "$VITIS_HLS_INCLUDE" --jobs 12           # every run in minimal/cases.json; resumable
 python collect_tables.py && python feature_evidence.py && python report_tables.py --write
+python collect_generated.py --work "$tool_eval_work/minimal"  # the tools' emitted HLS into generated_hls/
 python -m unittest discover -s . -p test_evidence.py && python validate.py
 ```
 
@@ -537,6 +538,7 @@ python -m unittest discover -s . -p test_evidence.py && python validate.py
 | `run_mlir.py`, `run_autosa.py`, `run_vitis.py` | Single runs: one tool on one design directory. They record the stage reached, the first error, and the input hash, and refuse a zero exit with empty output as a pass. |
 | `minimal_run.py --only <regex>` | Re-runs any subset of the matrix. |
 | `minimal_check.py` | The functional comparison. It reads the generated `top.h`, so it works for any ForgeBench design. |
+| `collect_generated.py` | Copies each tool's emitted HLS C++ into `generated_hls/` (§6.3). |
 
 The primary unedited runs of §2.4 were made with the same runners (`prepare.py`,
 `collect.py`).
@@ -635,9 +637,31 @@ file count are in [`archive.json`](archive.json), and it is also intended for th
 
 The TODO asked for this tarball to stay outside git, so that `make bundle`, which packs
 `results/tool_eval/`, stays small. It is committed anyway, at the authors' request. As a result,
-`results/tool_eval/` is about 7.6 MB, and a bundle built from it already contains the logs.
-`validate.py` keeps the 5 MiB budget for everything else, checks that the tarball matches
-`archive.json`, and scans every file inside it. Nothing in git, the tarball included, contains
-local paths, host names, licenses or build trees.
+`results/tool_eval/` is about 14 MB with the generated HLS of §6.3, and a bundle built from it
+already contains the logs. `validate.py` keeps the 5 MiB budget for everything except the tarball
+and `generated_hls/`, checks that the tarball matches `archive.json`, and scans every file inside
+it. Nothing in git, the tarball included, contains local paths, host names, licenses or build
+trees.
+
+### 6.3 Generated HLS
+
+[`generated_hls/`](generated_hls/) holds the HLS C++ that each tool emitted, for every run in
+`minimal/results.csv` that reached code generation. That is 110 runs and 186 files (6.4 MB),
+written by `scripts/collect_generated.py` and redacted like the logs.
+
+| Tool | Directory | Files | Runs | Functional check |
+|---|---|---|---|---|
+| ScaleHLS | `scalehls/<input>/` | `emitted.cpp` | 25 | 13 PASS, 12 FAIL |
+| HIDA | `hida/<input>/`; `hida/<input>__noext/` with `place-external-buffer=false` | `emitted.cpp` | 39 | 19 PASS, 1 FAIL, 19 COMPILE_ERROR |
+| StreamHLS | `streamhls/<input>/` | `emitted.cpp` | 8 | 5 PASS, 3 FAIL |
+| AutoSA | `autosa/<input>/st<N>/`, one per space-time candidate; `autosa/control_mm/` for its own example | `top_kernel.cpp`, `top_kernel.h`, `top_host.cpp` | 38 | 17 FAIL, 17 COMPILE_ERROR, 4 TIMEOUT |
+
+The code is kept whatever its verdict, so the miscompilations of §1 can be inspected directly.
+[`generated_hls/index.csv`](generated_hls/index.csv) gives, for each directory, its run id, input,
+patch, tool options, stage reached, functional check, latency, and the SHA-256 of each file.
+`validate.py` checks the hashes, checks that every row matches `minimal/results.csv`, and checks
+that no file is unlisted. Three HIDA runs (`llm_0001__edited`, `mha_rope__attn`,
+`mha_rope__attn_qkvsplit` with default options) failed during code generation and wrote nothing.
+They have no directory.
 
 
