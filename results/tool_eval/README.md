@@ -624,13 +624,20 @@ Vitis on the original generated designs:
   matched-resource comparisons.
 * **Where the reports are:**
   * `csynth.xml` of the unedited end-to-end designs: `reports/vitis/<id>/`.
-  * `csynth.xml` of every tool run: in the tarball, since the repository is kept under 5 MB.
+  * `csynth.xml` of every tool run: in the tarball (§6.2).
 
 ### 6.2 Full logs
 
 The full redacted transcripts (primary runs, controls, builds, every minimal-study run) are in
-`tool_eval_logs.tar.gz`, built outside git by `scripts/archive_logs.py`. Its name, SHA-256 and
-size are in [`archive.json`](archive.json), and it is intended for the Zenodo bundle. Nothing in
-git contains local paths, host names, licenses or build trees (checked by `validate.py`).
+[`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (2.7 MB, 378 files). `scripts/archive_logs.py`
+builds it outside the repository; the built file is then copied here. Its name, SHA-256, size and
+file count are in [`archive.json`](archive.json), and it is also intended for the Zenodo bundle.
+
+The TODO asked for this tarball to stay outside git, so that `make bundle`, which packs
+`results/tool_eval/`, stays small. It is committed anyway, at the authors' request. As a result,
+`results/tool_eval/` is about 7.6 MB, and a bundle built from it already contains the logs.
+`validate.py` keeps the 5 MiB budget for everything else, checks that the tarball matches
+`archive.json`, and scans every file inside it. Nothing in git, the tarball included, contains
+local paths, host names, licenses or build trees.
 
 

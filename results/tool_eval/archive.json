@@ -4,5 +4,5 @@
   "bytes": 2744937,
   "files": 378,
   "contents": "Full redacted run, control, diagnostic, historical and build logs",
-  "distribution": "Outside git; intended for the Zenodo bundle. No public DOI assigned yet."
+  "distribution": "Committed next to archive.json (built outside the repository, then copied in); also intended for the Zenodo bundle. No public DOI assigned yet."
 }

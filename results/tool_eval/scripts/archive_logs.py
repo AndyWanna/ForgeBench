@@ -62,7 +62,7 @@ def main():
                     tar.addfile(info, stream)
     write_json(EVAL / "archive.json", {"filename": out.name, "sha256": sha256(out), "bytes": out.stat().st_size,
                "files": len(members) + 1, "contents": "Full redacted run, control, diagnostic, historical and build logs",
-               "distribution": "Outside git; intended for the Zenodo bundle. No public DOI assigned yet."})
+               "distribution": "Committed next to archive.json (built outside the repository, then copied in); also intended for the Zenodo bundle. No public DOI assigned yet."})
     print(json.dumps({"filename": out.name, "sha256": sha256(out), "bytes": out.stat().st_size}))
 
 

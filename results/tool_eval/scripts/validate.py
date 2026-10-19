@@ -5,6 +5,7 @@ import json
 import re
 import shutil
 import subprocess
+import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -135,17 +136,28 @@ def main():
         if row["rating"] in {"full", "half"}:
             assert result["stage_reached"] == "synth"
             assert (EVAL / "reports" / tools[row["tool"]] / result["design_id"] / "csynth.xml").is_file()
+    def check_private(text, where):
+        assert not re.search(r"/(?:usr/scratch|export/hdd/scratch|nethome)/", text), where
+        assert not re.search(r"[\w.-]+\.ece\.gatech\.edu", text), where
+        assert not re.search(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)", text), where
+
+    # The full-log tarball is committed alongside the evidence but kept out of the size budget.
+    archive = json.loads((EVAL / "archive.json").read_text())
+    tarball = EVAL / archive["filename"]
+    assert sha256(tarball) == archive["sha256"] and tarball.stat().st_size == archive["bytes"], tarball
+    with tarfile.open(tarball) as stream:
+        members = [member for member in stream.getmembers() if member.isfile()]
+        assert len(members) == archive["files"], tarball
+        for member in members:
+            check_private(stream.extractfile(member).read().decode(errors="replace"), member.name)
     size = 0
     for path in EVAL.rglob("*"):
-        if not path.is_file() or "__pycache__" in path.parts:
+        if not path.is_file() or "__pycache__" in path.parts or path == tarball:
             continue
         assert not path.is_symlink()
         size += path.stat().st_size
         assert path.stat().st_size < 1024 * 1024, path
-        text = path.read_text()
-        assert not re.search(r"/(?:usr/scratch|export/hdd/scratch|nethome)/", text), path
-        assert not re.search(r"[\w.-]+\.ece\.gatech\.edu", text), path
-        assert not re.search(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)", text), path
+        check_private(path.read_text(), path)
     assert size < 5 * 1024 * 1024, size
     print(f"PASS: {len(summary)} summary cells, {len(outcomes)} outcomes, {len(results)} minimal-study rows, "
           f"{len(minimal['inputs'])} inputs; {size:,} public bytes")
