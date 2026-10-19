@@ -656,7 +656,7 @@ written by `scripts/collect_generated.py` and redacted like the logs.
 | StreamHLS | `streamhls/<input>/` | `emitted.cpp` | 8 | 5 PASS, 3 FAIL |
 | AutoSA | `autosa/<input>/st<N>/`, one per space-time candidate; `autosa/control_mm/` for its own example | `top_kernel.cpp`, `top_kernel.h`, `top_host.cpp` | 38 | 17 FAIL, 17 COMPILE_ERROR, 4 TIMEOUT |
 
-The code is kept whatever its verdict, so the miscompilations of §1 can be inspected directly.
+The code is kept whatever its verdict, so the miscompilations of §3.5 can be inspected directly.
 [`generated_hls/index.csv`](generated_hls/index.csv) gives, for each directory, its run id, input,
 patch, tool options, stage reached, functional check, latency, and the SHA-256 of each file.
 `validate.py` checks the hashes, checks that every row matches `minimal/results.csv`, and checks
