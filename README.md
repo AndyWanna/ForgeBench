@@ -6,8 +6,8 @@ self-checking testbench (`tb_top.cpp`), input data and the `run_hls.tcl` script.
 LLM (attention / transformer) and full-scale models (ResNet-18…152, Llama-3-8B). The GEMM generator also has a Catapult HLS backend.
 
 The benchmark suites in the paper are all produced by these generators. Their configs, the generated sources and the collected
-results are in this repository. The raw synthesis/implementation reports and verification logs are in the data release (see
-[Data release](#data-release)).
+results are in this repository, including the verification results (`results/verification/`). The synthesis and implementation
+reports are in the data release (see [Data release](#data-release)).
 
 ## Quick start
 
