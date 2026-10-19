@@ -1,6 +1,6 @@
 # Full-scale model generator (`forgebench/fullmodel`)
 
-This directory generates JSON model configs and HLS projects for the full-scale models in ForgeBench (Table 3). The 14 configs the
+This directory generates JSON model configs and HLS projects for the full-scale models in ForgeBench (Table 5). The 14 configs the
 paper uses are in `designs/configs/fullmodel/` and their generated sources in `designs/hls/fullmodel/`; `forgebench generate
 designs/configs/fullmodel/<name>.json -o out` regenerates one, and `make check` regenerates all of them and compares them with the
 repository. Functional verification of the generated sources against PyTorch references: [verification/fullmodel](../../verification/fullmodel/README.md).

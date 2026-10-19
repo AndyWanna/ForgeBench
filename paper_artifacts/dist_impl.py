@@ -1,4 +1,4 @@
-"""Domain-grouped distribution plot from impl data (paper Fig 8).
+"""Domain-grouped distribution plot from impl data (paper Fig 9).
 
 Four panels — Power (W), achieved Fmax (MHz), LUT util (linear) and Cycles (log) — each an
 overlapping filled KDE per domain, matching the R1 figure.

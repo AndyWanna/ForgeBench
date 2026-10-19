@@ -1,9 +1,9 @@
-"""Paper Section 4.2 (sweep results): Figs 6-8 and Table 5 from the collected R2 metrics.
+"""Paper Section 4.2 (sweep results): Figs 6, 7, 9 and Table 8 from the collected R2 metrics.
 
-  Fig 6  paper_artifacts/out/figs/fig6_dist_csynth.png   csynth marginal distributions (BRAM, LUT, FF util, cycles), designs within ZCU102
-  Fig 7  paper_artifacts/out/figs/fig7_coverage.png      csynth joint coverage (BRAM/DSP/LUT util vs cycles, BRAM vs DSP util), log util axes 0.1-100%
-  Fig 8  paper_artifacts/out/figs/fig8_dist_impl.png     impl marginal distributions (power, achieved Fmax, LUT util, cycles)
-  Tab 5  paper_artifacts/out/tables/table5_impl.{csv,tex}  impl min / mean / max per domain
+  Fig 6  paper_artifacts/out/figs/dist_csynth.png           csynth marginal distributions (BRAM, LUT, FF util, cycles), designs within ZCU102
+  Fig 7  paper_artifacts/out/figs/combined_utilization.png  csynth joint coverage (BRAM/DSP/LUT util vs cycles, BRAM vs DSP util), log util axes 0.1-100%
+  Fig 9  paper_artifacts/out/figs/dist_impl.png             impl marginal distributions (power, achieved Fmax, LUT util, cycles)
+  Tab 8  paper_artifacts/out/tables/impl_ppa.{csv,tex}      impl min / mean / max per domain
 
 Inputs: results/ml_sweep/{csynth,impl}/metrics_{gemm,dnn,llm}.csv only (the scale-model CSVs live in results/fullmodel/ and are
 not part of the sweep). Impl rows are the designs that completed place and route (manifest impl=YES).
@@ -18,7 +18,7 @@ import pandas as pd
 from forgebench.analysis import io
 from paper_artifacts.dist_csynth import dist_csynth
 from paper_artifacts.dist_impl import dist_impl
-from paper_artifacts.plots import fig4_coverage
+from paper_artifacts.plots import coverage
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOMAINS = [("gemm", "GEMM"), ("dnn", "DNN"), ("llm", "LLM")]
@@ -54,7 +54,7 @@ def fmt(x, kind):
     return f"{x:.1f}"
 
 
-def table5(impl):
+def impl_ppa(impl):
     os.makedirs(TAB, exist_ok=True)
     stats, counts = {}, {}
     for d, _ in DOMAINS:
@@ -63,7 +63,7 @@ def table5(impl):
         for label, col, scale, _k in TABLE5_ROWS:
             v = pd.to_numeric(sub[col], errors="coerce").dropna() * scale
             stats[(d, col)] = (v.min(), v.mean(), v.max())
-    with open(os.path.join(TAB, "table5_impl.csv"), "w", newline="") as f:
+    with open(os.path.join(TAB, "impl_ppa.csv"), "w", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["metric", "domain", "n", "min", "mean", "max"])
         for label, col, scale, _k in TABLE5_ROWS:
@@ -82,17 +82,17 @@ def table5(impl):
     for label, col, _s, k in TABLE5_ROWS:
         lines.append(label + " & " + " & ".join(fmt(x, k) for d, _ in DOMAINS for x in stats[(d, col)]) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
-    with open(os.path.join(TAB, "table5_impl.tex"), "w") as f:
+    with open(os.path.join(TAB, "impl_ppa.tex"), "w") as f:
         f.write("\n".join(lines) + "\n")
-    print(f"wrote {TAB}/table5_impl.{{csv,tex}}  ({', '.join(f'{name} {counts[d]}' for d, name in DOMAINS)}; total {sum(counts.values())})")
+    print(f"wrote {TAB}/impl_ppa.{{csv,tex}}  ({', '.join(f'{name} {counts[d]}' for d, name in DOMAINS)}; total {sum(counts.values())})")
 
 
 def main():
     csynth, impl = load("csynth"), load("impl")
-    dist_csynth(df=csynth, out=os.path.join(FIG, "fig6_dist_csynth.png"), feasible=True)
-    fig4_coverage(df=csynth, out=os.path.join(FIG, "fig7_coverage.png"), util_log=True, util_min=0.1)
-    dist_impl(df=impl, out=os.path.join(FIG, "fig8_dist_impl.png"))
-    table5(impl)
+    dist_csynth(df=csynth, out=os.path.join(FIG, "dist_csynth.png"), feasible=True)
+    coverage(df=csynth, out=os.path.join(FIG, "combined_utilization.png"), util_log=True, util_min=0.1)
+    dist_impl(df=impl, out=os.path.join(FIG, "dist_impl.png"))
+    impl_ppa(impl)
 
 
 if __name__ == "__main__":

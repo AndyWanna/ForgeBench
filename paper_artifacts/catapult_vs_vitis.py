@@ -10,7 +10,7 @@ Both report pre-implementation estimates (latency in cycles, LUT, DSP, FF / regi
   python -m paper_artifacts.catapult_vs_vitis sample  --out _sweeps/catapult_vs_vitis       # configs/ + sample.csv
   bash forgebench/ml_sweep/scripts/run_catapult_vs_vitis.sh                                             # both sweeps (64 jobs total)
   python -m paper_artifacts.catapult_vs_vitis collect --out _sweeps/catapult_vs_vitis       # metrics.csv (one row per design x tool)
-  python -m paper_artifacts.catapult_vs_vitis plot    --out _sweeps/catapult_vs_vitis       # Fig-8-style density plot
+  python -m paper_artifacts.catapult_vs_vitis plot    --out _sweeps/catapult_vs_vitis       # Fig 8 density plot
   make catapult-vs-vitis                                    # the paper's figure from results/catapult_vs_vitis/metrics.csv
 """
 import argparse

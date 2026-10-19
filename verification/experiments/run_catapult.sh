@@ -1,5 +1,5 @@
 #!/bin/bash
-# Catapult backend check (the Catapult table): the Table-2 matrix-product variants (GEMM, vmm, mmv, dot; each without and with bias)
+# Catapult backend check (Table 4): the Table-2 matrix-product variants (GEMM, vmm, mmv, dot; each without and with bias)
 # generated with the Catapult backend, Catapult SCVerify C simulation, N=100 at +-1, <32,10> and float: same inputs, seeds, golden and
 # bound as the Vitis operators/{C_32_10,D_float}__pm1 runs, so every trial is compared seed by seed. Needs Catapult 2026.2 + license.
 #   bash verification/experiments/run_catapult.sh

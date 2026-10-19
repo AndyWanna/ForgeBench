@@ -36,7 +36,7 @@ def sweep_configs(domain):
 
 
 def case_config_dirs(domain):
-    """Whole-design configs: the Table 7 programs, then the Table 1 examples."""
+    """Whole-design configs: the Table 10 programs, then the Table 1 examples."""
     return [os.path.join(CONFIGS, kind, GEN[domain]) for kind in ("modular_designs", "examples")]
 
 
@@ -57,7 +57,7 @@ def case_config(domain, name):
 
 
 def modular_hls(domain):
-    """Table 7 design directories (generated programs and hand-written modularized designs)."""
+    """Table 10 design directories (generated programs and hand-written modularized designs)."""
     return os.path.join(HLS, "modular_designs", GEN[domain])
 
 

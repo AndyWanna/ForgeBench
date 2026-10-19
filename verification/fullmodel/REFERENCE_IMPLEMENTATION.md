@@ -28,7 +28,7 @@ transcendental functions. No accelerator outputs become reference values.
 
 ## Run
 
-`make verify-fullmodel OUT=<new dir>` runs every Table 3 design; single-design commands are in [README.md](README.md). The data path
+`make verify-fullmodel OUT=<new dir>` runs every Table 5 design; single-design commands are in [README.md](README.md). The data path
 (word length, rounding and overflow modes) is read from the saved header and exact source contract, never from a command-line
 override.
 
@@ -47,7 +47,7 @@ Every output directory must be new. Optional flags:
 - `--inspect-only`: snapshot the sources and check their interface/arithmetic
   without allocating parameters or running C simulation. This is not a PASS.
 
-The registered versions are the 14 Table 3 sources in `designs/hls/fullmodel/`: full-buffer ResNet-18/34/50/101/152
+The registered versions are the 14 Table 5 sources in `designs/hls/fullmodel/`: full-buffer ResNet-18/34/50/101/152
 and the context-2048 and context-8192 Llama 3 8B prefill/decode pairs at `ap_fixed<32,10>` (**AP_RND/AP_SAT**), and tiled
 ResNet-18/34/50/101/152 at `ap_fixed<16,5>` (**AP_TRN/AP_WRAP**). Repairs are made in the JSON-to-HLS generator, never in a
 saved source. The word length is read from the saved header; it controls

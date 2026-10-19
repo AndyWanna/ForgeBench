@@ -4,7 +4,7 @@
 
   examples         designs/configs/examples/<gen>/*.json      -> designs/hls/examples/<gen>/<name>/
   fullmodel        designs/configs/fullmodel/*.json           -> designs/hls/fullmodel/<name>/
-  modular designs  the Table 7 programs, generated from the verified design JSONs (verification.experiments.prepare_table7_synth)
+  modular designs  the Table 10 programs, generated from the verified design JSONs (verification.experiments.prepare_table7_synth)
                    -> designs/hls/modular_designs/<gen>/<program>/
   --sweep          also regenerate the 12,144 ML sweep configs and compare with designs/configs/ml_sweep/<gen>/
 
@@ -57,7 +57,7 @@ def main():
             diff = same(os.path.join(t7, r["domain"], os.path.basename(r["design_path"])), os.path.join(REPO, r["design_path"]))
             if diff:
                 bad.append(f"{r['design_path']}: {', '.join(diff)}")
-        print(f"Table 7 programs: {len(progs)} regenerated", flush=True)
+        print(f"Table 10 programs: {len(progs)} regenerated", flush=True)
 
         if a.sweep:
             for g in ("gemm", "dnn", "llm"):

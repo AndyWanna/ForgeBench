@@ -7,7 +7,7 @@ numpy (Scott's-rule bandwidth), computed in log-space for log-scaled axes.
 """
 import numpy as np
 
-# Domain colors and labels as in the R1 Figs 6 and 8.
+# Domain colors and labels as in Figs 6 and 9.
 DOMAIN_STYLE = {
     "gemm": {"color": "lightseagreen", "label": "GEMM"},
     "dnn": {"color": "coral", "label": "DNN"},

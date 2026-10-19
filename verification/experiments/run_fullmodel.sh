@@ -1,5 +1,5 @@
 #!/bin/bash
-# Full-scale model verification for every Table 3 design (Vitis HLS C simulation of the generated accelerators) with
+# Full-scale model verification for every Table 5 design (Vitis HLS C simulation of the generated accelerators) with
 # verification/fullmodel/verify.py: every run compares the accelerator against (a) the integer-code fixed-point
 # PyTorch reference (bit-exact: mismatching codes) and (b) the FP64 PyTorch graph (relative L2 <= 5% at every observed tensor).
 # One seed = one synthetic parameter set + input (DRAM_input uniform +-1; weights +-sqrt(3/fan_in); BN gamma/var [0.9,1.1], beta/mean
@@ -9,7 +9,7 @@
 #       bash verification/experiments/run_fullmodel.sh            (or: make verify-fullmodel OUT=<dir>)
 #
 # The run list is manifest/designs/fullmodel.csv: the 10 ResNet projects (full <32,10> and tiled <16,5>) x 10 seeds (42-51) and the
-# two Llama-3-8B prefill/decode pairs (ctx 2048, 8192) x 3 seeds (42-44). Results land in the groups Table 3 reads:
+# two Llama-3-8B prefill/decode pairs (ctx 2048, 8192) x 3 seeds (42-44). Results land in the groups Table 5 reads:
 #   OUT/resnet_full_32_10/<project>seed<n>/   OUT/resnet_tiled_16_5_trn/...   OUT/llama_ctx{2048,8192}_32_10/LLAMA3_8B_ctx<c>_32_10_seed<n>/
 # ONLY filters on "<group>/<run>" (e.g. ONLY=tiled, ONLY=RESNET50, ONLY=llama_ctx8192); SEEDS overrides the seed list of every design.
 # Time per seed: ResNet 0.4-4 min, Llama ~16 min plus a ~33 GB temporary parameter store (deleted after the run; its manifest and

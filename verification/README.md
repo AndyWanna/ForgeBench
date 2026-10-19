@@ -10,9 +10,9 @@ config run by the engine `verification/functional_verification.py`; the per-desi
 | Operators, inputs in [-1, 1] | same | `operators/{A,B,C,D}_*__pm1.json` | `run_operators.sh` | `operators/*__pm1/` | `operators.csv` |
 | C/RTL co-simulation | same, `<32,10>` and float | `cosim/{C_32_10,D_float}__cosim.json` | `run_cosim.sh` | `cosim/` | `cosim.csv` |
 | Catapult backend | the 8 matrix-product variants (GEMM, vmm, mmv, dot, without/with bias), `<32,10>` and float | `catapult/*__catapult_pm1.json` | `run_catapult.sh` | `catapult/` | `catapult.csv` |
-| Table 7 programs | the 26 programs (`designs/{configs,hls}/modular_designs/`), `<32,10>` | `table7/C_32_10__table7.json` | `run_table7.sh` | `table7/C_32_10__table7/` | `table7_programs.csv` |
-| Table 7 modularized designs | the 12 modularized designs, each against every program of its row | (the programs' inputs) | `run_table7.sh` | `table7/C_32_10__table7_modularized/` | `table7_modularized.csv` |
-| Table 3 C-sim error | the 14 full-scale models (`designs/hls/fullmodel/`) | `manifest/designs/fullmodel.csv` | `run_fullmodel.sh` | `fullmodel/<group>/` | `fullmodel.csv` |
+| Table 10 programs | the 26 programs (`designs/{configs,hls}/modular_designs/`), `<32,10>` | `table7/C_32_10__table7.json` | `run_table7.sh` | `table7/C_32_10__table7/` | `table7_programs.csv` |
+| Table 10 modularized designs | the 12 modularized designs, each against every program of its row | (the programs' inputs) | `run_table7.sh` | `table7/C_32_10__table7_modularized/` | `table7_modularized.csv` |
+| Table 5 C-sim error | the 14 full-scale models (`designs/hls/fullmodel/`) | `manifest/designs/fullmodel.csv` | `run_fullmodel.sh` | `fullmodel/<group>/` | `fullmodel.csv` |
 
 Every run folder in `results/verification/` has `summary.csv` (one row per design x format), `resolved_config.json` (the settings
 used), `configs/` (the exact design JSON of every reported experiment: data type, input ranges, seeds), `rows/` and `run.log.gz`.
@@ -54,7 +54,7 @@ textbook math and does not read the generated C.
 the dependent rounding stages (+ #ops - 1 for whole designs). Float: rtol 1e-3, atol 1e-5.
 
 **Trials.** N=100 input sets, uniform in [-r, r] (non-negative inputs: [0, r]); trial k uses seed `seed_base + report_seed_offset + k`.
-Input constraints: operator weights (matmul, mha, swa, conv) +-0.1, batchnorm parameters [0.25, 1]; Table 7 weights
+Input constraints: operator weights (matmul, mha, swa, conv) +-0.1, batchnorm parameters [0.25, 1]; Table 10 weights
 +-sqrt(3/fan_in) (gemm: the second operand), conv bias +-0.1, norm parameters [0.25, 1]; conv_block_op1 uses N=10 (up to 60 min per
 trial). Full models: [fullmodel/README.md](fullmodel/README.md).
 
@@ -72,7 +72,7 @@ outputs compared element by element with the C simulation.
 SCVerify's original-C++ simulation runs it on exactly the inputs, seeds, golden and bound of the Vitis `operators/*__pm1` run, so
 every trial is compared with the Vitis trial of the same seed.
 
-**Table 7 modularized designs** (`merged_designs.py`). Each modularized design is driven with the inputs of every program of its row
+**Table 10 modularized designs** (`merged_designs.py`). Each modularized design is driven with the inputs of every program of its row
 (the program run's design JSONs and seeds) and each output is checked against that program's golden and bound.
 
 ## Code
@@ -82,7 +82,7 @@ every trial is compared with the Vitis trial of the same seed.
 | `functional_verification.py` | the engine: generate, build once with Vitis C sim, range search, N trials, optional co-sim |
 | `range_search.py`, `fixed_runner.py`, `csim_runner.py`, `cosim.py`, `prepare_designs.py` | its parts: range search, fixed-point bounds and output reading, C-sim / Catapult runs, co-sim, design generation |
 | `golden_ref.py`, `domains/`, `activations.py`, `fp.py`, `fixedpoint.py`, `io.py`, `layout.py` | golden references, number formats, file layout |
-| `merged_designs.py` | Table 7 modularized designs against their programs |
+| `merged_designs.py` | Table 10 modularized designs against their programs |
 | `fullmodel/` | full-scale model verifier (PyTorch fixed-point + FP64 references) |
 | `experiments/` | the paper configs and run scripts above; `make_tables.py` (tables + manifest CSVs), `collect_results.sh` |
 | `operators/<op>/variants/<domain>/` | the 57 Table-2 operator designs |

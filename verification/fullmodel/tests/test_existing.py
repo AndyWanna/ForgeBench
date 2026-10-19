@@ -33,7 +33,7 @@ from verification.fullmodel.references.runner import (
 
 INCLUDE = Path(paths.vitis_hls_include())   # $VITIS_HLS_INCLUDE, $XILINX_HLS/include or the vitis_hls on PATH
 REPO = Path(__file__).resolve().parents[3]
-DESIGNS = REPO / "designs" / "hls" / "fullmodel"   # the Table 3 projects
+DESIGNS = REPO / "designs" / "hls" / "fullmodel"   # the Table 5 projects
 
 
 @pytest.fixture(scope="module")

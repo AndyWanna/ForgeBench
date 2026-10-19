@@ -8,7 +8,7 @@ LaTeX (in --out):
   verif_cosim.tex      tab:verif-cosim      Vitis C/RTL co-simulation, one row per operator, columns C and D: variants passing, RTL != C elements, latency
   verif_catapult.tex   tab:verif-catapult   Catapult backend: gemm, vmm, mmv, dot (one row per operator), C sim (vs Vitis per seed)
 CSV (in --manifest, every number, one row per design x format x experiment):
-  operators.csv, cosim.csv, catapult.csv, table7_programs.csv, table7_modularized.csv, fullmodel.csv (one row per Table 3 run)
+  operators.csv, cosim.csv, catapult.csv, table7_programs.csv, table7_modularized.csv, fullmodel.csv (one row per Table 5 run)
 
 Aggregation over an operator's variants: range = minimum (conservative), errors = maximum. Relative L2 = ||out - golden|| / ||golden||
 over all N trials. Float is characterised, not bounded: its range is the span over which it stays within the float tolerance (search
@@ -345,8 +345,8 @@ def cosim(res, out):
     return n_all
 
 
-# ----------------------------------------------------------------------------- modular (Table 7) designs
-# the <32,10> run of the 26 Table 7 programs (the configs the committed programs are generated from); later runs replace earlier rows
+# ----------------------------------------------------------------------------- modular (Table 10) designs
+# the <32,10> run of the 26 Table 10 programs (the configs the committed programs are generated from); later runs replace earlier rows
 MODULAR_RUNS = ["C_32_10__table7"]
 
 
@@ -363,7 +363,7 @@ def modular(res):
 
 
 def modularized(res):
-    """Each modularized Table 7 design checked against every program of its row -> manifest/verification/table7_modularized.csv."""
+    """Each modularized Table 10 design checked against every program of its row -> manifest/verification/table7_modularized.csv."""
     recs = [{k: r.get(k) for k in ("merged_design", "program", "datatype", "status", "n_trials", "trials_within_bound", "max_abs_err",
                                      "rel_l2", "same_as_program", "program_trials_compared", "notes")}
             for r in rows_of(res, "C_32_10__table7_modularized")]

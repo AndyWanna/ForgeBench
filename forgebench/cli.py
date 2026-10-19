@@ -6,7 +6,7 @@
     forgebench ml-sweep ...                                run a csynth/impl sweep (forgebench.ml_sweep.run; needs Vitis HLS)
     forgebench select-impl ...                             the seeded implementation sample (forgebench.ml_sweep.select_impl)
     forgebench collect ...                                 tool reports -> metrics.csv (forgebench.analysis.collect)
-    forgebench paper {table3,table7,section42,verification,catapult-vs-vitis,all}   rebuild paper tables/figures from results/
+    forgebench paper {ml-model-suite,modularization,section42,verification,catapult-vs-vitis,all}   rebuild paper tables/figures from results/
 
 Generators are run in a scratch copy of forgebench/<gen>/ (they read templates and write DRAM_*.txt in their cwd), so the
 checkout is never written to except at OUT.
@@ -106,9 +106,9 @@ def _forward(module, argv):
 
 
 PAPER = {   # target -> (module, argv)
-    "table3": [("paper_artifacts.table3_fullmodel", [])],
+    "ml-model-suite": [("paper_artifacts.ml_model_suite", [])],
     "section42": [("paper_artifacts.section42", [])],
-    "table7": [("forgebench.modular_designs.parse_reports", ["--out", os.path.join(paths.PAPER, "out", "tables")])],
+    "modularization": [("forgebench.modular_designs.parse_reports", ["--out", os.path.join(paths.PAPER, "out", "tables")])],
     "verification": [("verification.experiments.make_tables", [])],
     "catapult-vs-vitis": [("paper_artifacts.catapult_vs_vitis", ["plot", "--out", os.path.join(paths.REPO, "results", "catapult_vs_vitis"),
                                                                  "--fig", os.path.join(paths.PAPER, "out", "figs", "catapult_vs_vitis.png")])],

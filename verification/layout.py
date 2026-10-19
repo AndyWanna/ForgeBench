@@ -43,7 +43,7 @@ def variants(domain=None, operator=None):
 
 
 def design_variants():
-    """Whole multi-operator designs verified end to end: the generated programs of the paper's modularization study (Table 7)
+    """Whole multi-operator designs verified end to end: the generated programs of the paper's modularization study (Table 10)
     that have a JSON config in the repo (manifest/designs/modular.csv: role=program, construction=generated). id: designs/<domain>/<stem>."""
     import csv
     path = os.path.join(os.path.dirname(HERE), "manifest", "designs", "modular.csv")

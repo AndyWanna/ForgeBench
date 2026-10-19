@@ -2,23 +2,23 @@
 PY ?= python3
 .DEFAULT_GOAL := help
 
-.PHONY: help install install-verify paper table3 table7 section42 verification-tables catapult-vs-vitis stage-tables check test selfcheck \
+.PHONY: help install install-verify paper ml-model-suite modularization section42 verification-tables catapult-vs-vitis stage-tables check test selfcheck \
         verify-fullmodel regression-save regression-compare manifest bundle clean
 
 help:
 	@echo "install              pip install -e .            (forgebench CLI + analysis dependencies)"
 	@echo "install-verify       pip install -e '.[verify]'  (adds torch + pytest for the full-model verifier and tests)"
 	@echo "paper                every paper table and figure below, from results/ -> paper_artifacts/out/"
-	@echo "  table3             Table 3 full-scale models (resources + C-sim error)"
-	@echo "  section42          Figs 6-8 and Table 5 (ML sweep csynth / impl)"
-	@echo "  table7             Table 7 modularization"
-	@echo "  verification-tables  operator / co-sim / Catapult / Table 7 verification tables (+ manifest/verification/*.csv)"
-	@echo "  catapult-vs-vitis  Catapult vs Vitis synthesis of 1,000 GEMM designs (figure)"
-	@echo "  stage-tables       stages passed per design set (tab:synth_summary, tab:status)"
+	@echo "  ml-model-suite     Table 5 full model-level designs (resources + C-sim error)"
+	@echo "  section42          Figs 6, 7, 9 and Table 8 (ML sweep csynth / impl)"
+	@echo "  modularization     Table 10 modularization"
+	@echo "  verification-tables  Tables 2-4 (operators, co-sim, Catapult) and the Table 10 verification (+ manifest/verification/*.csv)"
+	@echo "  catapult-vs-vitis  Fig 8 Catapult vs Vitis synthesis of 1,000 GEMM designs"
+	@echo "  stage-tables       Tables 7 and 11 (stages passed per design set)"
 	@echo "check                regenerate every committed design and sweep config; byte-compare with designs/"
 	@echo "test                 unit tests                                    [torch]"
 	@echo "selfcheck            compile + run every whole-design config with g++ against a float golden   [g++]"
-	@echo "verify-fullmodel     C simulation of every Table 3 design vs the PyTorch references, OUT=<new dir> [ONLY=<regex>]   [Vitis, torch]"
+	@echo "verify-fullmodel     C simulation of every Table 5 design vs the PyTorch references, OUT=<new dir> [ONLY=<regex>]   [Vitis, torch]"
 	@echo "regression-save / regression-compare   generator byte-compare around a code change (BASE=<file>)"
 	@echo "manifest             rebuild manifest/designs/*.csv (maintainers: needs the raw lean archives in checkpoints/)"
 	@echo "bundle               assemble the Zenodo bundle in release/_bundle (maintainers)"
@@ -29,15 +29,15 @@ install:
 install-verify:
 	$(PY) -m pip install -e '.[verify]'
 
-paper: table3 section42 table7 verification-tables catapult-vs-vitis stage-tables
+paper: ml-model-suite section42 modularization verification-tables catapult-vs-vitis stage-tables
 
-table3:
-	$(PY) -m paper_artifacts.table3_fullmodel
+ml-model-suite:
+	$(PY) -m paper_artifacts.ml_model_suite
 
 section42:
 	$(PY) -m paper_artifacts.section42
 
-table7:
+modularization:
 	$(PY) -m forgebench.modular_designs.parse_reports
 
 verification-tables:

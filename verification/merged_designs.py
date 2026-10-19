@@ -1,7 +1,7 @@
-"""Table 7 modularized ("merged") designs checked against their programs: one testbench per merged design that drives the synthesized
+"""Table 10 modularized ("merged") designs checked against their programs: one testbench per merged design that drives the synthesized
 `top` with every program's inputs at once and checks each program's outputs against that program's golden and bound.
 
-A merged design (designs/hls/modular_designs/<gen>/<name>_module*) merges the programs P1..P3 of one Table 7 row into one top function
+A merged design (designs/hls/modular_designs/<gen>/<name>_module*) merges the programs P1..P3 of one Table 10 row into one top function
 whose ports are the programs' ports one program after the other (each program's DRAMs in its config order). The check reuses, per
 program, exactly what verified the program itself (verification/results_paper/<programs run>/configs/designs__<domain>__<P>__<tag>.json):
 

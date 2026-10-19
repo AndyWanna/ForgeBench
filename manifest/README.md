@@ -5,13 +5,13 @@ reports are, and every verification number behind a table.
 
 | Folder | What |
 |---|---|
-| `designs/` | one row per design: the ML sweeps, the Table-2 operators, Table 7, Table 3 |
+| `designs/` | one row per design: the ML sweeps, the Table-2 operators, Table 10, Table 5 |
 | `verification/` | one row per verified design x format, per verification table (built by `make verification-tables`) |
 | `ml_sweep/` | the frozen design-id map, the seeded implementation samples, and why the 39 unfinished implementation runs failed |
 
 ## Sweep designs: `designs/{gemm,dnn,llm}.csv`
 
-One row per design (Table 4; Figs 6-8, Table 5). Columns, in order:
+One row per design (Table 6; Figs 6, 7, 9, Table 8). Columns, in order:
 
 | Column | Meaning |
 |---|---|
@@ -44,19 +44,19 @@ Metrics (LUT, DSP, cycles, power, Fmax, ...) are not repeated here: they are in
 | File | Rows | What |
 |---|---|---|
 | `designs/ops.csv` | 57 | The Table-2 operator variants verified in `verification/` (17 operators). `paper_table2_row` maps each to its Table 2 row; `generator_function` and `golden_function` point at the source and the NumPy reference. A bare `<op>.json` is skipped when `<op>__*.json` variants exist. |
-| `designs/modular.csv` | 38 | Design directories behind Table 7: `program` (P1-P3) and `modularized_design` (the paper's "Overall"; contains the shared function(s)). `construction`: generated (the 26 programs, from `designs/configs/modular_designs/`) / manual (the 12 modularized designs; their testbench is built by `verification/merged_designs.py` from their programs' verified inputs). `design_path` is the directory in this repo. Reports: `reports/modular/<domain>/<name>/` holds `csynth.xml` plus one `<function>_csynth.xml` per function (Table 7's "Shared" column sums these). |
-| `designs/modular_cases.csv` | 12 | The 12 rows of Table 7: `reuse_types` (the paper's tiling/functional/arithmetic marks), programs, modularized design, shared functions. |
-| `designs/fullmodel.csv` | 14 | The Table 3 full-scale models: `model`, `variant` (full / tiled / prefill / decode), `format`, `config_path` (designs/configs/fullmodel), `hls_dir` (designs/hls/fullmodel), `csynth`, `csynth_report` (`reports/fullmodel/<name>/csynth.xml` in the release bundle), and the C-simulation runs behind the row (`csim_runs`, `csim_seeds`). Also the registry input of `forgebench.modular_designs.synth` for re-synthesizing them. |
+| `designs/modular.csv` | 38 | Design directories behind Table 10: `program` (P1-P3) and `modularized_design` (the paper's "Overall"; contains the shared function(s)). `construction`: generated (the 26 programs, from `designs/configs/modular_designs/`) / manual (the 12 modularized designs; their testbench is built by `verification/merged_designs.py` from their programs' verified inputs). `design_path` is the directory in this repo. Reports: `reports/modular/<domain>/<name>/` holds `csynth.xml` plus one `<function>_csynth.xml` per function (Table 10's "Shared" column sums these). |
+| `designs/modular_cases.csv` | 12 | The 12 rows of Table 10: `reuse_types` (the paper's tiling/functional/arithmetic marks), programs, modularized design, shared functions. |
+| `designs/fullmodel.csv` | 14 | The Table 5 full-scale models: `model`, `variant` (full / tiled / prefill / decode), `format`, `config_path` (designs/configs/fullmodel), `hls_dir` (designs/hls/fullmodel), `csynth`, `csynth_report` (`reports/fullmodel/<name>/csynth.xml` in the release bundle), and the C-simulation runs behind the row (`csim_runs`, `csim_seeds`). Also the registry input of `forgebench.modular_designs.synth` for re-synthesizing them. |
 
 ## Verification: `verification/*.csv`
 
 One CSV per verification result in the paper ([verification/README.md](../verification/README.md) maps each to its config, run
 script and results folder): `operators.csv` (57 variants x 4 formats x {largest range, +-1}), `cosim.csv`, `catapult.csv`,
 `table7_programs.csv` (26 programs), `table7_modularized.csv` (12 modularized designs x their programs), `fullmodel.csv` (one row
-per Table 3 C-simulation run: 106).
+per Table 5 C-simulation run: 106).
 
 Only designs the paper references are registered. Whole-design configs in `designs/configs/examples/` that are not part
-of Table 7 are shipped as examples (Table 1), not as manifest entries.
+of Table 10 are shipped as examples (Table 1), not as manifest entries.
 
 ## Regenerating
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# C/RTL co-simulation (the co-sim table): the 57 Table-2 variants at +-1, 10 looped input sets, <32,10> and float, RTL vs C element by
+# C/RTL co-simulation (Table 3): the 57 Table-2 variants at +-1, 10 looped input sets, <32,10> and float, RTL vs C element by
 # element. Needs Vitis HLS; run on an idle server (float: conv ~8 h, mha ~16.5 h).
 #   JOBS=16 bash verification/experiments/run_cosim.sh [C_32_10 D_float]
 # Raw outputs -> verification/results_paper/cosim/<config>/; then collect_results.sh.

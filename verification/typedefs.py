@@ -1,4 +1,4 @@
-"""Rebinding the data_t / acc_t / math_t typedefs of a saved design (hand-written modularized designs, Table 7)."""
+"""Rebinding the data_t / acc_t / math_t typedefs of a saved design (hand-written modularized designs, Table 10)."""
 import re
 
 

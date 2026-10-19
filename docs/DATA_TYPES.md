@@ -23,7 +23,7 @@ Rules:
 * **No mode is ever implied.** Without explicit modes the type is truncate (toward -infinity) + wrap (two's complement), the tool default.
   A raw `ap_*` string is passed through to Vitis unchanged, so writing `ap_fixed<16,5>` never changes arithmetic.
 * Modes: quantization `trn | rnd`, overflow `wrap | sat` (case-insensitive). Anything else is an error.
-* The sweep suites (GEMM / DNN / LLM, Tables 4-5) and the modularization suite use `ap_fixed<16,5>`: truncate + wrap.
+* The sweep suites (GEMM / DNN / LLM, Tables 6-8) and the modularization suite use `ap_fixed<16,5>`: truncate + wrap.
   The full-model designs (ResNet, LLaMA) use `ap_fixed<16,5,AP_RND,AP_SAT>` for storage and `ap_fixed<32,10,AP_RND,AP_SAT>` for accumulation.
 * **Vitis limitation:** `hls_math.h` defines its fixed-point overloads (`exp`, `sqrt`, `tanh`, `sin`, `cos`) only for the default modes. A design
   that calls them (softmax, sigmoid, tanh, layernorm, RoPE, ...) does not compile with `rnd`/`sat` in Vitis ("call to 'exp' is ambiguous").

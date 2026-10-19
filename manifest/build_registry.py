@@ -52,7 +52,7 @@ TABLE2_DOMAINS = {
     "dnn": {"conv", "batchnorm", "maxpool", "adaptive_avgpool", "matrix_add", "activation"},
     "llm": {"mha", "swa", "matmul", "layernorm", "rmsnorm", "dropout", "elementwise_mult"},
 }
-REUSE = {"dagger": "tiling", "ddagger": "functional", "ast": "arithmetic"}      # Table 7 footnote marks
+REUSE = {"dagger": "tiling", "ddagger": "functional", "ast": "arithmetic"}      # Table 10 footnote marks
 
 
 def sha256_file(path):
@@ -165,7 +165,7 @@ def modular_reports():
 
 
 def modular_synthesized():
-    """design ids with a Table 7 csynth result (results/modular_designs/csynth_utilization.csv, the <32,10> synthesis)."""
+    """design ids with a Table 10 csynth result (results/modular_designs/csynth_utilization.csv, the <32,10> synthesis)."""
     with open(os.path.join(REPO, "results", "modular_designs", "csynth_utilization.csv"), newline="") as f:
         return {f"modular/{r['category']}/{r['project']}" for r in csv.DictReader(f) if not r["function"]}
 
@@ -204,7 +204,7 @@ def build_modular():
             has_cfg = os.path.isfile(cfg)
             r_ = role.get((cat, name))
             if r_ is None:
-                continue                                  # in no Table 7 test case: not registered
+                continue                                  # in no Table 10 test case: not registered
             if has_cfg:
                 construction = "generated"
             elif r_ == "modularized_design":

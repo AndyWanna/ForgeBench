@@ -8,14 +8,14 @@ Reads a design registry (default manifest/designs/modular.csv), copies each `hls
     python -m forgebench.modular_designs.synth --dry-run
     # 2. run (38 designs; each takes minutes)
     python -m forgebench.modular_designs.synth --jobs 8 --lean-out _sweeps/lean/modular_csynth
-    # 3. recompute the Table 7 inputs from the new reports
+    # 3. recompute the Table 10 inputs from the new reports
     python -m forgebench.modular_designs.parse_reports --reports-root _sweeps/lean/modular_csynth --out _sweeps/modular_r2
     # 4. package for the release bundle (layout modular/<domain>/<name>/...)
     tar -czf checkpoints/r2/csynth_modular_lean.tar.gz -C _sweeps/lean/modular_csynth --transform 's,^,modular/,' .
 
 Lean layout:  <lean-out>/<domain>/<name>/{top.cpp,top.h,tb_top.cpp,run_hls.tcl,vitis_tail.log (failures)}
               <lean-out>/<domain>/<name>/project_1/solution1/syn/report/{csynth.xml,csynth.rpt,<function>_csynth.xml,...}
-The per-function `<function>_csynth.xml` files are needed: Table 7's "Shared" column sums the areas of the shared
+The per-function `<function>_csynth.xml` files are needed: Table 10's "Shared" column sums the areas of the shared
 functions inside each modularized design (see ROWS in forgebench/modular_designs/parse_reports.py).
 """
 import argparse
@@ -97,7 +97,7 @@ def run_one(row, a, shared):
             status = "invalid_report"
         else:
             missing = [fn for fn in shared.get(row["design_id"], []) if not os.path.isfile(os.path.join(rep, f"{fn}_csynth.xml"))]
-            if missing:            # design synthesized, but Table 7's "Shared" column cannot be computed
+            if missing:            # design synthesized, but Table 10's "Shared" column cannot be computed
                 status, notes = "missing_function_reports", ";".join(missing)
 
     os.makedirs(lean, exist_ok=True)

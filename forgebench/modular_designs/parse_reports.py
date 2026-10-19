@@ -22,7 +22,7 @@ REPORT_REL = "project_1/solution1/syn/report"
 REPORTS_ROOT = None
 
 
-# Table 7 reports utilization as (LUT, DSP, BRAM) tuples of device percentages (R1 reported the mean of DSP% and LUT%, which hid
+# Table 10 reports utilization as (LUT, DSP, BRAM) tuples of device percentages (R1 reported the mean of DSP% and LUT%, which hid
 # BRAM), so a cell over 100% shows which resource exceeds the device; Shared / % Reuse / % Change print BRAM as a dot (LUT and DSP
 # only). The CSV keeps all three for every column.
 RESOURCES = [("LUT", "LUT"), ("DSP", "DSP"), ("BRAM", "BRAM_18K")]
@@ -304,7 +304,7 @@ def render_latex(rows):
 
 def main():
     global REPORTS_ROOT, OUTPUT_CSV, OUTPUT_TEX
-    ap = argparse.ArgumentParser(description="Recompute the modularization table (Table 7) from csynth utilization")
+    ap = argparse.ArgumentParser(description="Recompute the modularization table (Table 10) from csynth utilization")
     ap.add_argument("--reports-root", help="lean report root written by forgebench/modular_designs/synth.py; also rewrites "
                                            "results/modular_designs/csynth_utilization.csv (default: read it)")
     ap.add_argument("--out", help="directory for modularization_results.csv/.tex (default: paper_artifacts/out/tables)")

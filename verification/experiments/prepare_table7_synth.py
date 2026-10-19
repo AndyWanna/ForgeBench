@@ -1,4 +1,4 @@
-"""Table 7 synthesis sources: every program and modularized design at <32,10> (truncate/wrap), the format they were verified in,
+"""Table 10 synthesis sources: every program and modularized design at <32,10> (truncate/wrap), the format they were verified in,
 built the same way verification built them:
 
   programs (26)             gen_configs.run_hls_flow on the verified design JSON (results/verification/table7/C_32_10__table7/configs), data_type fixed<32,10>, task csynth
@@ -47,7 +47,7 @@ def rebind(src, dst):
             for name, c in tys.items():
                 text = M.typedef_re(name).sub(f"typedef {c} {name};", text)
             # merged designs copied generated functions with the type spelled out (ap_fixed<16, 5> in signatures/locals); function
-            # names (..._ap_fixed_16_5_) are left alone: Table 7's Shared column looks the per-function reports up by name
+            # names (..._ap_fixed_16_5_) are left alone: Table 10's Shared column looks the per-function reports up by name
             text = OLD_TYPE.sub(tys["data_t"], text)
             open(os.path.join(dst, fn), "w").write(text)
         else:

@@ -2,7 +2,7 @@
 
 Versions of the tools behind the R2 results, as reported by the tools themselves on the machine that ran them.
 
-## Vitis (all sweeps, operator / Table 7 verification)
+## Vitis (all sweeps, operator / Table 10 verification)
 
 | Tool | Version | Source |
 |---|---|---|

@@ -1,6 +1,6 @@
 """Scatter plots for ForgeBench design-space coverage and PPA trade-offs.
 
-- fig4_coverage: reproduces paper Figure 4 (BRAM/DSP/LUT util vs Cycles, plus
+- coverage: reproduces paper Figure 7 (BRAM/DSP/LUT util vs Cycles, plus
   BRAM-vs-DSP util), colored by domain (same panels, log-y and filters as the R1 plotting script).
 - resource_vs_latency: resource util vs end-to-end latency (ns).
 - resource_vs_power: resource util vs total power (needs an impl metrics.csv
@@ -45,15 +45,15 @@ def _filter(df, bram_min=0, bram_max=100, dsp_max=100, lut_max=100, cycles_max=1
     return d[keep.fillna(False)]
 
 
-def fig4_coverage(df=None, out=None, util_log=False, util_min=0.1):
-    """4-panel design-space coverage figure (paper Fig 4; R2 paper Fig 7).
+def coverage(df=None, out=None, util_log=False, util_min=0.1):
+    """4-panel design-space coverage figure (paper Fig 7, fig:design_coverage_analysis).
 
     util_log: utilization axes log-scaled from util_min to 100% (the R2 sweep's designs sit at 0.1-30% of the device, which a linear
     0-100% axis squeezes against the origin); values below util_min (e.g. 0 DSP) are drawn on the util_min edge."""
     if df is None:
         df = _load_default_coverage()
     df = _filter(df)
-    out = out or os.path.join(REPO_ROOT, "paper_artifacts", "out", "figs", "fig4_coverage.png")
+    out = out or os.path.join(REPO_ROOT, "paper_artifacts", "out", "figs", "coverage.png")
     os.makedirs(os.path.dirname(out), exist_ok=True)
 
     panels = [  # (x_col, y_col, title, xlabel, ylabel, ylog)
@@ -163,7 +163,7 @@ def resource_vs_power(df=None, out=None):
 
 
 _PLOTS = {
-    "fig4": fig4_coverage,
+    "coverage": coverage,
     "resource_vs_latency": resource_vs_latency,
     "resource_vs_power": resource_vs_power,
 }
