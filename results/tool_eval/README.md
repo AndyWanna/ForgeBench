@@ -199,6 +199,13 @@ as a ForgeBench config, a data type, and an optional patch against the generated
 `top.cpp` hash is recorded there too. `scripts/minimal_inputs.py` regenerates all inputs
 with ForgeBench's own generator and refuses any hash mismatch. No input is a hand-written kernel.
 
+In every `designs/<id>*/` folder, `config.json` is the config that the folder's sources were
+generated from. For an `ap_fixed` folder this is the sweep config itself. For a `_float` or
+`_edited` folder it is the sweep config with `"data_type": "float"`, and the `_edited` sources then
+have the patch applied on top. `cases.json` records the same input as the unchanged sweep config
+plus `data_type: float`, which is equivalent. `validate.py` checks both forms, and `top.cpp` of
+every folder matches the hash of the input that was run.
+
 ### 2.2 Tool versions
 
 [`versions.json`](versions.json) pins the sources and executable hashes:
