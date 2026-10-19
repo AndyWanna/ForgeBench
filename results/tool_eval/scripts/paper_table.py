@@ -152,7 +152,7 @@ def build():
     run_rows = []
     for run in sorted(used):
         row, spec = runs[run], cases[runs[run]["input"]]
-        archived = f"tool_eval_logs.tar.gz: tool-eval-logs/minimal/{run}/"
+        archived = f"tool_eval_logs.tar.gz: tool-eval-logs/tool_run_log/{run}/"
         run_rows.append({
             "run": run, "tool": row["tool"], "input": row["input"],
             "input_config": spec["config"], "data_type": spec["data_type"], "patch": spec["patch"],

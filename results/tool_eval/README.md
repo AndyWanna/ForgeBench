@@ -656,9 +656,9 @@ Vitis on the original generated designs:
 
 [`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (4.5 MB, 482 files) holds the full redacted
 transcripts of the study behind the paper's table, and of the setup:
-* `minimal/<run>/full.log` for each row of `minimal/results.csv`, and `csynth.xml` when the run
+* `tool_run_log/<run>/full.log` for each row of `minimal/results.csv`, and `csynth.xml` when the run
   synthesized;
-* `minimal/<run>/synth-unchecked.log` and `synth-unchecked-csynth.xml` for each output that
+* `tool_run_log/<run>/synth-unchecked.log` and `synth-unchecked-csynth.xml` for each output that
   `synth_unchecked.py` synthesized;
 * `build-*.log` (tool builds), `control-*.log` (each tool on its own example), `setup-tests/`
   (test runs of the control wrappers, the regeneration check) and `environment-probe.log`.

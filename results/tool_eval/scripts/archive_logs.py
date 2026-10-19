@@ -11,6 +11,12 @@ from common import EVAL, REPO, sanitize, sanitize_xml, sha256, write_json, write
 
 PACKED_DIRS = ("minimal", "setup-tests")
 PACKED_FILES = ("README.txt", "build-", "control-", "environment-probe.log")   # top-level files
+RENAMED = {"minimal": "tool_run_log"}   # staging directory -> name inside the tarball
+
+
+def packed_name(path, archive):
+    parts = path.relative_to(archive).parts
+    return "/".join((RENAMED.get(parts[0], parts[0]),) + parts[1:])
 
 
 def main():
@@ -52,10 +58,11 @@ def main():
         if (work / name).is_file():
             write_text(archive / "setup-tests" / name, sanitize((work / name).read_text(), [(work, "<WORK>")]))
     write_text(archive / "README.txt", "Full redacted transcripts of the tool evaluation (results/tool_eval/).\n"
-               "minimal/: the study behind the paper's table (minimal/cases.json, minimal/results.csv).\n"
-               "  minimal/<run>/full.log: the complete transcript of one row of minimal/results.csv.\n"
-               "  minimal/<run>/csynth.xml: its csynth report, when it synthesized.\n"
-               "  minimal/<run>/synth-unchecked.log and synth-unchecked-csynth.xml: Vitis on output that failed the\n"
+               "tool_run_log/: every tool run of the study behind the paper's table (minimal/cases.json,\n"
+               "  minimal/results.csv in the repository).\n"
+               "  tool_run_log/<run>/full.log: the complete transcript of one row of minimal/results.csv.\n"
+               "  tool_run_log/<run>/csynth.xml: its csynth report, when it synthesized.\n"
+               "  tool_run_log/<run>/synth-unchecked.log and synth-unchecked-csynth.xml: Vitis on output that failed the\n"
                "    functional check (minimal/synth_unchecked.csv).\n"
                "build-*.log: tool builds, including failed setup attempts as well as verified builds.\n"
                "control-*.log: each tool on its own upstream example (control-autosa.log is the row\n"
@@ -76,14 +83,14 @@ def main():
         assert not path.is_symlink()
         content = path.read_text()
         assert sanitize(content) == content, f"Unredacted content: {path.name}"
-        members.append({"path": str(path.relative_to(archive)), "sha256": sha256(path), "bytes": path.stat().st_size})
+        members.append({"path": packed_name(path, archive), "sha256": sha256(path), "bytes": path.stat().st_size})
     write_json(archive / "manifest.json", members)
     out.parent.mkdir(parents=True, exist_ok=True)
     # A fixed gzip timestamp keeps the archive byte-identical across rebuilds.
     with gzip.GzipFile(out, "wb", mtime=0) as compressed, tarfile.open(fileobj=compressed, mode="w") as tar:
         for path in packed + [archive / "manifest.json"]:
             if path.is_file():
-                info = tar.gettarinfo(str(path), arcname="tool-eval-logs/" + str(path.relative_to(archive)))
+                info = tar.gettarinfo(str(path), arcname="tool-eval-logs/" + packed_name(path, archive))
                 info.uid = info.gid = 0
                 info.uname = info.gname = ""
                 info.mtime = 0
