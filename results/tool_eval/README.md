@@ -256,8 +256,9 @@ rows of §1.
 * Every other run, at both levels, has `run.log`, `result.json` and, where code was emitted,
   `check.json` in `minimal/logs/<input>/<tool>/`.
 
-Logs are trimmed to the command, the first error, and the last ~50 lines. Full transcripts are
-in the tarball (§6.2).
+Logs are trimmed to the command, the first error, and the last ~50 lines. The full transcripts
+of the minimal-study runs are in the tarball (§6.2). Those of the primary runs in `logs/` are
+in the earlier, complete tarball, kept in git history (§6.2).
 
 ### 2.5 The modifications behind each ◐ result
 
@@ -649,16 +650,24 @@ Vitis on the original generated designs:
   matched-resource comparisons.
 * **Where the reports are:**
   * `csynth.xml` of the unedited end-to-end designs: `reports/vitis/<id>/`.
-  * `csynth.xml` of every tool run: in the tarball (§6.2).
+  * `csynth.xml` of every minimal-study run that synthesized: in the tarball (§6.2).
 
 ### 6.2 Full logs
 
-The full redacted transcripts (primary runs, controls, builds, every minimal-study run) are in
-[`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (5.4 MB, 562 files). For each row of
-`minimal/results.csv` it holds `minimal/<run>/full.log` and, when the run synthesized,
-`csynth.xml`. For each output synthesized by `synth_unchecked.py` it holds
-`synth-unchecked.log` and `synth-unchecked-csynth.xml`. `setup-tests/` holds the test runs of the
-control wrappers and the regeneration check. The exploratory runs of 16 October are not included: about 2.2 GB of
+[`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (4.5 MB, 482 files) holds the full redacted
+transcripts of the study behind the paper's table, and of the setup:
+* `minimal/<run>/full.log` for each row of `minimal/results.csv`, and `csynth.xml` when the run
+  synthesized;
+* `minimal/<run>/synth-unchecked.log` and `synth-unchecked-csynth.xml` for each output that
+  `synth_unchecked.py` synthesized;
+* `build-*.log` (tool builds), `control-*.log` (each tool on its own example), `setup-tests/`
+  (test runs of the control wrappers, the regeneration check) and `environment-probe.log`.
+
+The earlier transcripts are no longer in it: the primary runs of §2.4 (`fresh/`), their float
+runs (`float/`), the AutoSA header diagnostics (`diagnostic/`), the recovered AutoSA logs
+(`historical/`) and the setup mistakes (`excluded-setup/`). Their excerpts stay committed under
+`logs/`. The complete tarball with all of them (5.4 MB, 562 files, SHA-256 `be3b6b46…9a05`) is the
+version in commit `c79a0ec`: `git show c79a0ec:results/tool_eval/tool_eval_logs.tar.gz > full.tar.gz`. The exploratory runs of 16 October are not included: about 2.2 GB of
 transcripts, made with ad hoc scripts before the committed ones existed. The study was then
 re-run with the committed scripts, and only those runs are reported. `scripts/archive_logs.py`
 builds it outside the repository; the built file is then copied here. Its name, SHA-256, size and
