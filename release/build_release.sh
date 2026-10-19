@@ -14,18 +14,27 @@ PY="${PY:-python3}"
 
 rm -rf "$OUT"; mkdir -p "$OUT"
 
+# Tool-evaluation logs (Case Study 3, tab:tool-support): the full transcripts behind results/tool_eval/ (which is in git),
+# built by results/tool_eval/scripts/archive_logs.py; name, size and SHA-256 are pinned in results/tool_eval/archive.json.
+LOGS="${FORGEBENCH_ARCHIVES:-$ROOT}/checkpoints/r2/tool_eval_logs.tar.gz"
+"$PY" - "$LOGS" results/tool_eval/archive.json <<'PYEOF'
+import hashlib, json, os, sys
+path, meta = sys.argv[1], json.load(open(sys.argv[2]))
+if not os.path.isfile(path):
+    sys.exit(f"missing {path} (tool-evaluation logs, see results/tool_eval/archive.json)")
+h = hashlib.sha256(open(path, "rb").read()).hexdigest()
+if (h, os.path.getsize(path)) != (meta["sha256"], meta["bytes"]):
+    sys.exit(f"{path}: sha256 {h} / {os.path.getsize(path)} bytes, archive.json expects {meta['sha256']} / {meta['bytes']}")
+PYEOF
+
 # configs_<domain>.tar.gz, reports_<domain>.tar.gz (sweeps), reports_modular.tar.gz (tab:modularization_results),
 # reports_fullmodel.tar.gz (tab:ml_model_suite), reports_catapult_vs_vitis.tar.gz (fig:catapult_vs_vitis):
 # the trees the manifest paths describe, regenerated configs + lean reports, machine names scrubbed.
 "$PY" release/assemble_reports.py --out "$OUT"
 rm -rf "$OUT/_tree"
 
-# Tool-evaluation results (Case Study 3, tab:tool-support), once they are in results/tool_eval/.
-if [ -n "$(ls -A results/tool_eval 2>/dev/null)" ]; then
-  tar -czf "$OUT/results_tool_eval.tar.gz" results/tool_eval
-else
-  echo "note: results/tool_eval/ is empty, not bundled"
-fi
+# the tool-evaluation logs, checked above
+cp "$LOGS" "$OUT/tool_eval_logs.tar.gz"
 
 ( cd "$OUT" && find . -maxdepth 1 -type f ! -name SHA256SUMS -printf '%f\n' | sort | xargs sha256sum > SHA256SUMS )
 rm -f release/bundle_files.csv
