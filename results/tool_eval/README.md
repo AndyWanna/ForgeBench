@@ -189,7 +189,7 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | llm | `mha_rope` | AutoSA | ❌ stops at parse | generated `ap_fixed<16,5>` | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
 <!-- END GENERATED: operators -->
 
-## 2. TODO item 1: one piece of evidence per table cell
+## 2. One piece of evidence per table cell
 
 ### 2.1 Designs fed to each tool
 
@@ -228,7 +228,7 @@ every folder matches the hash of the input that was run.
 
 ### 2.3 `summary.csv`
 
-[`summary.csv`](summary.csv) has one row per tool × domain, with the TODO's columns. It rates the
+[`summary.csv`](summary.csv) has one row per tool × domain, with these columns. It rates the
 **whole end-to-end generated designs**:
 * `full` = synthesizes with correct results and no source edit;
 * `half` = the same after the committed non-algorithmic patch;
@@ -386,9 +386,9 @@ design.
   HIDA pipeline option; the source is not changed for it.
 
 
-## 3. TODO item 2: answers to the table questions
+## 3. Answers to the table questions
 
-This section answers the TODO's questions about the table **as first submitted**, whose F1–F6
+This section answers questions about the table **as first submitted**, whose F1–F6
 were different features ("HLS-tool-specific constructs", "dynamic loop nests", and so on). The
 revised table defines F1–F6 as constructs; its marks and their runs are in
 [`table/`](table/README.md).
@@ -512,9 +512,9 @@ Beyond the F-categories, three tool defects decide most cells:
 
    Most C-derived IR violates one of these.
 
-## 4. TODO item 3: per-design outcomes
+## 4. Per-design outcomes
 
-[`outcomes.csv`](outcomes.csv) has one row per design × tool attempt, with the TODO's
+[`outcomes.csv`](outcomes.csv) has one row per design × tool attempt, with the
 columns `design_id,domain,tool,stage_reached,failure_category,error_head`, plus `run`, `patch` and
 `functional_check`. `failure_category` is assigned by explicit rules in
 `scripts/collect_tables.py` (vendor headers → F1, non-affine/run-time bounds → F2, global buffers
@@ -522,7 +522,7 @@ columns `design_id,domain,tool,stage_reached,failure_category,error_head`, plus 
 category explains. `error_head` is the first error line, or "wrong results: max_error …" for
 output that computes the wrong result.
 
-## 5. TODO item 4: re-runnable scripts and environment
+## 5. Re-runnable scripts and environment
 
 **Environment:**
 * Tools are built from the pinned commits by `scripts/checkout_tools.sh` and
@@ -567,7 +567,7 @@ python -m unittest discover -s . -p test_evidence.py && python validate.py
 The primary unedited runs of §2.4 were made with the same runners (`prepare.py`,
 `collect.py`).
 
-## 6. TODO item 5: QoR and full logs
+## 6. QoR and full logs
 
 ### 6.1 Synthesis results
 
@@ -671,12 +671,9 @@ version in commit `c79a0ec`: `git show c79a0ec:results/tool_eval/tool_eval_logs.
 transcripts, made with ad hoc scripts before the committed ones existed. The study was then
 re-run with the committed scripts, and only those runs are reported. `scripts/archive_logs.py`
 builds it outside the repository; the built file is then copied here. Its name, SHA-256, size and
-file count are in [`archive.json`](archive.json), and it is also intended for the Zenodo bundle.
+file count are in [`archive.json`](archive.json), and it is also shipped in the Zenodo bundle.
 
-The TODO asked for this tarball to stay outside git, so that `make bundle`, which packs
-`results/tool_eval/`, stays small. It is committed anyway, at the authors' request. As a result,
-`results/tool_eval/` is about 17 MB with the generated HLS of §6.3, and a bundle built from it
-already contains the logs. `validate.py` keeps the 5 MiB budget for everything except the tarball
+With the tarball and the generated HLS of §6.3, `results/tool_eval/` is about 17 MB. `validate.py` keeps the 5 MiB budget for everything except the tarball
 and `generated_hls/`, checks that the tarball matches `archive.json`, and scans every file inside
 it. Nothing in git, the tarball included, contains local paths, host names, licenses or build
 trees.

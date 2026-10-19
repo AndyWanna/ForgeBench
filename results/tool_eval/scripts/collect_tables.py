@@ -2,7 +2,7 @@
 """Build summary.csv, outcomes.csv and tool_run_log/summary_operators.csv from the run records.
 
 Sources: tool_run_log/results.csv (written by minimal_run.py; every whole-design and single-operator
-run) and tool_run_log/cases.json. Ratings follow the TODO's definitions: `full` = synthesis with
+run) and tool_run_log/cases.json. Ratings: `full` = synthesis with
 correct results and no source edit; `half` = synthesis with correct results after the
 committed non-algorithmic patch; `none` otherwise. Output that synthesizes but computes the
 wrong result is rated `none`. Nothing in these tables is entered by hand.
@@ -92,7 +92,7 @@ def main():
     with (EVAL / "summary.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=["tool", "domain", "designs_tried", "stage_reached", "rating", "notes"], lineterminator="\n")
         writer.writeheader(); writer.writerows(summary)
-    # ---- patches/<tool>/: the edits behind every correct, synthesized result (TODO item 1) ---------
+    # ---- patches/<tool>/: the edits behind every correct, synthesized result ---------
     for r in data:
         if r["functional_check"] == "PASS" and r["stage_reached"] == "synth" and r["patch"]:
             dest = EVAL / "patches" / r["tool"].lower() / (r["patch"].split("/")[-1])
