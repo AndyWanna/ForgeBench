@@ -137,6 +137,32 @@ python -m paper_artifacts.catapult_vs_vitis plot --out _sweeps/catapult_vs_vitis
 
 Results: `results/catapult_vs_vitis/`.
 
+## 4. Runtime and storage
+
+Measured on the runs that produced `results/` (one tool job per design, wall clock; CPU-h is the sum over designs) and, for the
+first three rows, on a 128-core server.
+
+| Step | Designs | Per design | Total |
+|---|---|---|---|
+| `make paper` | — | — | ~10 s |
+| `make check` | 12,144 sweep configs + 35 whole designs | — | ~40 s |
+| `make test` | — | — | ~80 s |
+| Vitis C-synthesis, ML sweeps (Tables 6-8, Figs 6, 7) | 12,144 | median 2.1 / 1.9 / 2.9 min (GEMM / DNN / LLM) | ≈ 500 CPU-h |
+| Vivado implementation, seeded sample (Table 8, Fig 9) | 3,000 selected | median 7.6 / 7.7 / 14.9 min | ≈ 530 CPU-h |
+| Catapult vs Vitis, sampled GEMM (Fig 8) | 1,000 per tool | median 0.9 (Catapult) / 1.0 (Vitis) min | ≈ 20 + 20 CPU-h |
+| Vitis C-synthesis, modularization (Table 10) | 38 | — | 4.6 h |
+| Vitis C-synthesis, full model-level (Table 5) | 14 | Full ResNets 2.3-28.9 h; Tiled ResNets 11 min-2.8 h; Llama-3-8B 43-87 min | 55.8 h + 5.4 h + 4.4 h |
+
+Storage:
+
+| What | Size |
+|---|---|
+| This repository (tracked files) | 70 MB, of which the committed configs `designs/configs/` 58 MB |
+| Generated HLS sources of the ML sweeps (`forgebench generate`) | ≈ 0.4 / 1.7 / 12 MB per design (GEMM / DNN / LLM), ≈ 1.2 / 8.8 / 47 GB for the full suites (measured on a 1-in-60 sample) |
+| Vitis project directories | `--lean-out` keeps only the reports the manifests use; full `project_1/` trees are not kept |
+| Data release on Zenodo | ≈ 300 MB (11 files) |
+| Tool builds for the tool evaluation (Table 9) | ~40 GB outside git (`results/tool_eval/README.md` §5) |
+
 ## Changing a generator
 
 `make regression-save` before and `make regression-compare` after a generator change byte-compares a seeded sample of 252 designs
