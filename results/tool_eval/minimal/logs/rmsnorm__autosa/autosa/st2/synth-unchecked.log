@@ -1,0 +1,20 @@
+command: vitis_hls -f run_hls.tcl
+exit_code: 1
+ERROR: [HLS 207-3801] unknown type name 'sum_sq_t0' (./top_kernel.h:37:43)
+ERROR: [HLS 207-3801] unknown type name 'sum_sq_t0' (top_kernel.cpp:400:43)
+ERROR: [HLS 207-3776] use of undeclared identifier 'sum_sq_t0' (top_kernel.cpp:441:43)
+ERROR: [HLS 207-3776] use of undeclared identifier 'sum_sq_t0' (top_kernel.cpp:441:83)
+ERROR: [HLS 207-3801] unknown type name 'sum_sq_t0' (top_kernel.cpp:445:3)
+[middle omitted; full log in tool_eval_logs.tar.gz]
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_kernel.cpp:1812:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_kernel.cpp:1815:9)
+WARNING: [HLS 207-5538] 'Resource pragma' is deprecated, use 'bind_op/bind_storage pragma' instead (top_kernel.cpp:1818:9)
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:02; Allocated memory: 0.000 MB.
+ 
+    while executing
+"source run_hls.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel \#0 [list source $tclfile] "
+
+INFO: [HLS 200-112] Total CPU user time: 5.43 seconds. Total CPU system time: 1.15 seconds. Total elapsed time: 6.54 seconds; peak allocated memory: 0.000 MB.

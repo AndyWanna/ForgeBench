@@ -5,6 +5,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
@@ -143,6 +144,19 @@ def main():
         if row["rating"] in {"full", "half"}:
             assert result["stage_reached"] == "synth"
             assert (EVAL / "reports" / tools[row["tool"]] / result["design_id"] / "csynth.xml").is_file()
+    # Vitis on the outputs that failed the functional check: one row per such output, read from generated_hls/.
+    with (EVAL / "minimal/synth_unchecked.csv").open() as stream:
+        unchecked = list(csv.DictReader(stream))
+    expected_unchecked = {row["run"] for row in results
+                          if row["level"] != "control" and row["status"] == "codegen_requires_synthesis"}
+    assert {row["run"] for row in unchecked} == expected_unchecked
+    for row in unchecked:
+        assert sha256(EVAL / row["kernel"]) == row["kernel_sha256"], row["run"]
+        assert row["synth"] in {"passed", "failed", "timeout"} and (row["synth"] == "passed") == bool(row["latency_cycles"])
+        assert (EVAL / "minimal/logs" / row["run"] / "synth-unchecked.log").is_file(), row["run"]
+    # The paper's table must be exactly what the records give.
+    subprocess.run([sys.executable, str(EVAL / "scripts/paper_table.py"), "--check"], check=True, capture_output=True)
+
     def check_private(text, where):
         assert not re.search(r"/(?:usr/scratch|export/hdd/scratch|nethome)/", text), where
         assert not re.search(r"[\w.-]+\.ece\.gatech\.edu", text), where

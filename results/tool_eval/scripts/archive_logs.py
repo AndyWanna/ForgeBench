@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Make a redacted log-only tarball outside the public repository."""
 import argparse
+import csv
 import gzip
 import json
 import tarfile
 from pathlib import Path
 
-from common import EVAL, REPO, sanitize, sha256, write_json, write_text
+from common import EVAL, REPO, sanitize, sanitize_xml, sha256, write_json, write_text
 
 
 def main():
@@ -26,6 +27,27 @@ def main():
         for log in sorted(source.rglob("*")):
             if log.is_file():
                 write_text(archive / "minimal" / log.relative_to(source), log.read_text())
+        # The csynth report of every minimal-study run that synthesized: tool output that passed the
+        # functional check (synth_emitted.py) and the Vitis reference runs. synth_unchecked.py
+        # already archived the reports of the outputs that failed the check.
+        runs = args.minimal_work.resolve() / "runs"
+        with (EVAL / "minimal/results.csv").open() as stream:
+            for row in csv.DictReader(stream):
+                if row["status"] != "synth_passed":
+                    continue
+                directory, tool = row["run"].rsplit("/", 1)
+                if row["tool"] == "Vitis":
+                    report = runs / f"{directory}__vitis/vitis/project_1/solution1/syn/report/csynth.xml"
+                else:
+                    report = runs / f"{directory}__{tool}" / tool.split("-")[0] / "csynth.xml"
+                write_text(archive / "minimal" / row["run"] / "csynth.xml",
+                           sanitize_xml(report.read_text(), [(report.parent, "<SYNTH_RUN>"), (runs, "<RUNS>")]))
+    # Test runs of the control wrappers while they were written, and the regeneration check.
+    for name in ["control-autosa-wrapper-test.log", "control-hida-wrapper-test.log", "control-wrapper-test.log",
+                 "control-streamhls-array-only.log", "control-streamhls-directional.log", "control-streamhls-final.log",
+                 "regeneration-check.log"]:
+        if (work / name).is_file():
+            write_text(archive / "setup-tests" / name, sanitize((work / name).read_text(), [(work, "<WORK>")]))
     # Keep excluded setup attempts explicitly separate from benchmark results.
     for name in ["scalehls-empty-selector", "scalehls-missing-resources"]:
         for log in (work / "runs" / name).glob("*/*.log"):
@@ -38,6 +60,11 @@ def main():
                "diagnostic/: explicitly edited/header-mode experiments.\n"
                "excluded-setup/: missing-header or wrong-function-selector attempts; NOT benchmark outcomes.\n"
                "minimal/: the minimal-edit study (whole designs and single operators; see minimal/cases.json).\n"
+               "  minimal/<run>/full.log: the complete transcript of one row of minimal/results.csv.\n"
+               "  minimal/<run>/csynth.xml: its csynth report, when it synthesized.\n"
+               "  minimal/<run>/synth-unchecked.log and synth-unchecked-csynth.xml: Vitis on output that failed the\n"
+               "    functional check (minimal/synth_unchecked.csv).\n"
+               "setup-tests/: test runs of the control wrappers while they were written, and the regeneration check.\n"
                "build*.log: includes failed setup attempts as well as verified builds.\n"
                "No compiler build trees, vendor headers, licenses, credentials, or raw private logs are included.\n")
     members = []

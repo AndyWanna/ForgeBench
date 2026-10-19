@@ -1,0 +1,61 @@
+tool,domain,column,value,runs,note
+ScaleHLS,gemm,Design,half,gemm_0001__edited/scalehls,
+ScaleHLS,gemm,Ops Synth.,6/6,gemm_ijk__local/scalehls;gemm_ikj__local/scalehls;gemm_jik__local/scalehls;gemm_jki__local/scalehls;gemm_kij__local/scalehls;gemm_kji__local/scalehls,
+ScaleHLS,gemm,Ops FV,2/6,gemm_ijk__local/scalehls;gemm_ikj__local/scalehls;gemm_jik__local/scalehls;gemm_jki__local/scalehls;gemm_kij__local/scalehls;gemm_kji__local/scalehls,
+ScaleHLS,dnn,Design,half,dnn_0001__edited/scalehls,
+ScaleHLS,dnn,Ops Synth.,3/3,conv_k1__sunkguard/scalehls;conv_k3p0__sunkguard/scalehls;conv_k3__sunkguard/scalehls,
+ScaleHLS,dnn,Ops FV,3/3,conv_k1__sunkguard/scalehls;conv_k3p0__sunkguard/scalehls;conv_k3__sunkguard/scalehls,
+ScaleHLS,llm,Design,none,llm_0001__float/scalehls,
+ScaleHLS,llm,Ops Synth.,4/4,rmsnorm__local/scalehls;softmax__local/scalehls;mha__attn/scalehls;mha_rope__attn/scalehls,
+ScaleHLS,llm,Ops FV,2/4,rmsnorm__local/scalehls;softmax__local/scalehls;mha__attn/scalehls;mha_rope__attn/scalehls,
+ScaleHLS,,F1,x,gemm_ijk__fixed/scalehls;gemm_ijk__float/scalehls,Every ap_fixed input stops at parse inside the vendor ap_fixed implementation; the same design with the float option parses.
+ScaleHLS,,F2,x,rmsnorm__float/scalehls;rmsnorm__local/scalehls,ScaleHLS turns the written file-scope buffers into constant buffers and crashes; with the declarations moved into top() it compiles the design.
+ScaleHLS,,F3,check,gemm_ikj__local/scalehls,ScaleHLS keeps the interface: its output is checked through the original top() call.
+ScaleHLS,,F4,x,gemm_ijk__local/scalehls;gemm_jik__local/scalehls;gemm_jki__local/scalehls;gemm_kji__local/scalehls;gemm_ikj__local/scalehls;gemm_kij__local/scalehls,ScaleHLS silently miscompiles the four orders in which the reduction loop is not innermost; the two others are correct.
+ScaleHLS,,F5,x,conv_k3__local/scalehls;conv_k3__sunkguard/scalehls,ScaleHLS crashes on the padding guard around the convolution body; with the guard moved onto the innermost statement it is correct.
+ScaleHLS,,F6,check,rmsnorm__local/scalehls;softmax__local/scalehls,ScaleHLS is correct on the scalar accumulators of RMSNorm and softmax as generated (buffers moved into top() only).
+HIDA,gemm,Design,half,gemm_0001__edited/hida,
+HIDA,gemm,Ops Synth.,6/6,gemm_ijk__local/hida;gemm_ikj__local/hida;gemm_jik__local/hida;gemm_jki__local/hida;gemm_kij__local/hida;gemm_kji__local/hida,
+HIDA,gemm,Ops FV,6/6,gemm_ijk__local/hida;gemm_ikj__local/hida;gemm_jik__local/hida;gemm_jki__local/hida;gemm_kij__local/hida;gemm_kji__local/hida,
+HIDA,dnn,Design,half,dnn_0001__edited/hida,
+HIDA,dnn,Ops Synth.,3/3,conv_k1__sunkguard/hida;conv_k3p0__sunkguard/hida;conv_k3__sunkguard/hida,
+HIDA,dnn,Ops FV,3/3,conv_k1__sunkguard/hida;conv_k3p0__sunkguard/hida;conv_k3__sunkguard/hida,
+HIDA,llm,Design,full,llm_0001__edited/hida-noext,
+HIDA,llm,Ops Synth.,4/4,rmsnorm__rowacc_split/hida-noext;softmax__rowacc_split/hida-noext;mha__attn/hida-noext;mha_rope__attn/hida-noext,
+HIDA,llm,Ops FV,4/4,rmsnorm__rowacc_split/hida-noext;softmax__rowacc_split/hida-noext;mha__attn/hida-noext;mha_rope__attn/hida-noext,
+HIDA,,F1,x,gemm_ijk__fixed/hida;gemm_ijk__float/hida,Every ap_fixed input stops at parse inside the vendor ap_fixed implementation; the same design with the float option parses.
+HIDA,,F2,x,gemm_ijk__float/hida;gemm_ijk__local/hida,HIDA turns the written file-scope buffers into constant buffers and crashes; with the declarations moved into top() it compiles the design.
+HIDA,,F3,x,gemm_0001__edited/hida;dnn_0001__edited/hida;mha__attn/hida;mha__attn/hida-noext,"HIDA rewrites the top-level interface: it passes the one-element output port by value, drops unit dimensions, and adds ports for buffers it moves off chip, so the emitted top() cannot be called as the original. The code itself synthesizes (minimal/synth_unchecked.csv)."
+HIDA,,F4,check,gemm_ijk__local/hida;gemm_ikj__local/hida;gemm_jik__local/hida;gemm_jki__local/hida;gemm_kij__local/hida;gemm_kji__local/hida,HIDA is correct for all six GEMM loop orders.
+HIDA,,F5,x,conv_k3__local/hida;conv_k3__sunkguard/hida,HIDA crashes on the padding guard around the convolution body; with the guard moved onto the innermost statement it is correct.
+HIDA,,F6,x,rmsnorm__local/hida;softmax__local/hida;rmsnorm__rowacc_split/hida-noext;softmax__rowacc_split/hida-noext,"HIDA's C++ emitter cannot print the loop-carried value of a scalar accumulator, so its output does not compile; with one array slot per row it is correct."
+AutoSA,gemm,Design,none,gemm_0001__fixed/autosa,
+AutoSA,gemm,Ops Synth.,2/2,gemm_ijk__autosa/autosa/st3;gemm_ikj__autosa/autosa/st3,
+AutoSA,gemm,Ops FV,0/2,gemm_ijk__autosa/autosa/st3;gemm_ikj__autosa/autosa/st3,
+AutoSA,dnn,Design,none,dnn_0001__fixed/autosa,
+AutoSA,dnn,Ops Synth.,2/3,conv_k1__autosa/autosa/st0;conv_k3p0__autosa/autosa/st1;conv_k3__fixed/autosa,
+AutoSA,dnn,Ops FV,0/3,conv_k1__autosa/autosa/st0;conv_k3p0__autosa/autosa/st1;conv_k3__fixed/autosa,
+AutoSA,llm,Design,none,llm_0001__fixed/autosa,
+AutoSA,llm,Ops Synth.,2/4,rmsnorm__autosa/autosa/st0;softmax__autosa/autosa/st0;mha__fixed/autosa;mha_rope__fixed/autosa,
+AutoSA,llm,Ops FV,0/4,rmsnorm__autosa/autosa/st0;softmax__autosa/autosa/st0;mha__fixed/autosa;mha_rope__fixed/autosa,
+AutoSA,,F1,x,gemm_ijk__fixed/autosa;gemm_ijk__float/autosa;gemm_ijk__autosa/autosa/st3,"AutoSA's Clang front end asserts while reading the headers included through ap_fixed.h, which float designs also include (logs/autosa/gemm/headers-only-run.log keeps only those headers and shows the include chain); with the headers removed it parses and builds kernels."
+AutoSA,,F2,check,gemm_ijk__autosa/autosa/st3,"The AutoSA inputs keep the buffers at file scope (the patch only removes headers, adds #pragma scop and rewrites +=); AutoSA builds kernels from them."
+AutoSA,,F3,check,conv_k1__autosa/autosa/st0,"AutoSA's host code keeps the original top() signature: it is compiled and run through the original call, and fails on values, not on the interface."
+AutoSA,,F4,x,gemm_ijk__autosa/autosa/st3;gemm_ikj__autosa/autosa/st3,"AutoSA produces no correct kernel in either of the two loop orders it was given (ijk, ikj). NOT ISOLATED: The two orders give byte-identical kernels (generated_hls/autosa/gemm_i{jk,kj}__autosa/st*/top_kernel.*), so the failure is not caused by loop order; under the caption's definition this mark would be a tick with the failure explained elsewhere."
+AutoSA,,F5,x,conv_k3__autosa_guard/autosa;conv_k3p0__autosa/autosa/st1,AutoSA rejects the guarded convolution with a non-uniform dependence; the unpadded convolution without the guard yields kernels.
+AutoSA,,F6,x,rmsnorm__autosa/autosa/st0;rmsnorm__autosa/autosa/st1;softmax__autosa/autosa/st0;softmax__autosa/autosa/st1,"For the scalar accumulator, AutoSA either declares no FIFO or emits a kernel that hangs."
+StreamHLS,gemm,Design,none,gemm_0001__float/streamhls,
+StreamHLS,gemm,Ops Synth.,2/6,gemm_ijk__float/streamhls;gemm_ikj__local/streamhls;gemm_jik__local/streamhls;gemm_jki__local/streamhls;gemm_kij__local/streamhls;gemm_kji__local/streamhls,
+StreamHLS,gemm,Ops FV,2/6,gemm_ijk__float/streamhls;gemm_ikj__local/streamhls;gemm_jik__local/streamhls;gemm_jki__local/streamhls;gemm_kij__local/streamhls;gemm_kji__local/streamhls,
+StreamHLS,dnn,Design,none,dnn_0001__float/streamhls,
+StreamHLS,dnn,Ops Synth.,3/3,conv_k1__sunkguard/streamhls;conv_k3p0__noguard_reorder/streamhls;conv_k3__sunkguard/streamhls,
+StreamHLS,dnn,Ops FV,2/3,conv_k1__sunkguard/streamhls;conv_k3p0__noguard_reorder/streamhls;conv_k3__sunkguard/streamhls,
+StreamHLS,llm,Design,none,llm_0001__float/streamhls,
+StreamHLS,llm,Ops Synth.,0/4,rmsnorm__float/streamhls;softmax__float/streamhls;mha__float/streamhls;mha_rope__float/streamhls,
+StreamHLS,llm,Ops FV,0/4,rmsnorm__float/streamhls;softmax__float/streamhls;mha__float/streamhls;mha_rope__float/streamhls,
+StreamHLS,,F1,x,gemm_ijk__fixed/streamhls;softmax__fixed/streamhls;gemm_ijk__float/streamhls;softmax__float/streamhls,"Polygeist asserts while lowering ap_private, and rejects hls::exp on an ap_fixed value; the float designs parse."
+StreamHLS,,F2,x,gemm_ijk__float/streamhls;gemm_ijk__local/streamhls,StreamHLS asserts in its constant matcher on the file-scope buffers; with them moved into top() the matcher passes and the design reaches loop permutation.
+StreamHLS,,F3,check,gemm_ikj__local/streamhls,StreamHLS keeps the interface: its output is checked through the original top() call.
+StreamHLS,,F4,x,gemm_ijk__local/streamhls;gemm_jik__local/streamhls;gemm_jki__local/streamhls;gemm_kji__local/streamhls;gemm_ikj__local/streamhls;gemm_kij__local/streamhls,StreamHLS crashes in loop permutation on the four orders in which the reduction loop is not innermost; the two others are correct.
+StreamHLS,,F5,x,conv_k3__sunkguard/streamhls;conv_k3p0__sunkguard/streamhls;conv_k3p0__noguard_reorder/streamhls,"StreamHLS computes wrong results whenever the guard is present, even on the innermost statement; the same unpadded convolution without the guard is correct."
+StreamHLS,,F6,x,rmsnorm__local/streamhls;rmsnorm__rowacc_split/streamhls;rmsnorm__perfect/streamhls;softmax__local/streamhls;softmax__rowacc_split/streamhls;softmax__perfect/streamhls,StreamHLS crashes on the row reductions in every form tried.

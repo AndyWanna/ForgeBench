@@ -4,6 +4,10 @@ This directory backs Table 9 (`tab:tool-support`) of `Forgebench_FPT_Journal_202
 (Case Study 3; `sec/results.tex`, `table/testcases_table.tex`). It covers ScaleHLS, HIDA,
 AutoSA and StreamHLS on ForgeBench-generated GEMM, DNN and LLM designs. 
 
+**The revised table** (Design / Ops Synth. / FV columns and the new F1–F6) is derived cell by
+cell in [`table/`](table/README.md): each cell names its runs, and each run its input, emitted
+code, short logs and full logs.
+
 Every result below comes from a committed command, input and log. All tables inside
 `GENERATED` blocks are produced by [`scripts/report_tables.py`](scripts/report_tables.py) from
 [`minimal/results.csv`](minimal/results.csv) and [`summary.csv`](summary.csv); none is typed by
@@ -27,8 +31,11 @@ Two levels were tested, in all three domains, with all four tools:
 
 "Correct" means the tool's emitted C++ matches the unedited generated `float` design on 5
 random input sets, with max |ref − out| / max(1, |ref|) < 1e-4 over every output element
-(`scripts/minimal_check.py`). Only correct output is synthesized. A tool output that synthesizes
-but computes the wrong result is counted as a failure.
+(`scripts/minimal_check.py`). `scripts/minimal_run.py` synthesizes only correct output.
+`scripts/synth_unchecked.py` then runs the same Vitis flow on every other emitted output. That is
+72 outputs, 44 of which synthesize; see [`minimal/synth_unchecked.csv`](minimal/synth_unchecked.csv).
+The revised table's Synth. column and ◐ cells count these. A tool output that synthesizes but
+computes the wrong result is never counted as correct.
 
 <!-- BEGIN GENERATED: overview -->
 | Tool | GEMM whole end-to-end design | GEMM single op | DNN whole end-to-end design | DNN single ops | LLM whole end-to-end design | LLM single ops |
@@ -380,6 +387,11 @@ design.
 
 ## 3. TODO item 2: answers to the table questions
 
+This section answers the TODO's questions about the table **as first submitted**, whose F1–F6
+were different features ("HLS-tool-specific constructs", "dynamic loop nests", and so on). The
+revised table defines F1–F6 as constructs; its marks and their runs are in
+[`table/`](table/README.md).
+
 ### 3.1 Meaning of the F1–F6 ticks
 
 The prose calls F1–F6 limitation categories, but the header says "HLS Support". Only the
@@ -533,7 +545,9 @@ cd results/tool_eval/scripts
 python minimal_inputs.py --work "$tool_eval_work/minimal"   # regenerate and patch all 67 inputs; checks hashes
 python minimal_run.py --work "$tool_eval_work/minimal" --tools-work "$tool_eval_work" \
   --vitis-include "$VITIS_HLS_INCLUDE" --jobs 12           # every run in minimal/cases.json; resumable
+python synth_unchecked.py --work "$tool_eval_work/minimal" --jobs 16  # Vitis on output that failed the check
 python collect_tables.py && python feature_evidence.py && python report_tables.py --write
+python paper_table.py                                        # the paper's table, cell by cell, into table/
 python collect_generated.py --work "$tool_eval_work/minimal"  # the tools' emitted HLS into generated_hls/
 python -m unittest discover -s . -p test_evidence.py && python validate.py
 ```
@@ -546,6 +560,8 @@ python -m unittest discover -s . -p test_evidence.py && python validate.py
 | `minimal_run.py --only <regex>` | Re-runs any subset of the matrix. |
 | `minimal_check.py` | The functional comparison. It reads the generated `top.h`, so it works for any ForgeBench design. |
 | `collect_generated.py` | Copies each tool's emitted HLS C++ into `generated_hls/` (§6.3). |
+| `synth_unchecked.py` | Synthesizes the emitted code that `minimal_run.py` did not, because it failed the functional check. |
+| `paper_table.py` | Derives every cell of the paper's table into `table/`; `--check` is run by `validate.py`. |
 
 The primary unedited runs of §2.4 were made with the same runners (`prepare.py`,
 `collect.py`).
@@ -638,13 +654,19 @@ Vitis on the original generated designs:
 ### 6.2 Full logs
 
 The full redacted transcripts (primary runs, controls, builds, every minimal-study run) are in
-[`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (2.7 MB, 378 files). `scripts/archive_logs.py`
+[`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (5.4 MB, 562 files). For each row of
+`minimal/results.csv` it holds `minimal/<run>/full.log` and, when the run synthesized,
+`csynth.xml`. For each output synthesized by `synth_unchecked.py` it holds
+`synth-unchecked.log` and `synth-unchecked-csynth.xml`. `setup-tests/` holds the test runs of the
+control wrappers and the regeneration check. The exploratory runs of 16 October are not included: about 2.2 GB of
+transcripts, made with ad hoc scripts before the committed ones existed. The study was then
+re-run with the committed scripts, and only those runs are reported. `scripts/archive_logs.py`
 builds it outside the repository; the built file is then copied here. Its name, SHA-256, size and
 file count are in [`archive.json`](archive.json), and it is also intended for the Zenodo bundle.
 
 The TODO asked for this tarball to stay outside git, so that `make bundle`, which packs
 `results/tool_eval/`, stays small. It is committed anyway, at the authors' request. As a result,
-`results/tool_eval/` is about 14 MB with the generated HLS of §6.3, and a bundle built from it
+`results/tool_eval/` is about 17 MB with the generated HLS of §6.3, and a bundle built from it
 already contains the logs. `validate.py` keeps the 5 MiB budget for everything except the tarball
 and `generated_hls/`, checks that the tarball matches `archive.json`, and scans every file inside
 it. Nothing in git, the tarball included, contains local paths, host names, licenses or build
