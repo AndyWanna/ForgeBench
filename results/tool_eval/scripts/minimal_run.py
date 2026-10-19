@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the minimal-edit study described in minimal/cases.json and write minimal/results.csv.
+"""Run the minimal-edit study described in tool_run_log/cases.json and write tool_run_log/results.csv.
 
 Inputs come from minimal_inputs.py (run it first with the same --work). For each run, the tool's
 pinned runner is invoked (run_mlir.py, run_autosa.py, run_vitis.py). Code that reaches code
@@ -24,7 +24,7 @@ from minimal_check import compile_and_run
 from minimal_inputs import generate_base
 
 SCRIPTS = Path(__file__).resolve().parent
-CASES = EVAL / "minimal/cases.json"
+CASES = EVAL / "tool_run_log/cases.json"
 PY = sys.executable
 FIELDS = ["run", "level", "domain", "input", "data_type", "patch", "tool", "tool_options", "stage_reached", "status",
           "functional_check", "max_error", "latency_cycles", "est_clock_ns", "BRAM_18K", "DSP", "FF", "LUT",
@@ -203,7 +203,7 @@ class Study:
                                                                timeout=600).stdout.splitlines() if "Passed" in l or "Failed" in l), "")
         log = (f"command: control_autosa.sh (upstream autosa_tests/mm, documented --sa-sizes, --host-serialize)\n"
                f"autosa exit_code: {code}\ng++ exit_code: {build.returncode}\nbuilt-in golden check: {verdict}\n")
-        write_text(EVAL / "minimal/logs" / run["id"] / "run.log", sanitize(log))
+        write_text(EVAL / "tool_run_log/logs" / run["id"] / "run.log", sanitize(log))
         return [{"tool": "AutoSA", "level": "control", "domain": "gemm", "input": "autosa_tests/mm (upstream example)",
                  "stage_reached": "codegen" if code == 0 else "", "status": "codegen_requires_synthesis" if code == 0 else "failed",
                  "functional_check": "PASS" if verdict.startswith("Passed") else "FAIL", "detail": verdict}]
@@ -211,7 +211,7 @@ class Study:
     # ---- outputs --------------------------------------------------------------------------------
     def publish(self, run, directory, names):
         """Redacted excerpts into the repository; full transcripts into the external archive."""
-        target = EVAL / "minimal/logs" / run["id"]
+        target = EVAL / "tool_run_log/logs" / run["id"]
         for name in names:
             if (directory / name).is_file():
                 write_text(target / name, sanitize((directory / name).read_text(errors="replace")))
@@ -231,11 +231,11 @@ class Study:
                         if stages:
                             row["stage_reached"] = stages[-1]["stage"]
                     rows.append(row)
-        with (EVAL / "minimal/results.csv").open("w", newline="") as stream:
+        with (EVAL / "tool_run_log/results.csv").open("w", newline="") as stream:
             writer = csv.DictWriter(stream, fieldnames=FIELDS, lineterminator="\n", extrasaction="ignore")
             writer.writeheader()
             writer.writerows({k: str(row.get(k, "")) for k in FIELDS} for row in rows)
-        print(f"{len(rows)} rows in minimal/results.csv")
+        print(f"{len(rows)} rows in tool_run_log/results.csv")
 
 
 def main():

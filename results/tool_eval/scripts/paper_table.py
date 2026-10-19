@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Derive every cell of the paper's tool-support table from the run records; write table/.
 
-Inputs: minimal/results.csv (every tool run), minimal/synth_unchecked.csv (Vitis on the
-outputs that failed the functional check), minimal/cases.json (what each input is), and
+Inputs: tool_run_log/results.csv (every tool run), tool_run_log/synth_unchecked.csv (Vitis on the
+outputs that failed the functional check), tool_run_log/cases.json (what each input is), and
 table/constructs.json (the runs behind each F1-F6 mark, checked here against the records).
 
 Rules, as in the caption:
@@ -63,17 +63,17 @@ F1: vendor fixed-point types; F2: file-scope buffers; F3: top-level interface; \
 
 
 def load():
-    with (EVAL / "minimal/results.csv").open() as stream:
+    with (EVAL / "tool_run_log/results.csv").open() as stream:
         runs = {row["run"]: row for row in csv.DictReader(stream) if row["tool"] != "Vitis" and row["level"] != "control"}
-    with (EVAL / "minimal/synth_unchecked.csv").open() as stream:
+    with (EVAL / "tool_run_log/synth_unchecked.csv").open() as stream:
         extra = {row["run"]: row for row in csv.DictReader(stream)}
     with (EVAL / "generated_hls/index.csv").open() as stream:
         emitted = {row["run"]: row["path"] for row in csv.DictReader(stream)}
     for run, row in runs.items():
         if row["status"] == "synth_passed":
-            row["synth"], row["synth_source"] = "passed", "minimal/results.csv"
+            row["synth"], row["synth_source"] = "passed", "tool_run_log/results.csv"
         elif run in extra:
-            row["synth"], row["synth_source"] = extra[run]["synth"], "minimal/synth_unchecked.csv"
+            row["synth"], row["synth_source"] = extra[run]["synth"], "tool_run_log/synth_unchecked.csv"
             row["latency_cycles"] = row["latency_cycles"] or extra[run]["latency_cycles"]
         else:
             row["synth"], row["synth_source"] = "", ""   # no code was emitted
@@ -148,7 +148,7 @@ def build():
     footnotes = "\n".join(rf"\textsuperscript{{{key}}}{text}" for key, text in FOOTNOTE_TEXT.items())
     table = TEMPLATE.replace("%ROWS%", "".join(rows)).replace("%FOOTNOTES%", footnotes)
 
-    cases = json.loads((EVAL / "minimal/cases.json").read_text())["inputs"]
+    cases = json.loads((EVAL / "tool_run_log/cases.json").read_text())["inputs"]
     run_rows = []
     for run in sorted(used):
         row, spec = runs[run], cases[runs[run]["input"]]
@@ -160,7 +160,7 @@ def build():
             "stage_reached": row["stage_reached"], "status": row["status"], "functional_check": row["functional_check"],
             "synth": row["synth"], "synth_record": row["synth_source"], "latency_cycles": row["latency_cycles"],
             "emitted_code": f"generated_hls/{row['emitted']}/" if row["emitted"] else "",
-            "logs": f"minimal/logs/{run}/", "full_logs": archived})
+            "logs": f"tool_run_log/logs/{run}/", "full_logs": archived})
     return table, cells, run_rows
 
 

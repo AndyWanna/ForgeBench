@@ -22,7 +22,7 @@
    "domain": "gemm",
    "data_type": "float",
    "level": "design",
-   "patch": "minimal/patches/gemm_0001__edited.patch",
+   "patch": "tool_run_log/patches/gemm_0001__edited.patch",
    "sha256": "1abc426745dfbe964efe8718e9d2357cd1be1d2453ce90d58966f5a45bda071d"
   },
   "gemm_0004__fixed": {
@@ -46,7 +46,7 @@
    "domain": "gemm",
    "data_type": "float",
    "level": "design",
-   "patch": "minimal/patches/gemm_0004__edited.patch",
+   "patch": "tool_run_log/patches/gemm_0004__edited.patch",
    "sha256": "50a62c7823067ee380bc003cc8112565de2b29a4618d4cc8b6f9f5de17710667"
   },
   "dnn_0001__fixed": {
@@ -82,7 +82,7 @@
    "domain": "dnn",
    "data_type": "float",
    "level": "design",
-   "patch": "minimal/patches/dnn_0001__edited.patch",
+   "patch": "tool_run_log/patches/dnn_0001__edited.patch",
    "ranges": {
     "DRAM_batch_norm_weights": [
      0.25,
@@ -140,7 +140,7 @@
    "domain": "llm",
    "data_type": "float",
    "level": "design",
-   "patch": "minimal/patches/llm_0001__edited.patch",
+   "patch": "tool_run_log/patches/llm_0001__edited.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -158,7 +158,7 @@
    "sha256": "3fb9d818bd4af4f9b35ac177d310286fe42fa6d7291082d78840d07df384b751"
   },
   "gemm_ijk__fixed": {
-   "config": "results/tool_eval/minimal/configs/gemm_ijk.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_ijk.json",
    "domain": "gemm",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -166,7 +166,7 @@
    "sha256": "8d95f225821a2d2dc0b477db30d7d06d8949ccd472200d704d7287f9eabcf887"
   },
   "gemm_ijk__float": {
-   "config": "results/tool_eval/minimal/configs/gemm_ijk.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_ijk.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
@@ -174,71 +174,71 @@
    "sha256": "b33ab0d462921a70121d3477abf70c1914b375d77b1a6f224662993334111958"
   },
   "gemm_ijk__local": {
-   "config": "results/tool_eval/minimal/configs/gemm_ijk.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_ijk.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_ijk__local.patch",
+   "patch": "tool_run_log/patches/gemm_ijk__local.patch",
    "sha256": "31566425cd028f88d34709708645ddabf326820bf586cc7bf859554c0ae51198"
   },
   "gemm_ikj__local": {
-   "config": "results/tool_eval/minimal/configs/gemm_ikj.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_ikj.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_ikj__local.patch",
+   "patch": "tool_run_log/patches/gemm_ikj__local.patch",
    "sha256": "9848931d2e4c51bd0d665cd629c7a234eacb7b9f48b473a429378a624954b036"
   },
   "gemm_jik__local": {
-   "config": "results/tool_eval/minimal/configs/gemm_jik.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_jik.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_jik__local.patch",
+   "patch": "tool_run_log/patches/gemm_jik__local.patch",
    "sha256": "397e15506fc169f0f97221b0d74e2155b8249304ef07fd065cf19cfc130c3c88"
   },
   "gemm_jki__local": {
-   "config": "results/tool_eval/minimal/configs/gemm_jki.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_jki.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_jki__local.patch",
+   "patch": "tool_run_log/patches/gemm_jki__local.patch",
    "sha256": "ecdf2ad772f25abca69701615501906f1eafaec5042c7bebdc79d98bc475d2f9"
   },
   "gemm_kij__local": {
-   "config": "results/tool_eval/minimal/configs/gemm_kij.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_kij.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_kij__local.patch",
+   "patch": "tool_run_log/patches/gemm_kij__local.patch",
    "sha256": "8c77bfb41276f3a688d38d81c4881f22d1c42af0097c24d395b3bd413131eec1"
   },
   "gemm_kji__local": {
-   "config": "results/tool_eval/minimal/configs/gemm_kji.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_kji.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_kji__local.patch",
+   "patch": "tool_run_log/patches/gemm_kji__local.patch",
    "sha256": "e54a93627e9438e756c1d96c3b9e6de52f2c940a6828b07027d772f529bf29d3"
   },
   "gemm_ijk__autosa": {
-   "config": "results/tool_eval/minimal/configs/gemm_ijk.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_ijk.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_ijk__autosa.patch",
+   "patch": "tool_run_log/patches/gemm_ijk__autosa.patch",
    "sha256": "dc2d94abffd5dc01c07cd6e80ffc499fecc0281566bcc67514c272c81c720e6f"
   },
   "gemm_ikj__autosa": {
-   "config": "results/tool_eval/minimal/configs/gemm_ikj.json",
+   "config": "results/tool_eval/tool_run_log/configs/gemm_ikj.json",
    "domain": "gemm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/gemm_ikj__autosa.patch",
+   "patch": "tool_run_log/patches/gemm_ikj__autosa.patch",
    "sha256": "fc74f09eaf61e778f3ec5145787cb1dd8dcf9d81f06b05b12abca4df745a4d07"
   },
   "conv_k1__fixed": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -246,7 +246,7 @@
    "sha256": "f32c9be295e4c87b7f09bdec9557ae80bc818d2cf7204fde2e97c5f9855dc64b"
   },
   "conv_k1__float": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
@@ -254,23 +254,23 @@
    "sha256": "cfa200b3fb9aa1ef1a8120bed68edc1e7de33ee1c8303117afa8d895f6245657"
   },
   "conv_k1__local": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k1__local.patch",
+   "patch": "tool_run_log/patches/conv_k1__local.patch",
    "sha256": "6ce46de646de097fb33147f43c0894eba2522bb454cf401e295ce750a6160440"
   },
   "conv_k1__sunkguard": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k1__sunkguard.patch",
+   "patch": "tool_run_log/patches/conv_k1__sunkguard.patch",
    "sha256": "5c8c92e2e119297a3b08668500a4e51e58cf5f2c53f0707209f5539c8d5f43d2"
   },
   "conv_k3p0__fixed": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -278,7 +278,7 @@
    "sha256": "6c51ef70835ea521236c8cdb147f864b20cf1c06cea77a6c0fb88d0ceb992198"
   },
   "conv_k3p0__float": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
@@ -286,23 +286,23 @@
    "sha256": "d56d9297b5cb3abea62133b05ff9fd8bd9890bda399502407cba7bd38c193701"
   },
   "conv_k3p0__local": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3p0__local.patch",
+   "patch": "tool_run_log/patches/conv_k3p0__local.patch",
    "sha256": "302160af77e1f3e44e8c295f6a757f56a75effb036d0c684bde44ba9d644868d"
   },
   "conv_k3p0__sunkguard": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3p0__sunkguard.patch",
+   "patch": "tool_run_log/patches/conv_k3p0__sunkguard.patch",
    "sha256": "de2a360bdc7fe87c5fd6e677b65c98807cfedfaf9cd28805fd15a166cb683b58"
   },
   "conv_k3__fixed": {
-   "config": "results/tool_eval/minimal/configs/conv_k3.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3.json",
    "domain": "dnn",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -310,7 +310,7 @@
    "sha256": "0661075e08eb4a09443659e21104a13d6b0050765f126af2287937eb1698cec0"
   },
   "conv_k3__float": {
-   "config": "results/tool_eval/minimal/configs/conv_k3.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
@@ -318,87 +318,87 @@
    "sha256": "9266be340da9cff78c432040abe3bb8a54fc0eeb5b769d0a93e1f5547057dfc6"
   },
   "conv_k3__local": {
-   "config": "results/tool_eval/minimal/configs/conv_k3.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3__local.patch",
+   "patch": "tool_run_log/patches/conv_k3__local.patch",
    "sha256": "4c743cffe20803fc38ca5ca922f05a09943f6064a7f3e575e1d347efee2c39c6"
   },
   "conv_k3__sunkguard": {
-   "config": "results/tool_eval/minimal/configs/conv_k3.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3__sunkguard.patch",
+   "patch": "tool_run_log/patches/conv_k3__sunkguard.patch",
    "sha256": "880dfcef3a0acc42e2bb8e6d29ae8ba3348b444c6d5fa88acf9634f0b0868e06"
   },
   "conv_k1__noguard": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k1__noguard.patch",
+   "patch": "tool_run_log/patches/conv_k1__noguard.patch",
    "sha256": "10bcd6c40483b277a9a76fa87d0f54e4b4e8e5be87e8da176760f34fc9ce4e20"
   },
   "conv_k1__noguard_reorder": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k1__noguard_reorder.patch",
+   "patch": "tool_run_log/patches/conv_k1__noguard_reorder.patch",
    "sha256": "980aa7750c66a59561203b3501dbb2bcd997179882c093240553354cf659ff5f"
   },
   "conv_k1__autosa": {
-   "config": "results/tool_eval/minimal/configs/conv_k1.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k1.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k1__autosa.patch",
+   "patch": "tool_run_log/patches/conv_k1__autosa.patch",
    "sha256": "7fc932690e5374ffd81c0e9482a6bced6f73f54f681eb3c9782ccc4e109c9895"
   },
   "conv_k3p0__noguard": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3p0__noguard.patch",
+   "patch": "tool_run_log/patches/conv_k3p0__noguard.patch",
    "sha256": "22cbf507e80f79fcd35d99604a14a768205d27e2acc4a6a6c0c7ebe82e68f24e"
   },
   "conv_k3p0__noguard_reorder": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3p0__noguard_reorder.patch",
+   "patch": "tool_run_log/patches/conv_k3p0__noguard_reorder.patch",
    "sha256": "6df50bf107fe89d706edf69c8630847429bf94f2e134442c9970126be62b0da2"
   },
   "conv_k3p0__autosa": {
-   "config": "results/tool_eval/minimal/configs/conv_k3p0.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3p0.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3p0__autosa.patch",
+   "patch": "tool_run_log/patches/conv_k3p0__autosa.patch",
    "sha256": "c369ac6b6ff1d53331ab4e8980f24207c8464277470fd21559437e49eca0435b"
   },
   "conv_k3__sunkguard_reorder": {
-   "config": "results/tool_eval/minimal/configs/conv_k3.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3__sunkguard_reorder.patch",
+   "patch": "tool_run_log/patches/conv_k3__sunkguard_reorder.patch",
    "sha256": "7d22459ed1b6138e513e6c9d18833ed32b2c8173246b22b0eec1e3b48be5fb0e"
   },
   "conv_k3__autosa_guard": {
-   "config": "results/tool_eval/minimal/configs/conv_k3.json",
+   "config": "results/tool_eval/tool_run_log/configs/conv_k3.json",
    "domain": "dnn",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/conv_k3__autosa_guard.patch",
+   "patch": "tool_run_log/patches/conv_k3__autosa_guard.patch",
    "sha256": "b74aeab9c3d233dff94022eb95423ba553c9c3598ed56b5198167894fe1742c6"
   },
   "rmsnorm__fixed": {
-   "config": "results/tool_eval/minimal/configs/rmsnorm.json",
+   "config": "results/tool_eval/tool_run_log/configs/rmsnorm.json",
    "domain": "llm",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -406,7 +406,7 @@
    "sha256": "6f72509ca32127246c4fb2ae8357688020b7fe2dc5a7c3a7ad4559ff4027315f"
   },
   "rmsnorm__float": {
-   "config": "results/tool_eval/minimal/configs/rmsnorm.json",
+   "config": "results/tool_eval/tool_run_log/configs/rmsnorm.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
@@ -414,15 +414,15 @@
    "sha256": "e1daf9e4401d37d128478b30f407bf6c74674cf54410e01e64bcce7ac7d81f2e"
   },
   "rmsnorm__local": {
-   "config": "results/tool_eval/minimal/configs/rmsnorm.json",
+   "config": "results/tool_eval/tool_run_log/configs/rmsnorm.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/rmsnorm__local.patch",
+   "patch": "tool_run_log/patches/rmsnorm__local.patch",
    "sha256": "96515976a783490e9539efd655f7d5da8a0b1154803d83cfde31c20cb3b31da1"
   },
   "softmax__fixed": {
-   "config": "results/tool_eval/minimal/configs/softmax.json",
+   "config": "results/tool_eval/tool_run_log/configs/softmax.json",
    "domain": "llm",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -430,7 +430,7 @@
    "sha256": "f976fe11e6053596bdf225f06f89c57d08b47caada7d4c2e88c947fbab2af2d2"
   },
   "softmax__float": {
-   "config": "results/tool_eval/minimal/configs/softmax.json",
+   "config": "results/tool_eval/tool_run_log/configs/softmax.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
@@ -438,15 +438,15 @@
    "sha256": "ad8e9faa738551a10582434a4fc2a05e5f9d9b55fd777d6388a51a64cbf7c6e5"
   },
   "softmax__local": {
-   "config": "results/tool_eval/minimal/configs/softmax.json",
+   "config": "results/tool_eval/tool_run_log/configs/softmax.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/softmax__local.patch",
+   "patch": "tool_run_log/patches/softmax__local.patch",
    "sha256": "8f889d756dcc00e608739de4e22c55cbb8d21c2934b49e66a1876b8fdb0c289d"
   },
   "mha__fixed": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -468,7 +468,7 @@
    "sha256": "b2cc5417877cd24cafe8bd60f0c5520e1f6a2bbe8f561048ae94c32bc7172d2e"
   },
   "mha__float": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
@@ -490,11 +490,11 @@
    "sha256": "4d611a02411f793dcccecc1097eaa7bf56466f9a03fcb9733282503edbbfd419"
   },
   "mha__local": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha__local.patch",
+   "patch": "tool_run_log/patches/mha__local.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -512,7 +512,7 @@
    "sha256": "99f721ecb40add20726064b0fb6c6d3ceabf9506eb16fe0929d9e4c8f6b99bfd"
   },
   "mha_rope__fixed": {
-   "config": "results/tool_eval/minimal/configs/mha_rope.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha_rope.json",
    "domain": "llm",
    "data_type": "ap_fixed<16,5>",
    "level": "operator",
@@ -534,7 +534,7 @@
    "sha256": "573b08a4395683f2fc42f9fd9e6bbb6bc5f1215d5d3aadfee4237abb2f4f51b4"
   },
   "mha_rope__float": {
-   "config": "results/tool_eval/minimal/configs/mha_rope.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha_rope.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
@@ -556,11 +556,11 @@
    "sha256": "359fe2e69f675dc4313d205a08823dc07aec8aed77627dccfa8452342a7fe068"
   },
   "mha_rope__local": {
-   "config": "results/tool_eval/minimal/configs/mha_rope.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha_rope.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha_rope__local.patch",
+   "patch": "tool_run_log/patches/mha_rope__local.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -578,59 +578,59 @@
    "sha256": "3b90344eb124fbcb42e0b109310c5e18e8bbda68bae0a8fa55385e453426734e"
   },
   "rmsnorm__rowacc_split": {
-   "config": "results/tool_eval/minimal/configs/rmsnorm.json",
+   "config": "results/tool_eval/tool_run_log/configs/rmsnorm.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/rmsnorm__rowacc_split.patch",
+   "patch": "tool_run_log/patches/rmsnorm__rowacc_split.patch",
    "sha256": "5bb14f361a218764a85267985b85501c5aaf411b8bb875710c2a9c48d1bb6024"
   },
   "rmsnorm__perfect": {
-   "config": "results/tool_eval/minimal/configs/rmsnorm.json",
+   "config": "results/tool_eval/tool_run_log/configs/rmsnorm.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/rmsnorm__perfect.patch",
+   "patch": "tool_run_log/patches/rmsnorm__perfect.patch",
    "sha256": "9d326ed1302dbe78f868f6495da251f1ef41355f9c1f4466bde3b037f1c64cda"
   },
   "softmax__rowacc_split": {
-   "config": "results/tool_eval/minimal/configs/softmax.json",
+   "config": "results/tool_eval/tool_run_log/configs/softmax.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/softmax__rowacc_split.patch",
+   "patch": "tool_run_log/patches/softmax__rowacc_split.patch",
    "sha256": "f6bef50293199366dfba583e8d0748207824e6b8ace06d3b8a989ed8dff7eaf4"
   },
   "softmax__perfect": {
-   "config": "results/tool_eval/minimal/configs/softmax.json",
+   "config": "results/tool_eval/tool_run_log/configs/softmax.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/softmax__perfect.patch",
+   "patch": "tool_run_log/patches/softmax__perfect.patch",
    "sha256": "bc07e3307c89ca4f80230965e88f1aedb8fe7d715fe6469390ecc7449fa43fff"
   },
   "rmsnorm__autosa": {
-   "config": "results/tool_eval/minimal/configs/rmsnorm.json",
+   "config": "results/tool_eval/tool_run_log/configs/rmsnorm.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/rmsnorm__autosa.patch",
+   "patch": "tool_run_log/patches/rmsnorm__autosa.patch",
    "sha256": "144d0e05fc25d2ae18c55b1429dfe061daeda2e14e8c7ce32dddf58382e50e87"
   },
   "softmax__autosa": {
-   "config": "results/tool_eval/minimal/configs/softmax.json",
+   "config": "results/tool_eval/tool_run_log/configs/softmax.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/softmax__autosa.patch",
+   "patch": "tool_run_log/patches/softmax__autosa.patch",
    "sha256": "0d5fb4cd54e0c786f98fe833ff118cf00aed95cd0d67db95453f207e52bd35f0"
   },
   "mha__attn": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha__attn.patch",
+   "patch": "tool_run_log/patches/mha__attn.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -648,11 +648,11 @@
    "sha256": "db3c1938181b47945f702278ebe7ac02c0cd672ccafa499b1ea7655609b59936"
   },
   "mha__attn_qkvsplit": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha__attn_qkvsplit.patch",
+   "patch": "tool_run_log/patches/mha__attn_qkvsplit.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -670,11 +670,11 @@
    "sha256": "9c9cdc5f56b8fc4f41a248c1400bb5fd36ec606d6192be74ae0a90aa04254c99"
   },
   "mha_rope__attn": {
-   "config": "results/tool_eval/minimal/configs/mha_rope.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha_rope.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha_rope__attn.patch",
+   "patch": "tool_run_log/patches/mha_rope__attn.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -692,11 +692,11 @@
    "sha256": "4756d6b05376196cc1db6a338661ac0f51f0b071b2782c6050c4eb7e8143f7b4"
   },
   "mha_rope__attn_qkvsplit": {
-   "config": "results/tool_eval/minimal/configs/mha_rope.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha_rope.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha_rope__attn_qkvsplit.patch",
+   "patch": "tool_run_log/patches/mha_rope__attn_qkvsplit.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -714,11 +714,11 @@
    "sha256": "b51de97b4cd6cd2c2ed995f1df18e51c915ac0b8bfa10051896015dfc4e78d92"
   },
   "mha__autosa_qkv": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha__autosa_qkv.patch",
+   "patch": "tool_run_log/patches/mha__autosa_qkv.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -736,11 +736,11 @@
    "sha256": "00f0454d1a9c663c53074e5d0f38fc78e02dc0fcdcba1ce07a07508de264277e"
   },
   "mha__autosa_scores": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha__autosa_scores.patch",
+   "patch": "tool_run_log/patches/mha__autosa_scores.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,
@@ -758,11 +758,11 @@
    "sha256": "17befa34f27162a5dbe3869b3edbb988cce07bb27fae6c950233d2975e84364b"
   },
   "mha__noscalar_split": {
-   "config": "results/tool_eval/minimal/configs/mha.json",
+   "config": "results/tool_eval/tool_run_log/configs/mha.json",
    "domain": "llm",
    "data_type": "float",
    "level": "operator",
-   "patch": "minimal/patches/mha__noscalar_split.patch",
+   "patch": "tool_run_log/patches/mha__noscalar_split.patch",
    "ranges": {
     "DRAM_WQ": [
      -0.1,

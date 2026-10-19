@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Synthesize every emitted kernel that minimal_run.py left unsynthesized; write minimal/synth_unchecked.csv.
+"""Synthesize every emitted kernel that minimal_run.py left unsynthesized; write tool_run_log/synth_unchecked.csv.
 
 minimal_run.py synthesizes only code that passes the functional check. The paper's table also
 counts code that synthesizes but fails the check (wrong results, a hang, or an interface the
 check harness cannot call), so this script runs the same Vitis HLS flow as synth_emitted.py on
-every remaining row of minimal/results.csv that reached code generation. It reads the kernels
+every remaining row of tool_run_log/results.csv that reached code generation. It reads the kernels
 from generated_hls/, the byte-identical copy of the tools' output in this repository:
 emitted.cpp with the run's top symbol for ScaleHLS, HIDA and StreamHLS, and top_kernel.cpp with
 kernel0 for AutoSA. Build trees stay in <work>/synth_unchecked/; the redacted full log and
@@ -31,7 +31,7 @@ def pending():
     """Rows that emitted code but were not synthesized, with their kernel in generated_hls/."""
     with (EVAL / "generated_hls/index.csv").open() as stream:
         kernels = {row["run"]: row for row in csv.DictReader(stream)}
-    with (EVAL / "minimal/results.csv").open() as stream:
+    with (EVAL / "tool_run_log/results.csv").open() as stream:
         for row in csv.DictReader(stream):
             if row["level"] == "control" or row["status"] != "codegen_requires_synthesis":
                 continue
@@ -40,7 +40,7 @@ def pending():
                 kernel, top = "top_kernel.cpp", "kernel0"
             else:
                 kernel = "emitted.cpp"
-                top = json.loads((EVAL / "minimal/logs" / row["run"] / "result.json").read_text())["top_symbol"]
+                top = json.loads((EVAL / "tool_run_log/logs" / row["run"] / "result.json").read_text())["top_symbol"]
             yield row, EVAL / "generated_hls" / entry["path"], kernel, top
 
 
@@ -82,7 +82,7 @@ def synth(job, work, timeout):
         result["first_error"] = next((line for line in log.splitlines() if "ERROR" in line), log.splitlines()[-1])[:300]
     # A short excerpt in the repository, next to the run's other logs; the full log is archived.
     lines = log.splitlines()
-    write_text(EVAL / "minimal/logs" / row["run"] / "synth-unchecked.log",
+    write_text(EVAL / "tool_run_log/logs" / row["run"] / "synth-unchecked.log",
                "\n".join(lines[:2] + [line for line in lines if "ERROR" in line][:5]
                          + ["[middle omitted; full log in tool_eval_logs.tar.gz]"] + lines[-12:]) + "\n")
     write_json(record, result)
@@ -102,7 +102,7 @@ def main():
     jobs = list(pending())
     with ThreadPoolExecutor(args.jobs) as pool:
         results = list(pool.map(lambda job: synth(job, work, args.timeout), jobs))
-    with (EVAL / "minimal/synth_unchecked.csv").open("w", newline="") as stream:
+    with (EVAL / "tool_run_log/synth_unchecked.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows({key: result.get(key, "") for key in FIELDS} for result in results)

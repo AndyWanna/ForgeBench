@@ -35,7 +35,7 @@ def main():
     summary = read_csv("summary.csv", ["tool", "domain", "designs_tried", "stage_reached", "rating", "notes"])
     outcomes = read_csv("outcomes.csv", ["design_id", "domain", "tool", "stage_reached", "failure_category", "error_head",
                                          "run", "patch", "functional_check"])
-    results = read_csv("minimal/results.csv", FIELDS)
+    results = read_csv("tool_run_log/results.csv", FIELDS)
     by_run = {row["run"]: row for row in results}
     tools = {"ScaleHLS": "scalehls", "HIDA": "hida", "AutoSA": "autosa", "StreamHLS": "streamhls"}
     expected = {(tool, domain) for tool in tools for domain in ["gemm", "dnn", "llm"]}
@@ -57,7 +57,7 @@ def main():
     for row in outcomes:
         assert row["run"] in by_run, row["run"]
         assert row["failure_category"] in {"", "F1", "F2", "F3", "F4", "F5", "F6"}
-    minimal = json.loads((EVAL / "minimal/cases.json").read_text())
+    minimal = json.loads((EVAL / "tool_run_log/cases.json").read_text())
     for input_id, spec in minimal["inputs"].items():
         assert (REPO / spec["config"]).is_file(), spec["config"]
         if spec["patch"]:
@@ -77,15 +77,15 @@ def main():
     run_ids = {run["id"] for run in minimal["runs"]}
     for row in results:
         assert row["run"] in run_ids or row["run"].rsplit("/", 1)[0] in run_ids, row["run"]
-        logs = EVAL / "minimal/logs" / row["run"]
+        logs = EVAL / "tool_run_log/logs" / row["run"]
         assert (logs / "run.log").is_file(), row["run"]
         if row["functional_check"] == "PASS" and row["tool"] in tools:
             assert json.loads((logs / "check.json").read_text())["verdict"] == "PASS", row["run"]
         if row["stage_reached"] == "synth" and row["tool"] in tools:
             assert row["functional_check"] == "PASS" and row["latency_cycles"], row["run"]
     for patch in (EVAL / "patches").glob("*/*.patch"):
-        if patch.parent.name in tools.values() and patch.name in {p.name for p in (EVAL / "minimal/patches").iterdir()}:
-            assert patch.read_bytes() == (EVAL / "minimal/patches" / patch.name).read_bytes(), patch
+        if patch.parent.name in tools.values() and patch.name in {p.name for p in (EVAL / "tool_run_log/patches").iterdir()}:
+            assert patch.read_bytes() == (EVAL / "tool_run_log/patches" / patch.name).read_bytes(), patch
     for design_id in cases:
         report = EVAL / "reports/vitis" / design_id / "csynth.xml"
         tree = ET.parse(report)
@@ -145,7 +145,7 @@ def main():
             assert result["stage_reached"] == "synth"
             assert (EVAL / "reports" / tools[row["tool"]] / result["design_id"] / "csynth.xml").is_file()
     # Vitis on the outputs that failed the functional check: one row per such output, read from generated_hls/.
-    with (EVAL / "minimal/synth_unchecked.csv").open() as stream:
+    with (EVAL / "tool_run_log/synth_unchecked.csv").open() as stream:
         unchecked = list(csv.DictReader(stream))
     expected_unchecked = {row["run"] for row in results
                           if row["level"] != "control" and row["status"] == "codegen_requires_synthesis"}
@@ -153,7 +153,7 @@ def main():
     for row in unchecked:
         assert sha256(EVAL / row["kernel"]) == row["kernel_sha256"], row["run"]
         assert row["synth"] in {"passed", "failed", "timeout"} and (row["synth"] == "passed") == bool(row["latency_cycles"])
-        assert (EVAL / "minimal/logs" / row["run"] / "synth-unchecked.log").is_file(), row["run"]
+        assert (EVAL / "tool_run_log/logs" / row["run"] / "synth-unchecked.log").is_file(), row["run"]
     # The paper's table must be exactly what the records give.
     subprocess.run([sys.executable, str(EVAL / "scripts/paper_table.py"), "--check"], check=True, capture_output=True)
 

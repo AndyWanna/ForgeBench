@@ -12,9 +12,9 @@ F1–F6 mark, and `paper_table.py` checks every entry of it against the records.
 | [`constructs.json`](constructs.json) | The runs with and without each F1–F6 construct, with the expected status of each |
 
 `python scripts/paper_table.py` rebuilds the three generated files from
-[`../minimal/results.csv`](../minimal/results.csv),
-[`../minimal/synth_unchecked.csv`](../minimal/synth_unchecked.csv),
-[`../minimal/cases.json`](../minimal/cases.json) and `constructs.json`.
+[`../tool_run_log/results.csv`](../tool_run_log/results.csv),
+[`../tool_run_log/synth_unchecked.csv`](../tool_run_log/synth_unchecked.csv),
+[`../tool_run_log/cases.json`](../tool_run_log/cases.json) and `constructs.json`.
 `scripts/validate.py` fails if they are out of date.
 
 ## How a cell is computed
@@ -37,9 +37,9 @@ sets, with a relative error below 1e-4 on every output (`scripts/minimal_check.p
 
 Synthesis comes from two records:
 * `scripts/minimal_run.py` synthesizes only output that passes the check. These runs are in
-  `minimal/results.csv`.
+  `tool_run_log/results.csv`.
 * `scripts/synth_unchecked.py` synthesizes every other emitted output, 72 in all, with the same
-  flow. Their results are in `minimal/synth_unchecked.csv`, and 44 of them synthesize. It reads
+  flow. Their results are in `tool_run_log/synth_unchecked.csv`, and 44 of them synthesize. It reads
   the kernels from `generated_hls/`, which is byte-identical to what the tools wrote.
 
 ## Tracing a cell to its inputs, outputs and logs
@@ -50,7 +50,7 @@ Synthesis comes from two records:
      the input from these and checks `input_top_cpp_sha256`. Whole-design inputs are also
      committed as source in `designs/` (see the main README §2.1).
    * **Emitted code:** `emitted_code`, in `generated_hls/`.
-   * **Short logs:** `logs`, in `minimal/logs/<run>/`. These are `run.log`, `result.json`, and
+   * **Short logs:** `logs`, in `tool_run_log/logs/<run>/`. These are `run.log`, `result.json`, and
      `check.json` when the check ran. When `synth_unchecked.py` synthesized the output, there is
      also `synth-unchecked.log`.
    * **Full logs:** `full_logs`, in `tool_eval_logs.tar.gz`. These are `full.log` (the complete
@@ -79,7 +79,7 @@ Synthesis comes from two records:
 | Tool | GEMM Synth. / FV | DNN Synth. / FV | LLM Synth. / FV |
 |---|---|---|---|
 | ScaleHLS | 6/6 / 2/6. All orders synthesize; only `ikj` and `kij` are correct | 3/3 / 3/3 | 4/4 / 2/4. `mha` and `mha_rope` synthesize but are wrong |
-| HIDA | 6/6 / 6/6 | 3/3 / 3/3 | 4/4 / 4/4. `mha`, `mha_rope`, `rmsnorm` and `softmax` need `place-external-buffer=false` and the patches in `minimal/patches/` |
+| HIDA | 6/6 / 6/6 | 3/3 / 3/3 | 4/4 / 4/4. `mha`, `mha_rope`, `rmsnorm` and `softmax` need `place-external-buffer=false` and the patches in `tool_run_log/patches/` |
 | AutoSA | 2/2 / 0/2. Two orders run; st3 synthesizes in both but is wrong | 2/3 / 0/3. `conv_k3` yields no kernel | 2/4 / 0/4. `rmsnorm` and `softmax` st0 synthesize but hang in C simulation; `mha` and `mha_rope` yield no kernel |
 | StreamHLS | 2/6 / 2/6. The other four orders crash in loop permutation | 3/3 / 2/3. Padded `conv_k3` synthesizes but is wrong | 0/4 / 0/4. Every form crashes at transform |
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Publish the HLS C++ each tool emitted in the minimal-edit study into generated_hls/.
 
-Every row of minimal/results.csv that reached code generation gets one directory,
+Every row of tool_run_log/results.csv that reached code generation gets one directory,
 generated_hls/<tool>/<input>[__noext][/stN]/, holding what the tool wrote: emitted.cpp for
 ScaleHLS, HIDA and StreamHLS; the kernel, its header and the host code for each AutoSA
 space-time candidate. Files are redacted with common.sanitize. generated_hls/index.csv links
@@ -43,7 +43,7 @@ def main():
     if OUT.exists():
         shutil.rmtree(OUT)
     index = []
-    with (EVAL / "minimal/results.csv").open() as stream:
+    with (EVAL / "tool_run_log/results.csv").open() as stream:
         for row in csv.DictReader(stream):
             if row["tool"] == "Vitis" or row["stage_reached"] not in {"codegen", "synth"}:
                 continue

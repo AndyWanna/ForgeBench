@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the README's result tables (Markdown) from summary.csv and minimal/results.csv.
+"""Render the README's result tables (Markdown) from summary.csv and tool_run_log/results.csv.
 
 With --write, each table replaces the block between `<!-- BEGIN GENERATED: name -->` and
 `<!-- END GENERATED: name -->` in README.md, so the report's numbers always come from the records.
@@ -175,8 +175,8 @@ def features(rows, cases):
 
 
 def tables():
-    rows = read("minimal/results.csv")
-    cases = json.loads((EVAL / "minimal/cases.json").read_text())
+    rows = read("tool_run_log/results.csv")
+    cases = json.loads((EVAL / "tool_run_log/cases.json").read_text())
     return {name: "\n".join(fn(rows, cases)) + "\n"
             for name, fn in [("overview", overview), ("whole", whole), ("operators", operators), ("summary", summary),
                              ("features", features), ("qor", qor)]}

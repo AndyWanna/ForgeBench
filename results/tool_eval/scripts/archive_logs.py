@@ -40,7 +40,7 @@ def main():
         # functional check (synth_emitted.py) and the Vitis reference runs. synth_unchecked.py
         # already archived the reports of the outputs that failed the check.
         runs = args.minimal_work.resolve() / "runs"
-        with (EVAL / "minimal/results.csv").open() as stream:
+        with (EVAL / "tool_run_log/results.csv").open() as stream:
             for row in csv.DictReader(stream):
                 if row["status"] != "synth_passed":
                     continue
@@ -58,15 +58,15 @@ def main():
         if (work / name).is_file():
             write_text(archive / "setup-tests" / name, sanitize((work / name).read_text(), [(work, "<WORK>")]))
     write_text(archive / "README.txt", "Full redacted transcripts of the tool evaluation (results/tool_eval/).\n"
-               "tool_run_log/: every tool run of the study behind the paper's table (minimal/cases.json,\n"
-               "  minimal/results.csv in the repository).\n"
-               "  tool_run_log/<run>/full.log: the complete transcript of one row of minimal/results.csv.\n"
+               "tool_run_log/: every tool run of the study behind the paper's table (tool_run_log/cases.json,\n"
+               "  tool_run_log/results.csv in the repository).\n"
+               "  tool_run_log/<run>/full.log: the complete transcript of one row of tool_run_log/results.csv.\n"
                "  tool_run_log/<run>/csynth.xml: its csynth report, when it synthesized.\n"
                "  tool_run_log/<run>/synth-unchecked.log and synth-unchecked-csynth.xml: Vitis on output that failed the\n"
-               "    functional check (minimal/synth_unchecked.csv).\n"
+               "    functional check (tool_run_log/synth_unchecked.csv).\n"
                "build-*.log: tool builds, including failed setup attempts as well as verified builds.\n"
                "control-*.log: each tool on its own upstream example (control-autosa.log is the row\n"
-               "  autosa_control_mm/autosa of minimal/results.csv).\n"
+               "  autosa_control_mm/autosa of tool_run_log/results.csv).\n"
                "setup-tests/: test runs of the control wrappers while they were written, and the regeneration check.\n"
                "environment-probe.log: the machine and tool environment.\n"
                "No compiler build trees, vendor headers, licenses, credentials, or raw private logs are included.\n")

@@ -1,5 +1,5 @@
 {
-  "about": "Evidence behind each F1-F6 mark of the paper's table. 'with' runs contain the construct as generated; 'without' runs differ from them by removing it. Each entry is [run in minimal/results.csv, expected status, expected functional_check, substring of error_head or detail]. paper_table.py checks every entry against the records.",
+  "about": "Evidence behind each F1-F6 mark of the paper's table. 'with' runs contain the construct as generated; 'without' runs differ from them by removing it. Each entry is [run in tool_run_log/results.csv, expected status, expected functional_check, substring of error_head or detail]. paper_table.py checks every entry against the records.",
   "features": {
     "F1": "vendor fixed-point types",
     "F2": "file-scope buffers",
@@ -47,7 +47,7 @@
      "without": []},
 
     {"tool": "HIDA", "feature": "F3", "mark": "x",
-     "claim": "HIDA rewrites the top-level interface: it passes the one-element output port by value, drops unit dimensions, and adds ports for buffers it moves off chip, so the emitted top() cannot be called as the original. The code itself synthesizes (minimal/synth_unchecked.csv).",
+     "claim": "HIDA rewrites the top-level interface: it passes the one-element output port by value, drops unit dimensions, and adds ports for buffers it moves off chip, so the emitted top() cannot be called as the original. The code itself synthesizes (tool_run_log/synth_unchecked.csv).",
      "with": [["gemm_0001__edited/hida", "codegen_requires_synthesis", "COMPILE_ERROR", "cannot convert ‘float*’ to ‘float’"],
               ["dnn_0001__edited/hida", "codegen_requires_synthesis", "COMPILE_ERROR", "cannot convert ‘float (*)[16][1][1]’"],
               ["mha__attn/hida", "codegen_requires_synthesis", "COMPILE_ERROR", "too few arguments"]],
