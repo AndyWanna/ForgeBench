@@ -110,7 +110,7 @@ The raw tool reports are archived on Zenodo: [doi:10.5281/zenodo.23425257](https
 | `reports_modular.tar.gz` | csynth reports of the 38 modularization designs, with one `<function>_csynth.xml` per function |
 | `reports_fullmodel.tar.gz` | `csynth.xml` / `csynth.rpt` of the 14 full model-level designs |
 | `reports_catapult_vs_vitis.tar.gz` | Catapult `rtl.rpt` and Vitis `csynth.xml` of the 1,000 GEMM designs of the Catapult comparison |
-| `tool_eval_logs.tar.gz` | full logs of the source-to-source tool evaluation (Table 9); the results, inputs and trimmed logs are in `results/tool_eval/` |
+| `tool_eval_logs.tar.gz` | full logs of the source-to-source tool evaluation (Table 9), also committed as `results/tool_eval/tool_eval_logs.tar.gz` next to the results, inputs, emitted HLS and short logs |
 | `SHA256SUMS` | checksums of the files above (`sha256sum -c SHA256SUMS`); each tarball also contains a SHA256SUMS of its members |
 
 Extract the tarballs next to each other and every report path in `manifest/designs/*.csv` resolves. The machine name in the tool

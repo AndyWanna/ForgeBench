@@ -14,9 +14,9 @@ PY="${PY:-python3}"
 
 rm -rf "$OUT"; mkdir -p "$OUT"
 
-# Tool-evaluation logs (Case Study 3, tab:tool-support): the full transcripts behind results/tool_eval/ (which is in git),
-# built by results/tool_eval/scripts/archive_logs.py; name, size and SHA-256 are pinned in results/tool_eval/archive.json.
-LOGS="${FORGEBENCH_ARCHIVES:-$ROOT}/checkpoints/r2/tool_eval_logs.tar.gz"
+# Tool-evaluation logs (Case Study 3, tab:tool-support): the full transcripts behind results/tool_eval/, committed there
+# by results/tool_eval/scripts/archive_logs.py; name, size and SHA-256 are pinned in results/tool_eval/archive.json.
+LOGS=results/tool_eval/tool_eval_logs.tar.gz
 "$PY" - "$LOGS" results/tool_eval/archive.json <<'PYEOF'
 import hashlib, json, os, sys
 path, meta = sys.argv[1], json.load(open(sys.argv[2]))
