@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fetch the exact revisions used for the fresh evaluation. No global git config.
+# Fetch the exact revisions used for the evaluation (versions.json). No global git config.
 set -euo pipefail
 tool_eval_work=${1:?Usage: checkout_tools.sh EXTERNAL_WORK_DIRECTORY}
 mkdir -p "$tool_eval_work/tools"

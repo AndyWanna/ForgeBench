@@ -1,6 +1,6 @@
 {
   "generator_commit": "6b7c510dcc8db43bfcc269da6348dd84b135f082",
-  "selection": "First manifest design in each domain; a three-design smoke test, not the historical evaluation cohort.",
+  "selection": "The first design of each domain in manifest/designs/: the base designs of the ML test suite.",
   "cases": [
     {
       "design_id": "gemm_0001",

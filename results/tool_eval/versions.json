@@ -31,6 +31,5 @@
     "ScaleHLS/HIDA": "16.0.0git",
     "StreamHLS backend": "18.1.2",
     "StreamHLS Polygeist frontend": "18.0.0git"
-  },
-  "historical_tool_commits": "unknown; these pins describe the fresh evaluation only"
+  }
 }

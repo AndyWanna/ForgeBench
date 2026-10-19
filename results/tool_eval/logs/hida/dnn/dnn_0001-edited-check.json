@@ -1,5 +1,0 @@
-{
-  "verdict": "COMPILE_ERROR",
-  "max_error": "",
-  "detail": "<TMP>/cand.cpp:407:258: error: cannot convert \u2018float (*)[16][1][1]\u2019 to \u2018float (*)[16]\u2019"
-}

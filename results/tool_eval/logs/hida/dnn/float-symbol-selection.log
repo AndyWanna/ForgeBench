@@ -1,4 +1,0 @@
-command: clang++ -fsyntax-only -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -Xclang -ast-dump=json -Xclang -ast-dump-filter=top <DESIGN>/top.cpp
-exit_code: 0
-source_top: top
-selected_symbol: _Z3topPA56_A56_fPA16_A1_A1_fPfPA16_fPA58_A58_f

@@ -70,9 +70,7 @@ def main():
                "setup-tests/: test runs of the control wrappers while they were written, and the regeneration check.\n"
                "environment-probe.log: the machine and tool environment.\n"
                "No compiler build trees, vendor headers, licenses, credentials, or raw private logs are included.\n")
-    # Only the study behind the table and the setup are packed. The earlier primary, float, diagnostic,
-    # historical and excluded-setup transcripts stay in the staging directory and in the previous
-    # tarball (git history); their excerpts are committed under logs/.
+    # Only the runs behind the table and the setup are packed.
     packed = []
     for path in sorted(archive.rglob("*")):
         parts = path.relative_to(archive).parts
@@ -97,8 +95,8 @@ def main():
                 with path.open("rb") as stream:
                     tar.addfile(info, stream)
     write_json(EVAL / "archive.json", {"filename": out.name, "sha256": sha256(out), "bytes": out.stat().st_size,
-               "files": len(members) + 1, "contents": "Full redacted logs of the minimal-edit study behind the paper's table, plus tool builds, controls and setup tests",
-               "distribution": "Committed next to archive.json (built outside the repository, then copied in); also intended for the Zenodo bundle. No public DOI assigned yet."})
+               "files": len(members) + 1, "contents": "Full redacted logs of every tool run behind Table 9 (tab:tool-support), plus tool builds, controls and setup tests",
+               "distribution": "Committed next to archive.json and included in the Zenodo release."})
     print(json.dumps({"filename": out.name, "sha256": sha256(out), "bytes": out.stat().st_size}))
 
 

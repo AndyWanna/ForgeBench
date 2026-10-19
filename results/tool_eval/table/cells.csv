@@ -1,5 +1,5 @@
 tool,domain,column,value,runs,note
-ScaleHLS,gemm,Design,half,gemm_0001__edited/scalehls,
+ScaleHLS,gemm,Design,full,gemm_0004__edited/scalehls,
 ScaleHLS,gemm,Ops Synth.,6/6,gemm_ijk__local/scalehls;gemm_ikj__local/scalehls;gemm_jik__local/scalehls;gemm_jki__local/scalehls;gemm_kij__local/scalehls;gemm_kji__local/scalehls,
 ScaleHLS,gemm,Ops FV,2/6,gemm_ijk__local/scalehls;gemm_ikj__local/scalehls;gemm_jik__local/scalehls;gemm_jki__local/scalehls;gemm_kij__local/scalehls;gemm_kji__local/scalehls,
 ScaleHLS,dnn,Design,half,dnn_0001__edited/scalehls,
@@ -38,10 +38,10 @@ AutoSA,dnn,Ops FV,0/3,conv_k1__autosa/autosa/st0;conv_k3p0__autosa/autosa/st1;co
 AutoSA,llm,Design,none,llm_0001__fixed/autosa,
 AutoSA,llm,Ops Synth.,2/4,rmsnorm__autosa/autosa/st0;softmax__autosa/autosa/st0;mha__fixed/autosa;mha_rope__fixed/autosa,
 AutoSA,llm,Ops FV,0/4,rmsnorm__autosa/autosa/st0;softmax__autosa/autosa/st0;mha__fixed/autosa;mha_rope__fixed/autosa,
-AutoSA,,F1,x,gemm_ijk__fixed/autosa;gemm_ijk__float/autosa;gemm_ijk__autosa/autosa/st3,"AutoSA's Clang front end asserts while reading the headers included through ap_fixed.h, which float designs also include (logs/autosa/gemm/headers-only-run.log keeps only those headers and shows the include chain); with the headers removed it parses and builds kernels."
+AutoSA,,F1,x,gemm_ijk__fixed/autosa;gemm_ijk__float/autosa;gemm_ijk__autosa/autosa/st3,"AutoSA's Clang front end asserts while reading the headers included through ap_fixed.h, which float designs also include; with the headers removed it parses and builds kernels."
 AutoSA,,F2,check,gemm_ijk__autosa/autosa/st3,"The AutoSA inputs keep the buffers at file scope (the patch only removes headers, adds #pragma scop and rewrites +=); AutoSA builds kernels from them."
 AutoSA,,F3,check,conv_k1__autosa/autosa/st0,"AutoSA's host code keeps the original top() signature: it is compiled and run through the original call, and fails on values, not on the interface."
-AutoSA,,F4,x,gemm_ijk__autosa/autosa/st3;gemm_ikj__autosa/autosa/st3,"AutoSA produces no correct kernel in either of the two loop orders it was given (ijk, ikj). NOT ISOLATED: The two orders give byte-identical kernels (generated_hls/autosa/gemm_i{jk,kj}__autosa/st*/top_kernel.*), so the failure is not caused by loop order; under the caption's definition this mark would be a tick with the failure explained elsewhere."
+AutoSA,,F4,x,gemm_ijk__autosa/autosa/st3;gemm_ikj__autosa/autosa/st3,"AutoSA produces no correct kernel in either of the two loop orders it was given (ijk, ikj). Note: The two orders give byte-identical kernels (generated_hls/autosa/gemm_i{jk,kj}__autosa/st*/top_kernel.*), so this failure is not specific to loop order."
 AutoSA,,F5,x,conv_k3__autosa_guard/autosa;conv_k3p0__autosa/autosa/st1,AutoSA rejects the guarded convolution with a non-uniform dependence; the unpadded convolution without the guard yields kernels.
 AutoSA,,F6,x,rmsnorm__autosa/autosa/st0;rmsnorm__autosa/autosa/st1;softmax__autosa/autosa/st0;softmax__autosa/autosa/st1,"For the scalar accumulator, AutoSA either declares no FIFO or emits a kernel that hangs."
 StreamHLS,gemm,Design,none,gemm_0001__float/streamhls,

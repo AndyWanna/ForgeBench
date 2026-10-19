@@ -24,7 +24,7 @@
      "without": [["gemm_ijk__float/streamhls", "transform_failed", "", ""],
                  ["softmax__float/streamhls", "transform_failed", "", ""]]},
     {"tool": "AutoSA", "feature": "F1", "mark": "x",
-     "claim": "AutoSA's Clang front end asserts while reading the headers included through ap_fixed.h, which float designs also include (logs/autosa/gemm/headers-only-run.log keeps only those headers and shows the include chain); with the headers removed it parses and builds kernels.",
+     "claim": "AutoSA's Clang front end asserts while reading the headers included through ap_fixed.h, which float designs also include; with the headers removed it parses and builds kernels.",
      "with": [["gemm_ijk__fixed/autosa", "frontend_assertion", "", "NamedDecl::getName"],
               ["gemm_ijk__float/autosa", "frontend_assertion", "", "NamedDecl::getName"]],
      "without": [["gemm_ijk__autosa/autosa/st3", "codegen_requires_synthesis", "FAIL", ""]]},
@@ -83,7 +83,7 @@
      "without": [["gemm_ikj__local/streamhls", "synth_passed", "PASS", ""], ["gemm_kij__local/streamhls", "synth_passed", "PASS", ""]]},
     {"tool": "AutoSA", "feature": "F4", "mark": "x",
      "claim": "AutoSA produces no correct kernel in either of the two loop orders it was given (ijk, ikj).",
-     "not_isolated": "The two orders give byte-identical kernels (generated_hls/autosa/gemm_i{jk,kj}__autosa/st*/top_kernel.*), so the failure is not caused by loop order; under the caption's definition this mark would be a tick with the failure explained elsewhere.",
+     "not_isolated": "The two orders give byte-identical kernels (generated_hls/autosa/gemm_i{jk,kj}__autosa/st*/top_kernel.*), so this failure is not specific to loop order.",
      "with": [["gemm_ijk__autosa/autosa/st3", "codegen_requires_synthesis", "FAIL", ""], ["gemm_ikj__autosa/autosa/st3", "codegen_requires_synthesis", "FAIL", ""]],
      "without": []},
 

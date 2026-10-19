@@ -1,7 +1,0 @@
-+ <WORK>/build/scale/bin/cgeist <WORK><PATH>/test_gemm.c -function=test_gemm -S -memref-fullrank -raise-scf-to-affine -o <CONTROL>/parsed.mlir
-+ case "$tool" in
-+ <WORK>/build/scale/bin/scalehls-opt <CONTROL>/parsed.mlir '-scalehls-dse-pipeline=top-func=test_gemm target-spec=<WORK><PATH>/config.json' -o <CONTROL>/transformed.mlir
-+ <WORK>/build/scale/bin/scalehls-translate <CONTROL>/transformed.mlir -scalehls-emit-hlscpp -o <CONTROL>/emitted.cpp
-+ test -s <CONTROL>/emitted.cpp
-+ printf 'CONTROL PASS: upstream float GEMM imported, transformed and emitted HLS C++.\n'
-CONTROL PASS: upstream float GEMM imported, transformed and emitted HLS C++.

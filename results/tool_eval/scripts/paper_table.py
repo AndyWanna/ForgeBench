@@ -7,8 +7,9 @@ table/constructs.json (the runs behind each F1-F6 mark, checked here against the
 
 Rules, as in the caption:
 * Design: the base design of each domain (gemm_0001, dnn_0001, llm_0001), over every input the
-  tool was given for it. Full when a run synthesizes and passes the functional check, half
-  when a run's output synthesizes, empty otherwise.
+  tool was given for it; for GEMM also its ji loop-order version gemm_0004 (footnote b when the
+  cell rests on it). Full when a run synthesizes and passes the functional check, half when a
+  run's output synthesizes, empty otherwise.
 * Ops: the single-operator designs the tool was given. An operator counts under Synth. when
   the output of at least one of its inputs synthesizes, and under FV when one of them also
   passes the functional check. Both counts are bold when every evaluated operator passes FV.
@@ -27,20 +28,23 @@ from common import EVAL
 
 TOOLS = [("ScaleHLS", "yeScaleHLSScalableHighlevel2022a"), ("HIDA", "yeHIDAHierarchicalDataflow2024a"),
          ("AutoSA", "wangAutoSAPolyhedralCompiler2021a"), ("StreamHLS", "basalamaStreamHLSAutomaticDataflow2025a")]
-DOMAINS = {"gemm": ("gemm_0001", ["gemm_ijk", "gemm_ikj", "gemm_jik", "gemm_jki", "gemm_kij", "gemm_kji"]),
-           "dnn": ("dnn_0001", ["conv_k1", "conv_k3p0", "conv_k3"]),
-           "llm": ("llm_0001", ["rmsnorm", "softmax", "mha", "mha_rope"])}
+DOMAINS = {"gemm": (("gemm_0001", "gemm_0004"), ["gemm_ijk", "gemm_ikj", "gemm_jik", "gemm_jki", "gemm_kij", "gemm_kji"]),
+           "dnn": (("dnn_0001",), ["conv_k1", "conv_k3p0", "conv_k3"]),
+           "llm": (("llm_0001",), ["rmsnorm", "softmax", "mha", "mha_rope"])}
 STAGES = ["", "parse", "transform", "codegen", "synth"]
 CIRCLE = {"full": r"\fullcirc{}", "half": r"\halfcirc{}", "none": r"\emptycirc{}"}
 FOOTNOTES = {("AutoSA", "gemm"): "a"}
+MARK = {"a": r"$^\dagger$", "b": r"$^\ddagger$"}   # as in the paper
 FOOTNOTE_TEXT = {"a": "AutoSA was run on two of the six GEMM loop orders (reduction loop innermost and not "
-                      "innermost); it reschedules the loop nest itself and emitted identical kernels for both."}
+                      "innermost); it reschedules the loop nest itself and emitted identical kernels for both.",
+                 "b": r"The base design \texttt{gemm\_0001} synthesizes but computes wrong results; its \texttt{ji} "
+                      r"loop-order version (\texttt{gemm\_0004}) passes."}
 TEMPLATE = r"""\begin{table*}[t]
 \centering
 \caption{\new{m4}{1}{Support of source-to-source HLS tools for \thiswork{} designs, using the \texttt{float} option with minor edits. \emph{Design}: base design of the ML test suite ($\S$.~\ref{sec:ml_testsuite}); \fullcirc{} passes functional verification, \halfcirc{} synthesizes but fails functional verification, \emptycirc{} fails before synthesis. \emph{Ops}: single-operator designs that synthesize (\emph{Synth.}) and that pass functional verification (\emph{FV}), out of those evaluated; bold when all pass. F1--F6: whether the tool handles (\cmark) or fails on (\xmark) each construct.}}
 \label{tab:tool-support}
 \resizebox{\textwidth}{!}{%
-\todofloat{
+\revfloat{
 \begin{tabular}{l ccc ccc ccc | cccccc}
 \toprule
 \multirow{3}{*}{\textbf{Tool}} & \multicolumn{3}{c}{\textbf{GEMM}} & \multicolumn{3}{c}{\textbf{DNN}} & \multicolumn{3}{c}{\textbf{LLM}} & \multicolumn{6}{c}{\textbf{Constructs}} \\
@@ -87,11 +91,16 @@ def rank(row):
     return (row["fv"], row["synth"] == "passed", bool(row["emitted"]), STAGES.index(row["stage_reached"]))
 
 
-def design_cell(runs, tool, base):
-    tried = [row for row in runs.values() if row["tool"] == tool and row["input"].startswith(base + "__")]
-    best = max(tried, key=rank)
-    value = "full" if best["fv"] else "half" if best["synth"] == "passed" else "none"
-    return value, [best["run"]]
+def design_cell(runs, tool, bases):
+    """Best run over the base design and (GEMM) its loop-order version; the note is "b" when the
+    cell rests on the loop-order version, i.e. the base design alone would rate lower."""
+    def best(designs):
+        tried = [row for row in runs.values() if row["tool"] == tool and row["input"].split("__")[0] in designs]
+        top = max(tried, key=rank)
+        return "full" if top["fv"] else "half" if top["synth"] == "passed" else "none", top
+    value, top = best(bases)
+    note = "b" if value != best(bases[:1])[0] else ""
+    return value, [top["run"]], note
 
 
 def ops_cells(runs, tool, operators):
@@ -118,7 +127,7 @@ def check_constructs(runs):
 
 def fraction(count, total, bold, note=""):
     text = f"{count}/{total}"
-    return (rf"\textbf{{{text}}}" if bold else text) + (rf"\textsuperscript{{{note}}}" if note else "")
+    return (rf"\textbf{{{text}}}" if bold else text) + (MARK[note] if note else "")
 
 
 def build():
@@ -128,24 +137,25 @@ def build():
     for tool, cite in TOOLS:
         tex = [f"{tool}~\\cite{{{cite}}}"]
         for domain, (base, operators) in DOMAINS.items():
-            value, evidence = design_cell(runs, tool, base)
+            value, evidence, design_note = design_cell(runs, tool, base)
             cells.append({"tool": tool, "domain": domain, "column": "Design", "value": value, "runs": ";".join(evidence)})
             (synth, fv, total), op_runs = ops_cells(runs, tool, operators)
             note = FOOTNOTES.get((tool, domain), "")
             cells.append({"tool": tool, "domain": domain, "column": "Ops Synth.", "value": f"{synth}/{total}", "runs": ";".join(op_runs)})
             cells.append({"tool": tool, "domain": domain, "column": "Ops FV", "value": f"{fv}/{total}", "runs": ";".join(op_runs)})
             # "Bold when all pass": both counts are bold when every evaluated operator passes FV.
-            tex += [CIRCLE[value], fraction(synth, total, fv == total, note), fraction(fv, total, fv == total, note)]
+            circle = CIRCLE[value] + (MARK[design_note] if design_note else "")
+            tex += [circle, fraction(synth, total, fv == total, note), fraction(fv, total, fv == total, note)]
             used.update(evidence + op_runs)
         for feature in ["F1", "F2", "F3", "F4", "F5", "F6"]:
             entry = marks[tool, feature]
             evidence = [item[0] for item in entry["with"] + entry["without"]]
             cells.append({"tool": tool, "domain": "", "column": feature, "value": entry["mark"], "runs": ";".join(evidence),
-                          "note": entry["claim"] + (" NOT ISOLATED: " + entry["not_isolated"] if "not_isolated" in entry else "")})
+                          "note": entry["claim"] + (" Note: " + entry["not_isolated"] if "not_isolated" in entry else "")})
             tex.append(r"\cmark{}" if entry["mark"] == "check" else r"\xmark{}")
             used.update(evidence)
         rows.append(" & ".join(tex) + r" \\" + "\n")
-    footnotes = "\n".join(rf"\textsuperscript{{{key}}}{text}" for key, text in FOOTNOTE_TEXT.items())
+    footnotes = "\n".join(MARK[key] + " " + text for key, text in FOOTNOTE_TEXT.items())
     table = TEMPLATE.replace("%ROWS%", "".join(rows)).replace("%FOOTNOTES%", footnotes)
 
     cases = json.loads((EVAL / "tool_run_log/cases.json").read_text())["inputs"]

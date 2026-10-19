@@ -5,12 +5,10 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from common import sanitize, sanitize_xml, unified_patch
-from collect import annotate
 from normalize_stream_dlti import normalize
 from run_autosa import classify
 from run_mlir import first_error, has_mlir_definition, top_symbol_from_ast
 from stream_handoff import adapt as stream_handoff
-from collect_tables import category
 from minimal_check import harness, signature
 from minimal_inputs import base_key
 
@@ -38,13 +36,6 @@ class EvidenceTests(unittest.TestCase):
         b = {"config": "results/tool_eval/designs/dnn_0001/config.json", "data_type": "float"}
         self.assertNotEqual(base_key(a), base_key(b))
 
-    def test_failure_categories_are_rule_based(self):
-        row = {"error_head": "loc(\"<VITIS_INCLUDE>/etc/ap_fixed_base.h\":828:9): error", "detail": ""}
-        self.assertEqual(category(row)[0], "F1")
-        row = {"error_head": "'math.exp' op operand #0 must be floating-point-like, but got '!llvm.struct<...>'", "detail": ""}
-        self.assertEqual(category(row)[0], "F5")
-        self.assertEqual(category({"error_head": "segfault in some pass", "detail": ""})[0], "")
-
     def test_stream_handoff_drops_only_uncalled_helpers(self):
         module = ("module {\n  func.func @top() {\n    %0 = memref.alloca() : memref<4xf32>\n    return\n  }\n"
                   "  func.func @helper() {\n    return\n  }\n}\n")
@@ -55,12 +46,6 @@ class EvidenceTests(unittest.TestCase):
             stream_handoff(module.replace("    return\n  }\n  func", "    call @helper() : () -> ()\n    return\n  }\n  func", 1), "top")
         declared = module.replace("}\n", "}\n  func.func private @ext(f32) -> f32\n", 1)
         self.assertIn("func.func private @ext(f32) -> f32", stream_handoff(declared, "top"))
-
-    def test_feature_attribution_requires_vendor_enum_evidence(self):
-        result = {"status": "parse_failed", "error_head": "ap_fixed_base.h: error", "failure_category": ""}
-        self.assertEqual(annotate(result, "visiting unknonwn sub decl stmt EnumDecl")["failure_category"], "F1")
-        self.assertEqual(annotate(result, "unrelated failure")["failure_category"], "")
-        self.assertEqual(result["failure_category"], "")
 
     def test_empty_mlir_module_is_not_a_parse_pass(self):
         self.assertFalse(has_mlir_definition("module {\n}\n", "_Z3topv"))

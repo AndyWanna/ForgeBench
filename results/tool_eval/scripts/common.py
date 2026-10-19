@@ -30,8 +30,7 @@ def sanitize(text, replacements=()):
     for old, new in sorted(replacements, key=lambda pair: -len(str(pair[0]))):
         text = text.replace(str(old), new)
     text = re.sub(r"For user '[^']*' on host '[^']*'", "For user '<USER>' on host '<HOST>'", text)
-    # Preserve public URLs, but remove machine-specific absolute paths even if a
-    # historical artifact came from a different workstation than this run.
+    # Preserve public URLs, but remove machine-specific absolute paths from any machine.
     text = re.sub(r"(?<![:/\w])/(?:export|usr|home|nethome|tools|opt|tmp|scratch|mnt|root|nfs)(?:/[^\s'\"<>:,;)]+)+",
                   lambda match: "<PATH>/" + match.group().rsplit("/", 1)[-1], text)
     text = re.sub(r"\b[\w.-]+\.(?:ece\.gatech\.edu|gatech\.edu)\b", "<HOST>", text)

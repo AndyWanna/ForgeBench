@@ -35,7 +35,7 @@ Exact tool builds: [docs/TOOL_VERSIONS.md](docs/TOOL_VERSIONS.md). Target: ZCU10
 | Table 1, supported models (`tab:supported_models`), *Block* column | VGG-19 / ResNet-18 / ResNet-50 blocks: `designs/configs/examples/dnn/`; GPT and LLaMA transformer blocks: `designs/configs/modular_designs/llm/{gpt_transformer_p1,llama_transformer_p2}.json` | `forgebench generate <config>` | — |
 | Fig 3 and Fig 5, GEMM JSON example and its Vitis / Catapult code (`fig:jsondesign`, `fig:fb_hls_gen`) | `designs/configs/examples/gemm/gemm_96x512x128_{vitis,catapult}.json` | `forgebench generate <config>` (`make check` compares with `designs/hls/examples/gemm/`) | `top.cpp` (`gemm_ijk`) |
 | Fig 4a-b, Python generation snippets (`fig:pythonblock`, `fig:pythonmodel`) | `forgebench/fullmodel/auto_generate_json.py` (`generate_llama_decode_block`, `generate_llama_architecture`) | — | — |
-| Table 9, source-to-source tool support (`tab:tool-support`) | `results/tool_eval/table/{tool_support.tex,cells.csv,runs.csv}` | `python results/tool_eval/scripts/paper_table.py` (from `tool_run_log/{results,synth_unchecked}.csv`; `scripts/validate.py` checks it is current); re-running the tools: `results/tool_eval/README.md` §5 | `results/tool_eval/table/README.md` |
+| Table 9, source-to-source tool support (`tab:tool-support`) | `results/tool_eval/table/{tool_support.tex,cells.csv,runs.csv}` | `python results/tool_eval/scripts/paper_table.py` (from `tool_run_log/{results,synth_unchecked}.csv`; `scripts/validate.py` checks it is current); re-running the tools: `results/tool_eval/README.md`, "Re-running" | `results/tool_eval/table/README.md` |
 | Fig 4c-d, HLSFactory files (`fig:hlsfactory_opt`, `fig:hlsfactory_run`) | pending | — | — |
 
 Table and figure numbers are those of the current manuscript; the labels in parentheses are its LaTeX labels. Identifiers recorded
@@ -161,7 +161,7 @@ Storage:
 | Generated HLS sources of the ML sweeps (`forgebench generate`) | ≈ 0.4 / 1.7 / 12 MB per design (GEMM / DNN / LLM), ≈ 1.2 / 8.8 / 47 GB for the full suites (measured on a 1-in-60 sample) |
 | Vitis project directories | `--lean-out` keeps only the reports the manifests use; full `project_1/` trees are not kept |
 | Data release on Zenodo | ≈ 300 MB (11 files) |
-| Tool builds for the tool evaluation (Table 9) | ~40 GB outside git (`results/tool_eval/README.md` §5) |
+| Tool builds for the tool evaluation (Table 9) | ~40 GB outside git (`results/tool_eval/README.md`, "Re-running") |
 
 ## Changing a generator
 

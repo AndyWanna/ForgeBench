@@ -4,7 +4,7 @@
 Polygeist's pinned LLVM emits data-layout vectors as i32; StreamHLS's pinned
 LLVM requires i64. Only those metadata payload types (and stack-alignment's
 payload type) change. No function, operation, shape, layout value, or C++ input
-is rewritten. This adapter is part of the explicitly recorded fresh setup.
+is rewritten. This adapter is recorded in versions.json.
 """
 import re
 import sys
