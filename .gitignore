@@ -33,10 +33,7 @@ _run_logs/
 # --- large artifacts (live in the Zenodo release bundle, not git; see release/) ------
 # Kept on disk in checkpoints/ for maintainers (make manifest, make bundle).
 ML_testsuite_part_*
-checkpoints/*/*.tar.gz
-checkpoints/*/*_part_*
-checkpoints/*/regroup.sh
-checkpoints/*/*.log
+checkpoints/
 release/_bundle/
 
 # --- verification scratch (regenerable) ---------------------------------
@@ -65,3 +62,5 @@ results/verification/**/trials/
 !results/verification/operators/*__pm1/trials/
 *.egg-info/
 paper_artifacts/out/
+
+.pytest_cache/
