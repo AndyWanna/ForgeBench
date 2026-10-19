@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every input of the minimal-edit study from minimal/cases.json.
+"""Regenerate every input of the minimal-edit study from tool_run_log/cases.json.
 
 Each input is a ForgeBench config generated with an optional data-type override, plus an
 optional committed patch against that generated source. The unmodified generations are kept
@@ -19,7 +19,7 @@ from common import EVAL, REPO, sha256
 sys.path.insert(0, str(REPO))
 from forgebench.cli import generate  # noqa: E402
 
-CASES = EVAL / "minimal/cases.json"
+CASES = EVAL / "tool_run_log/cases.json"
 
 
 def base_key(spec):

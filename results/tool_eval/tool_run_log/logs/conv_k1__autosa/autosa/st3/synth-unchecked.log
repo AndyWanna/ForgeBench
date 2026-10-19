@@ -1,0 +1,19 @@
+command: vitis_hls -f run_hls.tcl
+exit_code: 1
+ERROR: [HLS 200-970] Internal stream 'fifo_output_PE_0' (top_kernel.cpp:1070) failed dataflow checking: it must be produced and consumed exactly once.
+ERROR: [HLS 200-970] Internal stream 'fifo_output_PE_16' (top_kernel.cpp:1118) failed dataflow checking: it must be produced and consumed exactly once.
+ERROR: [HLS 200-1715] Encountered problem during source synthesis
+ERROR: [HLS 200-70] Pre-synthesis failed.
+[middle omitted; full log in tool_eval_logs.tar.gz]
+Resolution: For help on HLS 200-992 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-992.html
+ERROR: [HLS 200-1715] Encountered problem during source synthesis
+ERROR: [HLS 200-70] Pre-synthesis failed.
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:20; Allocated memory: 0.000 MB.
+command 'ap_source' returned error code
+    while executing
+"source run_hls.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel \#0 [list source $tclfile] "
+
+INFO: [HLS 200-112] Total CPU user time: 17.08 seconds. Total CPU system time: 3.69 seconds. Total elapsed time: 24.63 seconds; peak allocated memory: 0.000 MB.

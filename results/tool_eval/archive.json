@@ -1,8 +1,8 @@
 {
   "filename": "tool_eval_logs.tar.gz",
-  "sha256": "f7dec762d9b636edb2aa8ef48a9267593f5365f975ecaa25fc808d445d32d5e1",
-  "bytes": 2744937,
-  "files": 378,
-  "contents": "Full redacted run, control, diagnostic, historical and build logs",
-  "distribution": "Outside git; intended for the Zenodo bundle. No public DOI assigned yet."
+  "sha256": "3a38bfd65b1396bb8651da0e3a2f055b724932eaa42ac95c7fd2bd401c2a81a9",
+  "bytes": 4545432,
+  "files": 482,
+  "contents": "Full redacted logs of the minimal-edit study behind the paper's table, plus tool builds, controls and setup tests",
+  "distribution": "Committed next to archive.json (built outside the repository, then copied in); also intended for the Zenodo bundle. No public DOI assigned yet."
 }

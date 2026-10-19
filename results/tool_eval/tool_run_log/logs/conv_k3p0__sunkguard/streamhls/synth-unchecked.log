@@ -1,0 +1,15 @@
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+[middle omitted; full log in tool_eval_logs.tar.gz]
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v41_RAM_AUTO_1R1W_memcore' using auto RAMs.
+INFO: [HLS 200-741] Implementing PIPO _Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v42_RAM_AUTO_1R1W using a single memory for all blocks
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v42_RAM_AUTO_1R1W_memcore' using auto RAMs.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.09 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.1 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 0.27 seconds. CPU system time: 0.03 seconds. Elapsed time: 0.3 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 0.74 seconds. CPU system time: 0.04 seconds. Elapsed time: 0.78 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f.
+INFO: [VLOG 209-307] Generating Verilog RTL for p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 142.53 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:37; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 29.83 seconds. Total CPU system time: 6.72 seconds. Total elapsed time: 43.52 seconds; peak allocated memory: 0.000 MB.

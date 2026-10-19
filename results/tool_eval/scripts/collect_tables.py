@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build summary.csv, outcomes.csv and minimal/summary_operators.csv from the run records.
+"""Build summary.csv, outcomes.csv and tool_run_log/summary_operators.csv from the run records.
 
-Sources: minimal/results.csv (written by minimal_run.py; every whole-design and single-operator
-run) and minimal/cases.json. Ratings follow the TODO's definitions: `full` = synthesis with
+Sources: tool_run_log/results.csv (written by minimal_run.py; every whole-design and single-operator
+run) and tool_run_log/cases.json. Ratings follow the TODO's definitions: `full` = synthesis with
 correct results and no source edit; `half` = synthesis with correct results after the
 committed non-algorithmic patch; `none` otherwise. Output that synthesizes but computes the
 wrong result is rated `none`. Nothing in these tables is entered by hand.
@@ -28,7 +28,7 @@ RULES = [  # (pattern in the diagnostic, category, explanation); first match win
 
 
 def rows():
-    with (EVAL / "minimal/results.csv").open() as stream:
+    with (EVAL / "tool_run_log/results.csv").open() as stream:
         return list(csv.DictReader(stream))
 
 
@@ -63,7 +63,7 @@ def describe(row):
 
 def main():
     data = [r for r in rows() if r["tool"] in TOOLS]
-    cases = json.loads((EVAL / "minimal/cases.json").read_text())
+    cases = json.loads((EVAL / "tool_run_log/cases.json").read_text())
     # ---- summary.csv: whole generated designs ----------------------------------------------------
     summary = []
     for tool in TOOLS:
@@ -78,11 +78,11 @@ def main():
                               for r in sorted(attempts, key=lambda r: r["run"]))
             summary.append({"tool": tool, "domain": domain, "designs_tried": len(designs), "stage_reached": best["stage_reached"],
                             "rating": rating, "notes": f"Whole generated designs {', '.join(designs)}. {notes}. "
-                                                       "Edited inputs use minimal/patches/<design>__edited.patch; logs in minimal/logs/."})
+                                                       "Edited inputs use tool_run_log/patches/<design>__edited.patch; logs in tool_run_log/logs/."})
             # One log per cell in logs/<tool>/<domain>/ for the edited whole design too.
             for r in attempts:
                 if r["input"].endswith("__edited"):
-                    src = EVAL / "minimal/logs" / r["run"]
+                    src = EVAL / "tool_run_log/logs" / r["run"]
                     suffix = r["run"].split("/")[-1].replace(tool.lower(), "").strip("-")
                     for name in ["run.log", "result.json", "check.json"]:
                         if (src / name).is_file():
@@ -129,7 +129,7 @@ def main():
                       "patch": best["patch"], "tool_options": best["tool_options"],
                       "rating": ("half" if best["patch"] else "full") if best["functional_check"] == "PASS" and best["stage_reached"] == "synth" else "none",
                       "attempts": len(attempts)})
-    with (EVAL / "minimal/summary_operators.csv").open("w", newline="") as stream:
+    with (EVAL / "tool_run_log/summary_operators.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(table[0]), lineterminator="\n")
         writer.writeheader(); writer.writerows(table)
     print(f"summary.csv: {len(summary)} rows; outcomes.csv: {len(outcomes)} rows; summary_operators.csv: {len(table)} rows")

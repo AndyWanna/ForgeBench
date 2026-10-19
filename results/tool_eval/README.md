@@ -4,9 +4,13 @@ This directory backs Table 9 (`tab:tool-support`) of `Forgebench_FPT_Journal_202
 (Case Study 3; `sec/results.tex`, `table/testcases_table.tex`). It covers ScaleHLS, HIDA,
 AutoSA and StreamHLS on ForgeBench-generated GEMM, DNN and LLM designs. 
 
+**The revised table** (Design / Ops Synth. / FV columns and the new F1–F6) is derived cell by
+cell in [`table/`](table/README.md): each cell names its runs, and each run its input, emitted
+code, short logs and full logs.
+
 Every result below comes from a committed command, input and log. All tables inside
 `GENERATED` blocks are produced by [`scripts/report_tables.py`](scripts/report_tables.py) from
-[`minimal/results.csv`](minimal/results.csv) and [`summary.csv`](summary.csv); none is typed by
+[`tool_run_log/results.csv`](tool_run_log/results.csv) and [`summary.csv`](summary.csv); none is typed by
 hand.
 
 ## 1. What was verified, and the results
@@ -27,8 +31,11 @@ Two levels were tested, in all three domains, with all four tools:
 
 "Correct" means the tool's emitted C++ matches the unedited generated `float` design on 5
 random input sets, with max |ref − out| / max(1, |ref|) < 1e-4 over every output element
-(`scripts/minimal_check.py`). Only correct output is synthesized. A tool output that synthesizes
-but computes the wrong result is counted as a failure.
+(`scripts/minimal_check.py`). `scripts/minimal_run.py` synthesizes only correct output.
+`scripts/synth_unchecked.py` then runs the same Vitis flow on every other emitted output. That is
+72 outputs, 44 of which synthesize; see [`tool_run_log/synth_unchecked.csv`](tool_run_log/synth_unchecked.csv).
+The revised table's Synth. column and ◐ cells count these. A tool output that synthesizes but
+computes the wrong result is never counted as correct.
 
 <!-- BEGIN GENERATED: overview -->
 | Tool | GEMM whole end-to-end design | GEMM single op | DNN whole end-to-end design | DNN single ops | LLM whole end-to-end design | LLM single ops |
@@ -66,11 +73,11 @@ but computes the wrong result is counted as a failure.
   * AutoSA passes none.
 * **AutoSA** produces no correct kernel at any level. Its own documented example,
   `autosa_tests/mm`, also fails its built-in golden check in the pinned image ("Failed with
-  4096 errors!"; [`minimal/logs/autosa_control_mm/`](minimal/logs/autosa_control_mm/autosa/run.log)).
+  4096 errors!"; [`tool_run_log/logs/autosa_control_mm/`](tool_run_log/logs/autosa_control_mm/autosa/run.log)).
   So no AutoSA result can be validated in this environment.
 
 Detailed results follow. Every row links its exact input and patch; logs are in
-`minimal/logs/<input>/<tool>/`.
+`tool_run_log/logs/<input>/<tool>/`.
 
 **End-to-end Design Table**
 
@@ -85,9 +92,9 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | `gemm_0001` | `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
 | `gemm_0001` | `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
 | `gemm_0001` | `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
-| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) | ScaleHLS | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 2.5) |
-| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:216:196: error: cannot convert ‘float*’ to ‘float’` |
-| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
+| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](tool_run_log/patches/gemm_0001__edited.patch) | ScaleHLS | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 2.5) |
+| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](tool_run_log/patches/gemm_0001__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:216:196: error: cannot convert ‘float*’ to ‘float’` |
+| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](tool_run_log/patches/gemm_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
 | `gemm_0004` | `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt` |
 | `gemm_0004` | `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt` |
 | `gemm_0004` | `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc(callsite("<VITIS_INCLUDE>/etc/ap_private.h":2210:9 at "<VITIS_INCLUDE>/etc/ap_private.h":6766:28)): err...` |
@@ -96,9 +103,9 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | `gemm_0004` | `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
 | `gemm_0004` | `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
 | `gemm_0004` | `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
-| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) | ScaleHLS | synth | ✅ synthesized, correct |  |
-| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
-| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
+| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](tool_run_log/patches/gemm_0004__edited.patch) | ScaleHLS | synth | ✅ synthesized, correct |  |
+| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](tool_run_log/patches/gemm_0004__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
+| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](tool_run_log/patches/gemm_0004__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | transform_failed |
 | `dnn_0001` | `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1288:5): error:  + visiting unknonwn sub decl stmt` |
 | `dnn_0001` | `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1288:5): error:  + visiting unknonwn sub decl stmt` |
 | `dnn_0001` | `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | `cgeist: <WORK><PATH>/ValueCategory.cc:154: void ValueCategory::store(mlir::Location, mlir::OpBuilder &, Val...` |
@@ -107,9 +114,9 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | `dnn_0001` | `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
 | `dnn_0001` | `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
 | `dnn_0001` | `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
-| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) | ScaleHLS | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 1.02) |
-| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:407:258: error: cannot convert ‘float (*)[16][1][1]’ to ‘float (*)[16]’` |
-| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](tool_run_log/patches/dnn_0001__edited.patch) | ScaleHLS | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 1.02) |
+| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](tool_run_log/patches/dnn_0001__edited.patch) | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:407:258: error: cannot convert ‘float (*)[16][1][1]’ to ‘float (*)[16]’` |
+| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](tool_run_log/patches/dnn_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
 | `llm_0001` | `ap_fixed<16,5>` | ScaleHLS | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1639:5): error:  + visiting unknonwn sub decl stmt` |
 | `llm_0001` | `ap_fixed<16,5>` | HIDA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1639:5): error:  + visiting unknonwn sub decl stmt` |
 | `llm_0001` | `ap_fixed<16,5>` + `--stream-polygeist-handoff` | StreamHLS | parse | ❌ stops at parse | `cgeist: <WORK><PATH>/ValueCategory.cc:154: void ValueCategory::store(mlir::Location, mlir::OpBuilder &, Val...` |
@@ -118,13 +125,13 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | `llm_0001` | `float` | HIDA | transform | ❌ stops at transform | F3: written global buffer treated as a constant (ConvertGetGlobalToConstBuffer); `scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::...` |
 | `llm_0001` | `float` + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
 | `llm_0001` | `float` | AutoSA | parse | ❌ stops at parse | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
-| `llm_0001` | `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) | ScaleHLS | transform | ❌ stops at transform | transformation (DSE) did not finish within the run's time limit |
-| `llm_0001` | `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) | HIDA | codegen | ❌ stops at codegen | `<RUN>/transformed.mlir:622:10: error: 'hls.dataflow.buffer' op only support depth of 1` |
-| `llm_0001` | `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) + `place-external-buffer=false` | HIDA | synth | ✅ synthesized, correct |  |
-| `llm_0001` | `float` + [`llm_0001__edited.patch`](minimal/patches/llm_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
-| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](minimal/patches/gemm_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:216:196: error: cannot convert ‘float*’ to ‘float’` |
-| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
-| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](minimal/patches/dnn_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 0.664) |
+| `llm_0001` | `float` + [`llm_0001__edited.patch`](tool_run_log/patches/llm_0001__edited.patch) | ScaleHLS | transform | ❌ stops at transform | transformation (DSE) did not finish within the run's time limit |
+| `llm_0001` | `float` + [`llm_0001__edited.patch`](tool_run_log/patches/llm_0001__edited.patch) | HIDA | codegen | ❌ stops at codegen | `<RUN>/transformed.mlir:622:10: error: 'hls.dataflow.buffer' op only support depth of 1` |
+| `llm_0001` | `float` + [`llm_0001__edited.patch`](tool_run_log/patches/llm_0001__edited.patch) + `place-external-buffer=false` | HIDA | synth | ✅ synthesized, correct |  |
+| `llm_0001` | `float` + [`llm_0001__edited.patch`](tool_run_log/patches/llm_0001__edited.patch) + `--stream-polygeist-handoff` | StreamHLS | transform | ❌ stops at transform | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| `gemm_0001` | `float` + [`gemm_0001__edited.patch`](tool_run_log/patches/gemm_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:216:196: error: cannot convert ‘float*’ to ‘float’` |
+| `gemm_0004` | `float` + [`gemm_0004__edited.patch`](tool_run_log/patches/gemm_0004__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | emitted C++ unusable: `emitted.cpp:208:196: error: cannot convert ‘float*’ to ‘float’` |
+| `dnn_0001` | `float` + [`dnn_0001__edited.patch`](tool_run_log/patches/dnn_0001__edited.patch) + `place-external-buffer=false` | HIDA | codegen | ❌ codegen reached, output wrong/unusable | wrong results (max_error 0.664) |
 <!-- END GENERATED: whole -->
 
 **Operator Table**
@@ -132,53 +139,53 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 <!-- BEGIN GENERATED: operators -->
 | Domain | Operator | Tool | Best result | Input of that attempt | Why it failed |
 |---|---|---|---|---|---|
-| gemm | `gemm_ijk` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ijk__local.patch`](minimal/patches/gemm_ijk__local.patch) | wrong results (max_error 10.8) |
-| gemm | `gemm_ijk` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_ijk__local.patch`](minimal/patches/gemm_ijk__local.patch) |  |
-| gemm | `gemm_ijk` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_ijk__local.patch`](minimal/patches/gemm_ijk__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
-| gemm | `gemm_ijk` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ijk__autosa.patch`](minimal/patches/gemm_ijk__autosa.patch) + `sa-sizes space_time[0];array_part[16,16,16];latency[4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:465:28: error: ‘fifo_BRAM_B_in’ was not declared in this scope` |
-| gemm | `gemm_ikj` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](minimal/patches/gemm_ikj__local.patch) |  |
-| gemm | `gemm_ikj` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](minimal/patches/gemm_ikj__local.patch) |  |
-| gemm | `gemm_ikj` | StreamHLS | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](minimal/patches/gemm_ikj__local.patch) + `--stream-polygeist-handoff` |  |
-| gemm | `gemm_jik` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_jik__local.patch`](minimal/patches/gemm_jik__local.patch) | wrong results (max_error 10.5) |
-| gemm | `gemm_jik` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_jik__local.patch`](minimal/patches/gemm_jik__local.patch) |  |
-| gemm | `gemm_jik` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_jik__local.patch`](minimal/patches/gemm_jik__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
-| gemm | `gemm_jki` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_jki__local.patch`](minimal/patches/gemm_jki__local.patch) | wrong results (max_error 10.3) |
-| gemm | `gemm_jki` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_jki__local.patch`](minimal/patches/gemm_jki__local.patch) |  |
-| gemm | `gemm_jki` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_jki__local.patch`](minimal/patches/gemm_jki__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
-| gemm | `gemm_kij` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](minimal/patches/gemm_kij__local.patch) |  |
-| gemm | `gemm_kij` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](minimal/patches/gemm_kij__local.patch) |  |
-| gemm | `gemm_kij` | StreamHLS | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](minimal/patches/gemm_kij__local.patch) + `--stream-polygeist-handoff` |  |
-| gemm | `gemm_kji` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_kji__local.patch`](minimal/patches/gemm_kji__local.patch) | wrong results (max_error 10.3) |
-| gemm | `gemm_kji` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_kji__local.patch`](minimal/patches/gemm_kji__local.patch) |  |
-| gemm | `gemm_kji` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_kji__local.patch`](minimal/patches/gemm_kji__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
-| gemm | `gemm_ikj` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ikj__autosa.patch`](minimal/patches/gemm_ikj__autosa.patch) + `sa-sizes space_time[0];array_part[16,16,16];latency[4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:465:28: error: ‘fifo_BRAM_B_in’ was not declared in this scope` |
-| dnn | `conv_k1` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](minimal/patches/conv_k1__sunkguard.patch) |  |
-| dnn | `conv_k1` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](minimal/patches/conv_k1__sunkguard.patch) |  |
-| dnn | `conv_k1` | StreamHLS | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](minimal/patches/conv_k1__sunkguard.patch) + `--stream-polygeist-handoff` |  |
-| dnn | `conv_k1` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k1__autosa.patch`](minimal/patches/conv_k1__autosa.patch) + `sa-sizes space_time[0];array_part[14,14,16,16];latency[2,2,4]` | wrong results (max_error 1.82e+35) |
-| dnn | `conv_k3p0` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k3p0__sunkguard.patch`](minimal/patches/conv_k3p0__sunkguard.patch) |  |
-| dnn | `conv_k3p0` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k3p0__sunkguard.patch`](minimal/patches/conv_k3p0__sunkguard.patch) |  |
-| dnn | `conv_k3p0` | StreamHLS | ✅ synthesized, correct | generated `float` + [`conv_k3p0__noguard_reorder.patch`](minimal/patches/conv_k3p0__noguard_reorder.patch) + `--stream-polygeist-handoff` |  |
-| dnn | `conv_k3p0` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k3p0__autosa.patch`](minimal/patches/conv_k3p0__autosa.patch) + `sa-sizes space_time[0];array_part[12,12,16,3];latency[4,4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:398:22: error: ‘fifo_kernel_in’ was not declared in this scope` |
-| dnn | `conv_k3` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k3__sunkguard.patch`](minimal/patches/conv_k3__sunkguard.patch) |  |
-| dnn | `conv_k3` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k3__sunkguard.patch`](minimal/patches/conv_k3__sunkguard.patch) |  |
-| dnn | `conv_k3` | StreamHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k3__sunkguard.patch`](minimal/patches/conv_k3__sunkguard.patch) + `--stream-polygeist-handoff` | wrong results (max_error 5.14) |
-| dnn | `conv_k3` | AutoSA | ❌ stops at setup | generated `float` + [`conv_k3__autosa_guard.patch`](minimal/patches/conv_k3__autosa_guard.patch) | F2: loop nest outside the single uniform band AutoSA requires; `what():  [AutoSA] Error: Non-uniform dependence detected.` |
-| llm | `rmsnorm` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`rmsnorm__local.patch`](minimal/patches/rmsnorm__local.patch) |  |
-| llm | `rmsnorm` | HIDA | ✅ synthesized, correct | generated `float` + [`rmsnorm__rowacc_split.patch`](minimal/patches/rmsnorm__rowacc_split.patch) + `place-external-buffer=false` |  |
-| llm | `rmsnorm` | StreamHLS | ❌ stops at transform | generated `float` + [`rmsnorm__local.patch`](minimal/patches/rmsnorm__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
-| llm | `rmsnorm` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`rmsnorm__autosa.patch`](minimal/patches/rmsnorm__autosa.patch) + `sa-sizes space_time[0];array_part[8,16];latency[4]` | emitted kernel hangs in C simulation |
-| llm | `softmax` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`softmax__local.patch`](minimal/patches/softmax__local.patch) |  |
-| llm | `softmax` | HIDA | ✅ synthesized, correct | generated `float` + [`softmax__rowacc_split.patch`](minimal/patches/softmax__rowacc_split.patch) + `place-external-buffer=false` |  |
-| llm | `softmax` | StreamHLS | ❌ stops at transform | generated `float` + [`softmax__local.patch`](minimal/patches/softmax__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/AffineMemAccess.cpp:1293: mlir::AffineMap mlir::streamhls::getMinimalAccessPatt...` |
-| llm | `softmax` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`softmax__autosa.patch`](minimal/patches/softmax__autosa.patch) + `sa-sizes space_time[0];array_part[8,16];latency[4]` | emitted kernel hangs in C simulation |
-| llm | `mha` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`mha__attn.patch`](minimal/patches/mha__attn.patch) | wrong results (max_error 0.0914) |
-| llm | `mha` | HIDA | ✅ synthesized, correct | generated `float` + [`mha__attn.patch`](minimal/patches/mha__attn.patch) + `place-external-buffer=false` |  |
-| llm | `mha` | StreamHLS | ❌ stops at transform | generated `float` + [`mha__local.patch`](minimal/patches/mha__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
-| llm | `mha` | AutoSA | ❌ stops at parse | generated `float` + [`mha__autosa_scores.patch`](minimal/patches/mha__autosa_scores.patch) | `collect2: error: ld returned 1 exit status` |
-| llm | `mha_rope` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`mha_rope__attn.patch`](minimal/patches/mha_rope__attn.patch) | wrong results (max_error 0.0991) |
-| llm | `mha_rope` | HIDA | ✅ synthesized, correct | generated `float` + [`mha_rope__attn.patch`](minimal/patches/mha_rope__attn.patch) + `place-external-buffer=false` |  |
-| llm | `mha_rope` | StreamHLS | ❌ stops at transform | generated `float` + [`mha_rope__local.patch`](minimal/patches/mha_rope__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_ijk` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ijk__local.patch`](tool_run_log/patches/gemm_ijk__local.patch) | wrong results (max_error 10.8) |
+| gemm | `gemm_ijk` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_ijk__local.patch`](tool_run_log/patches/gemm_ijk__local.patch) |  |
+| gemm | `gemm_ijk` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_ijk__local.patch`](tool_run_log/patches/gemm_ijk__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_ijk` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ijk__autosa.patch`](tool_run_log/patches/gemm_ijk__autosa.patch) + `sa-sizes space_time[0];array_part[16,16,16];latency[4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:465:28: error: ‘fifo_BRAM_B_in’ was not declared in this scope` |
+| gemm | `gemm_ikj` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](tool_run_log/patches/gemm_ikj__local.patch) |  |
+| gemm | `gemm_ikj` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](tool_run_log/patches/gemm_ikj__local.patch) |  |
+| gemm | `gemm_ikj` | StreamHLS | ✅ synthesized, correct | generated `float` + [`gemm_ikj__local.patch`](tool_run_log/patches/gemm_ikj__local.patch) + `--stream-polygeist-handoff` |  |
+| gemm | `gemm_jik` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_jik__local.patch`](tool_run_log/patches/gemm_jik__local.patch) | wrong results (max_error 10.5) |
+| gemm | `gemm_jik` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_jik__local.patch`](tool_run_log/patches/gemm_jik__local.patch) |  |
+| gemm | `gemm_jik` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_jik__local.patch`](tool_run_log/patches/gemm_jik__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_jki` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_jki__local.patch`](tool_run_log/patches/gemm_jki__local.patch) | wrong results (max_error 10.3) |
+| gemm | `gemm_jki` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_jki__local.patch`](tool_run_log/patches/gemm_jki__local.patch) |  |
+| gemm | `gemm_jki` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_jki__local.patch`](tool_run_log/patches/gemm_jki__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_kij` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](tool_run_log/patches/gemm_kij__local.patch) |  |
+| gemm | `gemm_kij` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](tool_run_log/patches/gemm_kij__local.patch) |  |
+| gemm | `gemm_kij` | StreamHLS | ✅ synthesized, correct | generated `float` + [`gemm_kij__local.patch`](tool_run_log/patches/gemm_kij__local.patch) + `--stream-polygeist-handoff` |  |
+| gemm | `gemm_kji` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_kji__local.patch`](tool_run_log/patches/gemm_kji__local.patch) | wrong results (max_error 10.3) |
+| gemm | `gemm_kji` | HIDA | ✅ synthesized, correct | generated `float` + [`gemm_kji__local.patch`](tool_run_log/patches/gemm_kji__local.patch) |  |
+| gemm | `gemm_kji` | StreamHLS | ❌ stops at transform | generated `float` + [`gemm_kji__local.patch`](tool_run_log/patches/gemm_kji__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| gemm | `gemm_ikj` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`gemm_ikj__autosa.patch`](tool_run_log/patches/gemm_ikj__autosa.patch) + `sa-sizes space_time[0];array_part[16,16,16];latency[4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:465:28: error: ‘fifo_BRAM_B_in’ was not declared in this scope` |
+| dnn | `conv_k1` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](tool_run_log/patches/conv_k1__sunkguard.patch) |  |
+| dnn | `conv_k1` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](tool_run_log/patches/conv_k1__sunkguard.patch) |  |
+| dnn | `conv_k1` | StreamHLS | ✅ synthesized, correct | generated `float` + [`conv_k1__sunkguard.patch`](tool_run_log/patches/conv_k1__sunkguard.patch) + `--stream-polygeist-handoff` |  |
+| dnn | `conv_k1` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k1__autosa.patch`](tool_run_log/patches/conv_k1__autosa.patch) + `sa-sizes space_time[0];array_part[14,14,16,16];latency[2,2,4]` | wrong results (max_error 1.82e+35) |
+| dnn | `conv_k3p0` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k3p0__sunkguard.patch`](tool_run_log/patches/conv_k3p0__sunkguard.patch) |  |
+| dnn | `conv_k3p0` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k3p0__sunkguard.patch`](tool_run_log/patches/conv_k3p0__sunkguard.patch) |  |
+| dnn | `conv_k3p0` | StreamHLS | ✅ synthesized, correct | generated `float` + [`conv_k3p0__noguard_reorder.patch`](tool_run_log/patches/conv_k3p0__noguard_reorder.patch) + `--stream-polygeist-handoff` |  |
+| dnn | `conv_k3p0` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k3p0__autosa.patch`](tool_run_log/patches/conv_k3p0__autosa.patch) + `sa-sizes space_time[0];array_part[12,12,16,3];latency[4,4,4]` | emitted C++ unusable: `<SRC>/top_kernel.cpp:398:22: error: ‘fifo_kernel_in’ was not declared in this scope` |
+| dnn | `conv_k3` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`conv_k3__sunkguard.patch`](tool_run_log/patches/conv_k3__sunkguard.patch) |  |
+| dnn | `conv_k3` | HIDA | ✅ synthesized, correct | generated `float` + [`conv_k3__sunkguard.patch`](tool_run_log/patches/conv_k3__sunkguard.patch) |  |
+| dnn | `conv_k3` | StreamHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`conv_k3__sunkguard.patch`](tool_run_log/patches/conv_k3__sunkguard.patch) + `--stream-polygeist-handoff` | wrong results (max_error 5.14) |
+| dnn | `conv_k3` | AutoSA | ❌ stops at setup | generated `float` + [`conv_k3__autosa_guard.patch`](tool_run_log/patches/conv_k3__autosa_guard.patch) | F2: loop nest outside the single uniform band AutoSA requires; `what():  [AutoSA] Error: Non-uniform dependence detected.` |
+| llm | `rmsnorm` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`rmsnorm__local.patch`](tool_run_log/patches/rmsnorm__local.patch) |  |
+| llm | `rmsnorm` | HIDA | ✅ synthesized, correct | generated `float` + [`rmsnorm__rowacc_split.patch`](tool_run_log/patches/rmsnorm__rowacc_split.patch) + `place-external-buffer=false` |  |
+| llm | `rmsnorm` | StreamHLS | ❌ stops at transform | generated `float` + [`rmsnorm__local.patch`](tool_run_log/patches/rmsnorm__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm...` |
+| llm | `rmsnorm` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`rmsnorm__autosa.patch`](tool_run_log/patches/rmsnorm__autosa.patch) + `sa-sizes space_time[0];array_part[8,16];latency[4]` | emitted kernel hangs in C simulation |
+| llm | `softmax` | ScaleHLS | ✅ synthesized, correct | generated `float` + [`softmax__local.patch`](tool_run_log/patches/softmax__local.patch) |  |
+| llm | `softmax` | HIDA | ✅ synthesized, correct | generated `float` + [`softmax__rowacc_split.patch`](tool_run_log/patches/softmax__rowacc_split.patch) + `place-external-buffer=false` |  |
+| llm | `softmax` | StreamHLS | ❌ stops at transform | generated `float` + [`softmax__local.patch`](tool_run_log/patches/softmax__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/AffineMemAccess.cpp:1293: mlir::AffineMap mlir::streamhls::getMinimalAccessPatt...` |
+| llm | `softmax` | AutoSA | ❌ codegen reached, output wrong/unusable | generated `float` + [`softmax__autosa.patch`](tool_run_log/patches/softmax__autosa.patch) + `sa-sizes space_time[0];array_part[8,16];latency[4]` | emitted kernel hangs in C simulation |
+| llm | `mha` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`mha__attn.patch`](tool_run_log/patches/mha__attn.patch) | wrong results (max_error 0.0914) |
+| llm | `mha` | HIDA | ✅ synthesized, correct | generated `float` + [`mha__attn.patch`](tool_run_log/patches/mha__attn.patch) + `place-external-buffer=false` |  |
+| llm | `mha` | StreamHLS | ❌ stops at transform | generated `float` + [`mha__local.patch`](tool_run_log/patches/mha__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
+| llm | `mha` | AutoSA | ❌ stops at parse | generated `float` + [`mha__autosa_scores.patch`](tool_run_log/patches/mha__autosa_scores.patch) | `collect2: error: ld returned 1 exit status` |
+| llm | `mha_rope` | ScaleHLS | ❌ codegen reached, output wrong/unusable | generated `float` + [`mha_rope__attn.patch`](tool_run_log/patches/mha_rope__attn.patch) | wrong results (max_error 0.0991) |
+| llm | `mha_rope` | HIDA | ✅ synthesized, correct | generated `float` + [`mha_rope__attn.patch`](tool_run_log/patches/mha_rope__attn.patch) + `place-external-buffer=false` |  |
+| llm | `mha_rope` | StreamHLS | ❌ stops at transform | generated `float` + [`mha_rope__local.patch`](tool_run_log/patches/mha_rope__local.patch) + `--stream-polygeist-handoff` | `streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mli...` |
 | llm | `mha_rope` | AutoSA | ❌ stops at parse | generated `ap_fixed<16,5>` | F1: vendor ap_fixed / C++ header implementation; `autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier(...` |
 <!-- END GENERATED: operators -->
 
@@ -191,13 +198,20 @@ Detailed results follow. Every row links its exact input and patch; logs are in
 | End-to-end designs (ap_fixed) | `gemm_0001`, `dnn_0001`, `llm_0001`: the first design of each manifest (`manifest/designs/{gemm,dnn,llm}.csv`) | configs and unedited generated sources in [`designs/<id>/`](designs/); hashes in [`designs/manifest.json`](designs/manifest.json) |
 | End-to-end designs, `float` option | the same three, `data_type = float` | [`designs/<id>_float/`](designs/), [`designs/float_manifest.json`](designs/float_manifest.json) |
 | End-to-end designs, edited | `gemm_0004` and `llm_0001`, `float` + patch (the two whole-design passes) | [`designs/gemm_0004_edited/`](designs/gemm_0004_edited/), [`designs/llm_0001_edited/`](designs/llm_0001_edited/); the passing runs' emitted C++ and csynth reports in [`reports/scalehls/gemm_0004_edited/`](reports/scalehls/gemm_0004_edited/) and [`reports/hida/llm_0001_edited/`](reports/hida/llm_0001_edited/); the edits are listed in §2.5 |
-| End-to-end design, loop-order sibling | `gemm_0004` (`vm_order` = `ji`/`ji`; otherwise identical to `gemm_0001`) | sweep config `designs/configs/ml_sweep/gemm/GEMM_config_M64_K64_N64_UM1_UK1_UN1_GORDna_VM1ji_VM2ji_...json`; sources as run in [`designs/gemm_0004/`](designs/gemm_0004/) (`ap_fixed`), [`designs/gemm_0004_float/`](designs/gemm_0004_float/) and [`designs/gemm_0004_edited/`](designs/gemm_0004_edited/) (float + [`gemm_0004__edited.patch`](minimal/patches/gemm_0004__edited.patch)); ScaleHLS output and csynth report of the passing run in [`reports/scalehls/gemm_0004_edited/`](reports/scalehls/gemm_0004_edited/) |
-| Single operators | the 13 configs in [`minimal/configs/`](minimal/configs/) | generated by `forgebench generate` |
+| End-to-end design, loop-order sibling | `gemm_0004` (`vm_order` = `ji`/`ji`; otherwise identical to `gemm_0001`) | sweep config `designs/configs/ml_sweep/gemm/GEMM_config_M64_K64_N64_UM1_UK1_UN1_GORDna_VM1ji_VM2ji_...json`; sources as run in [`designs/gemm_0004/`](designs/gemm_0004/) (`ap_fixed`), [`designs/gemm_0004_float/`](designs/gemm_0004_float/) and [`designs/gemm_0004_edited/`](designs/gemm_0004_edited/) (float + [`gemm_0004__edited.patch`](tool_run_log/patches/gemm_0004__edited.patch)); ScaleHLS output and csynth report of the passing run in [`reports/scalehls/gemm_0004_edited/`](reports/scalehls/gemm_0004_edited/) |
+| Single operators | the 13 configs in [`tool_run_log/configs/`](tool_run_log/configs/) | generated by `forgebench generate` |
 
-Every tool input, including each edited one, is listed in [`minimal/cases.json`](minimal/cases.json)
+Every tool input, including each edited one, is listed in [`tool_run_log/cases.json`](tool_run_log/cases.json)
 as a ForgeBench config, a data type, and an optional patch against the generated source. Its
 `top.cpp` hash is recorded there too. `scripts/minimal_inputs.py` regenerates all inputs
 with ForgeBench's own generator and refuses any hash mismatch. No input is a hand-written kernel.
+
+In every `designs/<id>*/` folder, `config.json` is the config that the folder's sources were
+generated from. For an `ap_fixed` folder this is the sweep config itself. For a `_float` or
+`_edited` folder it is the sweep config with `"data_type": "float"`, and the `_edited` sources then
+have the patch applied on top. `cases.json` records the same input as the unchanged sweep config
+plus `data_type: float`, which is equivalent. `validate.py` checks both forms, and `top.cpp` of
+every folder matches the hash of the input that was run.
 
 ### 2.2 Tool versions
 
@@ -229,7 +243,7 @@ with ForgeBench's own generator and refuses any hash mismatch. No input is a han
 | StreamHLS | ○ none (transform) | ○ none (transform) | ○ none (transform) |
 <!-- END GENERATED: summary -->
 
-The per-operator ratings are in [`minimal/summary_operators.csv`](minimal/summary_operators.csv).
+The per-operator ratings are in [`tool_run_log/summary_operators.csv`](tool_run_log/summary_operators.csv).
 `float_summary.csv`, `float_outcomes.csv` and `float_runs.json` record the first, separate run of
 the three unedited `float` designs (`scripts/collect_float.py`). They agree with the `float`
 rows of §1.
@@ -240,10 +254,11 @@ rows of §1.
   (`run.log`, `result.json`), its float run (`float-*`), and the edited whole-design runs
   (`<design>-edited-*`).
 * Every other run, at both levels, has `run.log`, `result.json` and, where code was emitted,
-  `check.json` in `minimal/logs/<input>/<tool>/`.
+  `check.json` in `tool_run_log/logs/<input>/<tool>/`.
 
-Logs are trimmed to the command, the first error, and the last ~50 lines. Full transcripts are
-in the tarball (§6.2).
+Logs are trimmed to the command, the first error, and the last ~50 lines. The full transcripts
+of the minimal-study runs are in the tarball (§6.2). Those of the primary runs in `logs/` are
+in the earlier, complete tarball, kept in git history (§6.2).
 
 ### 2.5 The modifications behind each ◐ result
 
@@ -251,7 +266,7 @@ Every patch is against the source ForgeBench generates with the `float` option. 
 source was checked to compute exactly the same result as the generated design before any tool
 saw it. `patches/<tool>/` holds the patch of every correct, synthesized result of that tool
 (copied by `scripts/collect_tables.py`; `validate.py` checks they are identical to
-`minimal/patches/`).
+`tool_run_log/patches/`).
 
 **Whole end-to-end designs:**
 
@@ -372,6 +387,11 @@ design.
 
 
 ## 3. TODO item 2: answers to the table questions
+
+This section answers the TODO's questions about the table **as first submitted**, whose F1–F6
+were different features ("HLS-tool-specific constructs", "dynamic loop nests", and so on). The
+revised table defines F1–F6 as constructs; its marks and their runs are in
+[`table/`](table/README.md).
 
 ### 3.1 Meaning of the F1–F6 ticks
 
@@ -525,8 +545,11 @@ done
 cd results/tool_eval/scripts
 python minimal_inputs.py --work "$tool_eval_work/minimal"   # regenerate and patch all 67 inputs; checks hashes
 python minimal_run.py --work "$tool_eval_work/minimal" --tools-work "$tool_eval_work" \
-  --vitis-include "$VITIS_HLS_INCLUDE" --jobs 12           # every run in minimal/cases.json; resumable
+  --vitis-include "$VITIS_HLS_INCLUDE" --jobs 12           # every run in tool_run_log/cases.json; resumable
+python synth_unchecked.py --work "$tool_eval_work/minimal" --jobs 16  # Vitis on output that failed the check
 python collect_tables.py && python feature_evidence.py && python report_tables.py --write
+python paper_table.py                                        # the paper's table, cell by cell, into table/
+python collect_generated.py --work "$tool_eval_work/minimal"  # the tools' emitted HLS into generated_hls/
 python -m unittest discover -s . -p test_evidence.py && python validate.py
 ```
 
@@ -537,6 +560,9 @@ python -m unittest discover -s . -p test_evidence.py && python validate.py
 | `run_mlir.py`, `run_autosa.py`, `run_vitis.py` | Single runs: one tool on one design directory. They record the stage reached, the first error, and the input hash, and refuse a zero exit with empty output as a pass. |
 | `minimal_run.py --only <regex>` | Re-runs any subset of the matrix. |
 | `minimal_check.py` | The functional comparison. It reads the generated `top.h`, so it works for any ForgeBench design. |
+| `collect_generated.py` | Copies each tool's emitted HLS C++ into `generated_hls/` (§6.3). |
+| `synth_unchecked.py` | Synthesizes the emitted code that `minimal_run.py` did not, because it failed the functional check. |
+| `paper_table.py` | Derives every cell of the paper's table into `table/`; `--check` is run by `validate.py`. |
 
 The primary unedited runs of §2.4 were made with the same runners (`prepare.py`,
 `collect.py`).
@@ -624,13 +650,56 @@ Vitis on the original generated designs:
   matched-resource comparisons.
 * **Where the reports are:**
   * `csynth.xml` of the unedited end-to-end designs: `reports/vitis/<id>/`.
-  * `csynth.xml` of every tool run: in the tarball, since the repository is kept under 5 MB.
+  * `csynth.xml` of every minimal-study run that synthesized: in the tarball (§6.2).
 
 ### 6.2 Full logs
 
-The full redacted transcripts (primary runs, controls, builds, every minimal-study run) are in
-`tool_eval_logs.tar.gz`, built outside git by `scripts/archive_logs.py`. Its name, SHA-256 and
-size are in [`archive.json`](archive.json), and it is intended for the Zenodo bundle. Nothing in
-git contains local paths, host names, licenses or build trees (checked by `validate.py`).
+[`tool_eval_logs.tar.gz`](tool_eval_logs.tar.gz) (4.5 MB, 482 files) holds the full redacted
+transcripts of the study behind the paper's table, and of the setup:
+* `tool_run_log/<run>/full.log` for each row of `tool_run_log/results.csv`, and `csynth.xml` when the run
+  synthesized;
+* `tool_run_log/<run>/synth-unchecked.log` and `synth-unchecked-csynth.xml` for each output that
+  `synth_unchecked.py` synthesized;
+* `build-*.log` (tool builds), `control-*.log` (each tool on its own example), `setup-tests/`
+  (test runs of the control wrappers, the regeneration check) and `environment-probe.log`.
+
+The earlier transcripts are no longer in it: the primary runs of §2.4 (`fresh/`), their float
+runs (`float/`), the AutoSA header diagnostics (`diagnostic/`), the recovered AutoSA logs
+(`historical/`) and the setup mistakes (`excluded-setup/`). Their excerpts stay committed under
+`logs/`. The complete tarball with all of them (5.4 MB, 562 files, SHA-256 `be3b6b46…9a05`) is the
+version in commit `c79a0ec`: `git show c79a0ec:results/tool_eval/tool_eval_logs.tar.gz > full.tar.gz`. The exploratory runs of 16 October are not included: about 2.2 GB of
+transcripts, made with ad hoc scripts before the committed ones existed. The study was then
+re-run with the committed scripts, and only those runs are reported. `scripts/archive_logs.py`
+builds it outside the repository; the built file is then copied here. Its name, SHA-256, size and
+file count are in [`archive.json`](archive.json), and it is also intended for the Zenodo bundle.
+
+The TODO asked for this tarball to stay outside git, so that `make bundle`, which packs
+`results/tool_eval/`, stays small. It is committed anyway, at the authors' request. As a result,
+`results/tool_eval/` is about 17 MB with the generated HLS of §6.3, and a bundle built from it
+already contains the logs. `validate.py` keeps the 5 MiB budget for everything except the tarball
+and `generated_hls/`, checks that the tarball matches `archive.json`, and scans every file inside
+it. Nothing in git, the tarball included, contains local paths, host names, licenses or build
+trees.
+
+### 6.3 Generated HLS
+
+[`generated_hls/`](generated_hls/) holds the HLS C++ that each tool emitted, for every run in
+`tool_run_log/results.csv` that reached code generation. That is 110 runs and 186 files (6.4 MB),
+written by `scripts/collect_generated.py` and redacted like the logs.
+
+| Tool | Directory | Files | Runs | Functional check |
+|---|---|---|---|---|
+| ScaleHLS | `scalehls/<input>/` | `emitted.cpp` | 25 | 13 PASS, 12 FAIL |
+| HIDA | `hida/<input>/`; `hida/<input>__noext/` with `place-external-buffer=false` | `emitted.cpp` | 39 | 19 PASS, 1 FAIL, 19 COMPILE_ERROR |
+| StreamHLS | `streamhls/<input>/` | `emitted.cpp` | 8 | 5 PASS, 3 FAIL |
+| AutoSA | `autosa/<input>/st<N>/`, one per space-time candidate; `autosa/control_mm/` for its own example | `top_kernel.cpp`, `top_kernel.h`, `top_host.cpp` | 38 | 17 FAIL, 17 COMPILE_ERROR, 4 TIMEOUT |
+
+The code is kept whatever its verdict, so the miscompilations of §3.5 can be inspected directly.
+[`generated_hls/index.csv`](generated_hls/index.csv) gives, for each directory, its run id, input,
+patch, tool options, stage reached, functional check, latency, and the SHA-256 of each file.
+`validate.py` checks the hashes, checks that every row matches `tool_run_log/results.csv`, and checks
+that no file is unlisted. Three HIDA runs (`llm_0001__edited`, `mha_rope__attn`,
+`mha_rope__attn_qkvsplit` with default options) failed during code generation and wrote nothing.
+They have no directory.
 
 

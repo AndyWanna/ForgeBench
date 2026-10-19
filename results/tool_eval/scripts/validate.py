@@ -5,6 +5,8 @@ import json
 import re
 import shutil
 import subprocess
+import sys
+import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -33,7 +35,7 @@ def main():
     summary = read_csv("summary.csv", ["tool", "domain", "designs_tried", "stage_reached", "rating", "notes"])
     outcomes = read_csv("outcomes.csv", ["design_id", "domain", "tool", "stage_reached", "failure_category", "error_head",
                                          "run", "patch", "functional_check"])
-    results = read_csv("minimal/results.csv", FIELDS)
+    results = read_csv("tool_run_log/results.csv", FIELDS)
     by_run = {row["run"]: row for row in results}
     tools = {"ScaleHLS": "scalehls", "HIDA": "hida", "AutoSA": "autosa", "StreamHLS": "streamhls"}
     expected = {(tool, domain) for tool in tools for domain in ["gemm", "dnn", "llm"]}
@@ -55,28 +57,35 @@ def main():
     for row in outcomes:
         assert row["run"] in by_run, row["run"]
         assert row["failure_category"] in {"", "F1", "F2", "F3", "F4", "F5", "F6"}
-    minimal = json.loads((EVAL / "minimal/cases.json").read_text())
+    minimal = json.loads((EVAL / "tool_run_log/cases.json").read_text())
     for input_id, spec in minimal["inputs"].items():
         assert (REPO / spec["config"]).is_file(), spec["config"]
         if spec["patch"]:
             assert (EVAL / spec["patch"]).is_file(), spec["patch"]
         # Inputs committed as source (gemm_0004's three variants, llm_0001's edited one) must be exactly what was run.
+        # As in designs/gemm_0001_float/, config.json is the config the source was generated from: the sweep
+        # config itself for the fixed-point variant, and the sweep config with data_type set to float otherwise.
         if input_id.startswith("gemm_0004__") or input_id == "llm_0001__edited":
             variant = input_id.split("__")[0] + {"fixed": "", "float": "_float", "edited": "_edited"}[input_id.split("__")[1]]
             assert sha256(EVAL / "designs" / variant / "top.cpp") == spec["sha256"], variant
-            assert sha256(EVAL / "designs" / variant / "config.json") == sha256(REPO / spec["config"]), variant
+            config = json.loads((REPO / spec["config"]).read_text())
+            if spec["data_type"] == config["data_type"]:
+                assert sha256(EVAL / "designs" / variant / "config.json") == sha256(REPO / spec["config"]), variant
+            else:
+                config["data_type"] = spec["data_type"]
+                assert json.loads((EVAL / "designs" / variant / "config.json").read_text()) == config, variant
     run_ids = {run["id"] for run in minimal["runs"]}
     for row in results:
         assert row["run"] in run_ids or row["run"].rsplit("/", 1)[0] in run_ids, row["run"]
-        logs = EVAL / "minimal/logs" / row["run"]
+        logs = EVAL / "tool_run_log/logs" / row["run"]
         assert (logs / "run.log").is_file(), row["run"]
         if row["functional_check"] == "PASS" and row["tool"] in tools:
             assert json.loads((logs / "check.json").read_text())["verdict"] == "PASS", row["run"]
         if row["stage_reached"] == "synth" and row["tool"] in tools:
             assert row["functional_check"] == "PASS" and row["latency_cycles"], row["run"]
     for patch in (EVAL / "patches").glob("*/*.patch"):
-        if patch.parent.name in tools.values() and patch.name in {p.name for p in (EVAL / "minimal/patches").iterdir()}:
-            assert patch.read_bytes() == (EVAL / "minimal/patches" / patch.name).read_bytes(), patch
+        if patch.parent.name in tools.values() and patch.name in {p.name for p in (EVAL / "tool_run_log/patches").iterdir()}:
+            assert patch.read_bytes() == (EVAL / "tool_run_log/patches" / patch.name).read_bytes(), patch
     for design_id in cases:
         report = EVAL / "reports/vitis" / design_id / "csynth.xml"
         tree = ET.parse(report)
@@ -135,17 +144,55 @@ def main():
         if row["rating"] in {"full", "half"}:
             assert result["stage_reached"] == "synth"
             assert (EVAL / "reports" / tools[row["tool"]] / result["design_id"] / "csynth.xml").is_file()
+    # Vitis on the outputs that failed the functional check: one row per such output, read from generated_hls/.
+    with (EVAL / "tool_run_log/synth_unchecked.csv").open() as stream:
+        unchecked = list(csv.DictReader(stream))
+    expected_unchecked = {row["run"] for row in results
+                          if row["level"] != "control" and row["status"] == "codegen_requires_synthesis"}
+    assert {row["run"] for row in unchecked} == expected_unchecked
+    for row in unchecked:
+        assert sha256(EVAL / row["kernel"]) == row["kernel_sha256"], row["run"]
+        assert row["synth"] in {"passed", "failed", "timeout"} and (row["synth"] == "passed") == bool(row["latency_cycles"])
+        assert (EVAL / "tool_run_log/logs" / row["run"] / "synth-unchecked.log").is_file(), row["run"]
+    # The paper's table must be exactly what the records give.
+    subprocess.run([sys.executable, str(EVAL / "scripts/paper_table.py"), "--check"], check=True, capture_output=True)
+
+    def check_private(text, where):
+        assert not re.search(r"/(?:usr/scratch|export/hdd/scratch|nethome)/", text), where
+        assert not re.search(r"[\w.-]+\.ece\.gatech\.edu", text), where
+        assert not re.search(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)", text), where
+
+    # The full-log tarball is committed alongside the evidence but kept out of the size budget.
+    archive = json.loads((EVAL / "archive.json").read_text())
+    tarball = EVAL / archive["filename"]
+    assert sha256(tarball) == archive["sha256"] and tarball.stat().st_size == archive["bytes"], tarball
+    with tarfile.open(tarball) as stream:
+        members = [member for member in stream.getmembers() if member.isfile()]
+        assert len(members) == archive["files"], tarball
+        for member in members:
+            check_private(stream.extractfile(member).read().decode(errors="replace"), member.name)
+    # The tools' emitted HLS is kept out of the size budget too, but must match its index and results.csv.
+    generated = EVAL / "generated_hls"
+    with (generated / "index.csv").open() as stream:
+        index = list(csv.DictReader(stream))
+    recorded = {row["run"]: row for row in results}
+    listed = {generated / "index.csv"}
+    for row in index:
+        assert recorded[row["run"]]["stage_reached"] in {"codegen", "synth"}, row["run"]
+        assert row["functional_check"] == recorded[row["run"]]["functional_check"], row["run"]
+        for name, digest in zip(row["files"].split(), row["sha256"].split(), strict=True):
+            assert sha256(generated / row["path"] / name) == digest, (row["path"], name)
+            listed.add(generated / row["path"] / name)
+    assert {path for path in generated.rglob("*") if path.is_file()} == listed
     size = 0
     for path in EVAL.rglob("*"):
-        if not path.is_file() or "__pycache__" in path.parts:
+        if not path.is_file() or "__pycache__" in path.parts or path == tarball:
             continue
         assert not path.is_symlink()
-        size += path.stat().st_size
+        if generated not in path.parents:
+            size += path.stat().st_size
         assert path.stat().st_size < 1024 * 1024, path
-        text = path.read_text()
-        assert not re.search(r"/(?:usr/scratch|export/hdd/scratch|nethome)/", text), path
-        assert not re.search(r"[\w.-]+\.ece\.gatech\.edu", text), path
-        assert not re.search(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)", text), path
+        check_private(path.read_text(), path)
     assert size < 5 * 1024 * 1024, size
     print(f"PASS: {len(summary)} summary cells, {len(outcomes)} outcomes, {len(results)} minimal-study rows, "
           f"{len(minimal['inputs'])} inputs; {size:,} public bytes")
