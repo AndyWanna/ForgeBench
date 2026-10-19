@@ -1,0 +1,61 @@
+artifact: historical AutoSA workspace; dnn/conv_A/vitis_hls.log
+source_sha256_before_redaction: 8c33c78b0b88425f6588c343a3a427bad8a67e25e66c6dfa236a1d011fa60261
+invocation: vitis_hls -f run_hls_autosa.tcl (from transcript; historical environment not recovered)
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Thu Jun 26 12:30:58 2025
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source <PATH>/hls.tcl -notrace
+INFO: [HLS 200-10] For user '<USER>' on host '<HOST>' (Linux_x86_64 version 4.18.0-553.56.1.el8_10.x86_64) on Thu Jun 26 12:31:00 EDT 2025
+INFO: [HLS 200-10] On os "Red Hat Enterprise Linux release 8.10 (Ootpa)"
+INFO: [HLS 200-10] In directory '<DESIGN>'
+WARNING: [HLS 200-2053] The vitis_hls executable is deprecated. Consider using vitis-run --mode hls --tcl
+Sourcing Tcl script 'run_hls_autosa.tcl'
+INFO: [HLS 200-1510] Running: open_project kernel0 
+INFO: [HLS 200-10] Opening project '<DESIGN>/kernel0'.
+INFO: [HLS 200-1510] Running: set_top kernel0 
+INFO: [HLS 200-1510] Running: add_files kernel_kernel.cpp 
+INFO: [HLS 200-10] Adding design file 'kernel_kernel.cpp' to the project
+INFO: [HLS 200-1510] Running: open_solution solution 
+INFO: [HLS 200-10] Opening solution '<DESIGN>/kernel0/solution'.
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.333ns.
+INFO: [SYN 201-201] Setting up clock 'default' with an uncertainty of 0.9ns.
+INFO: [HLS 200-1611] Setting target device to 'xcu250-figd2104-2L-e'
+INFO: [HLS 200-1505] Using flow_target 'vitis'
+Resolution: For help on HLS 200-1505 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-1505.html
+INFO: [HLS 200-1464] Running solution command: config_dataflow -strict_mode=warning
+INFO: [HLS 200-1464] Running solution command: config_interface -m_axi_conservative_mode=1
+INFO: [HLS 200-1464] Running solution command: config_interface -m_axi_addr64=1
+INFO: [HLS 200-1464] Running solution command: config_interface -m_axi_latency=64
+INFO: [HLS 200-1464] Running solution command: config_interface -m_axi_alignment_byte_size=64
+INFO: [HLS 200-1464] Running solution command: config_interface -m_axi_max_widen_bitwidth=512
+INFO: [HLS 200-1464] Running solution command: config_interface -default_interface=kernel
+INFO: [HLS 200-1464] Running solution command: config_rtl -register_reset_num=3
+INFO: [HLS 200-1510] Running: set_part xcu250-figd2104-2L-e 
+INFO: [HLS 200-1510] Running: create_clock -period 3.333 
+INFO: [HLS 200-1510] Running: config_dataflow -strict_mode warning 
+INFO: [HLS 200-1510] Running: set_clock_uncertainty 27.000000% 
+INFO: [HLS 200-1510] Running: config_rtl -enable_maxiConservative=1 
+WARNING: [HLS 200-483] The 'config_rtl -enable_maxiConservative' command is deprecated and will be removed in a future release. Use 'config_interface -m_axi_conservative_mode' as its replacement.
+INFO: [HLS 200-1907] Replacing 'config_rtl -enable_maxiConservative=1' with 'config_interface -m_axi_conservative_mode=1' in current solution file
+INFO: [HLS 200-1510] Running: config_interface -m_axi_addr64 
+WARNING: [HLS 200-483] The 'config_sdx -target' command is deprecated and will be removed in a future release. Use 'config_flow -target' as its replacement.
+WARNING: [HLS 200-484] The 'config_sdx -target' command is deprecated and will be removed in a future release.
+INFO: [HLS 200-435] Setting 'config_sdx -target xocc' configuration: config_flow -target=vitis
+INFO: [HLS 200-1510] Running: csynth_design 
+INFO: [HLS 200-111] Finished File checks and directory preparation: CPU user time: 0.07 seconds. CPU system time: 0 seconds. Elapsed time: 0.08 seconds; current allocated memory: 391.438 MB.
+INFO: [HLS 200-10] Analyzing design file 'kernel_kernel.cpp' ... 
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:00; Allocated memory: 0.000 MB.
+command 'ap_source' returned error code
+    while executing
+"source run_hls_autosa.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel \#0 [list source $tclfile] "
+
+INFO: [HLS 200-112] Total CPU user time: 3.73 seconds. Total CPU system time: 0.62 seconds. Total elapsed time: 4.2 seconds; peak allocated memory: 391.438 MB.

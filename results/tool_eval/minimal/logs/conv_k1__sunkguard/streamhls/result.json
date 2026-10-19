@@ -1,0 +1,41 @@
+{
+  "design_id": "conv_k1__sunkguard",
+  "domain": "dnn",
+  "tool": "StreamHLS",
+  "source_sha256": "5c8c92e2e119297a3b08668500a4e51e58cf5f2c53f0707209f5539c8d5f43d2",
+  "input_edits": "conv_k1__sunkguard.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA14_A14_fPA16_A1_A1_fS1_",
+  "stage_reached": "synth",
+  "rating": "full",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    },
+    {
+      "stage": "synth",
+      "exit_code": 0
+    }
+  ],
+  "status": "synth_passed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "3309e4af1dee6a5c1f1ec35cdf429e598921be364a5b17f49945c06f07552b53",
+    "output_sha256": "053ccf7c0bae563d6318fad9cf458c336723e80b83f42beea8c62b129f98bcda"
+  },
+  "emitted_source_sha256": "04d0b4928be626b9957601b63a9e4de0fa5f2d54e6d87c0da1cd4d8b1bea0525"
+}

@@ -1,0 +1,65 @@
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Fri Oct 16 23:59:55 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source <PATH>/hls.tcl -notrace
+INFO: [HLS 200-10] For user '<USER>' on host '<HOST>' (Linux_x86_64 version 4.18.0-553.159.1.el8_10.x86_64) on Fri Oct 16 23:59:57 EDT 2026
+INFO: [HLS 200-10] On os "Red Hat Enterprise Linux release 8.10 (Ootpa)"
+[middle omitted]
+INFO: [HLS 200-10] -- Generating RTL for module 'top_Pipeline_VITIS_LOOP_150_4' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top_Pipeline_VITIS_LOOP_150_4'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.08 seconds. CPU system time: 0.01 seconds. Elapsed time: 0.1 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'top_Pipeline_VITIS_LOOP_156_5_VITIS_LOOP_158_6' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'top_Pipeline_VITIS_LOOP_156_5_VITIS_LOOP_158_6' pipeline 'VITIS_LOOP_156_5_VITIS_LOOP_158_6' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Generating core module 'fadd_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top_Pipeline_VITIS_LOOP_156_5_VITIS_LOOP_158_6'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.07 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.08 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'top_Pipeline_VITIS_LOOP_173_7' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'top_Pipeline_VITIS_LOOP_173_7' pipeline 'VITIS_LOOP_173_7' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Generating core module 'fadd_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top_Pipeline_VITIS_LOOP_173_7'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.09 seconds. CPU system time: 0.01 seconds. Elapsed time: 0.1 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'top' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+WARNING: [RTGEN 206-101] Design contains AXI ports. Reset is fixed to synchronous and active low.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem1' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem2' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_x' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_A' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_B' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_y' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_bias' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_result' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'top' to 'ap_ctrl_hs'.
+INFO: [RTGEN 206-100] Bundling port 'DRAM_x', 'DRAM_A', 'DRAM_B', 'DRAM_y', 'DRAM_bias' and 'DRAM_result' to AXI-Lite port control.
+INFO: [RTGEN 206-100] Generating core module 'fadd_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top'.
+INFO: [RTMG 210-278] Implementing memory 'top_BRAM_x_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [RTMG 210-278] Implementing memory 'top_BRAM_A_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [RTMG 210-278] Implementing memory 'top_BRAM_xA_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.12 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.15 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 0.32 seconds. CPU system time: 0.13 seconds. Elapsed time: 0.47 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-1603] Design has inferred MAXI bursts and missed bursts, see Vitis HLS GUI synthesis summary report for detailed information.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 1.47 seconds. CPU system time: 0.06 seconds. Elapsed time: 1.53 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for top.
+INFO: [VLOG 209-307] Generating Verilog RTL for top.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were NOT satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 136.99 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:39; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 31.93 seconds. Total CPU system time: 3.87 seconds. Total elapsed time: 43.98 seconds; peak allocated memory: 0.000 MB.

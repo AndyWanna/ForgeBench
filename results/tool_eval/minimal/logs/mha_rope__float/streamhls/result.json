@@ -1,0 +1,32 @@
+{
+  "design_id": "mha_rope__float",
+  "domain": "llm",
+  "tool": "StreamHLS",
+  "source_sha256": "359fe2e69f675dc4313d205a08823dc07aec8aed77627dccfa8452342a7fe068",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_S0_S0_S0_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mlir::affine::AffineForOp>, ArrayRef<unsigned int>): Assertion `isPerfectlyNested(input) && \"input not perfectly nested\"' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "e36764da5c176b6957537b2de93a790deaec9fa24025694c36253b2b3982ce14",
+    "output_sha256": "5ebae3d18a3a666fe726eba77df8c7a43f6d65c8af5a4ae0c49df41404046809"
+  }
+}

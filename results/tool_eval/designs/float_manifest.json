@@ -1,0 +1,69 @@
+{
+  "generator_commit": "6b7c510dcc8db43bfcc269da6348dd84b135f082",
+  "selection": "User-requested float regeneration of the same three configurations; separate from original fixed-point cohort",
+  "cases": [
+    {
+      "design_id": "gemm_0001_float",
+      "domain": "gemm",
+      "parent_design_id": "gemm_0001",
+      "configuration_change": {
+        "data_type": [
+          "ap_fixed<16,5>",
+          "float"
+        ]
+      },
+      "config_sha256": "a1df5382f8c26742968131251c770c00d6d10e12ff17f155eb125cbe2b784e7d",
+      "source_sha256": {
+        "run_hls.tcl": "43ae3b0bb2b1e34db985e1a69f6ce5952243f159b36ae44777c15a2da31d6a96",
+        "tb_top.cpp": "53dd6402dc3d45f3da42cee298035a6d13490e2e667b24ef18abc1c12e6fc176",
+        "top.cpp": "ce62b174a2f31f10b0658b7cd5f2717ab0b58136b5ba3c3b398195172587c60d",
+        "top.h": "90fb14859ad22f0fa157a657b175ed1637062fa31729bbb082c17ea8371a1f6c"
+      },
+      "input_edits": "none after generation",
+      "precision_equivalence_claimed": false,
+      "generated_directory": "gemm_0001_float/config"
+    },
+    {
+      "design_id": "dnn_0001_float",
+      "domain": "dnn",
+      "parent_design_id": "dnn_0001",
+      "configuration_change": {
+        "data_type": [
+          "ap_fixed<16,5>",
+          "float"
+        ]
+      },
+      "config_sha256": "8d10708eb745dd3af95f5df87f81cca0b78f3e5fade3900c31d627dad55a5fa0",
+      "source_sha256": {
+        "run_hls.tcl": "931a2a289dcccdddf4385be04e21cfaeae760723624d926dc6f053ee19aa289f",
+        "tb_top.cpp": "c08bc4d7b2bc365255b1d3e98c0937dd1f128521c69408caaa4a5a942ced677f",
+        "top.cpp": "05998c574cd665066ecf573ad9741336626cb6c73c9908cea5732a428f7b6678",
+        "top.h": "ecc03a00006b05f5c0f84a02ff2f29638fa745e5a9d405012eff9f6e8339413d"
+      },
+      "input_edits": "none after generation",
+      "precision_equivalence_claimed": false,
+      "generated_directory": "dnn_0001_float/config"
+    },
+    {
+      "design_id": "llm_0001_float",
+      "domain": "llm",
+      "parent_design_id": "llm_0001",
+      "configuration_change": {
+        "data_type": [
+          "ap_fixed<16,5>",
+          "float"
+        ]
+      },
+      "config_sha256": "fa42a4f5038fef690aa9bee67bb7a96084e33e04de9020cd7e69dd202c4fbc30",
+      "source_sha256": {
+        "run_hls.tcl": "4bf7b08f7d257714d8cd63864ca56b8ea3530a3be424f7e0d968724f103f0248",
+        "tb_top.cpp": "9be679e4847fca9f34f7a4667746508e88dff68795d5d6648f059398a941ad9c",
+        "top.cpp": "9e27ca140107f8283cd5691b716578b49124a4573cb3bc7872ed379569eda4a3",
+        "top.h": "9237b826cab391bd99a84496b41fee506f6b56547ac6fffe0af67014a303f29a"
+      },
+      "input_edits": "none after generation",
+      "precision_equivalence_claimed": false,
+      "generated_directory": "llm_0001_float/config"
+    }
+  ]
+}

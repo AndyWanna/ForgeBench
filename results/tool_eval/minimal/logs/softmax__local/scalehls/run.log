@@ -1,0 +1,78 @@
+tool: ScaleHLS
+design_id: softmax__local
+source_sha256: 8f889d756dcc00e608739de4e22c55cbb8d21c2934b49e66a1876b8fdb0c289d
+input_edits: softmax__local.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_fS0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/scale/bin/scalehls-opt <RUN>/parsed.mlir '-scalehls-dse-pipeline=top-func=_Z3topPA128_fS0_ target-spec=<WORK><PATH>/config.json' -o <RUN>/transformed.mlir
+exit_code: 0
+
+stage: codegen
+command (inside build image): <WORK>/build/scale/bin/scalehls-translate <RUN>/transformed.mlir -scalehls-emit-hlscpp -o <RUN>/emitted.cpp
+exit_code: 0
+
+first_synthesis_error: 
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Oct 17 00:10:07 2026
+[middle omitted]
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_106' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_107' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_108' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_109' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_110' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_111' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_112' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_113' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_114' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_115' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_116' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_117' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_118' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_119' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_120' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_121' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_122' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_123' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_124' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_125' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_126' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v0_3_127' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_0_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_0_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_1_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_1_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_2_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_2_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_3_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_3_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_4_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_4_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_5_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_5_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_6_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_6_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_7_0' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_s/v1_7_1' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'p_Z3topPA128_fS0_s' to 's_axilite & ap_ctrl_hs'.
+INFO: [RTGEN 206-100] Bundling port 'return' to AXI-Lite port ctrl.
+INFO: [RTGEN 206-100] Finished creating RTL model for 'p_Z3topPA128_fS0_s'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 2.17 seconds. CPU system time: 0.31 seconds. Elapsed time: 2.53 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 1.81 seconds. CPU system time: 0.21 seconds. Elapsed time: 2.05 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 146.09 seconds. CPU system time: 0.61 seconds. Elapsed time: 147.11 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for p_Z3topPA128_fS0_s.
+INFO: [VLOG 209-307] Generating Verilog RTL for p_Z3topPA128_fS0_s.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 126.68 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:19:31; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 1160.53 seconds. Total CPU system time: 7.93 seconds. Total elapsed time: 1176.62 seconds; peak allocated memory: 0.000 MB.

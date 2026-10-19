@@ -1,0 +1,50 @@
+InstalledDir: <PATH>/bin
++ ld.lld --version
+Ubuntu LLD 14.0.0 (compatible with GNU linkers)
++ cmake --version
+cmake version 3.22.1
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
++ ninja --version
+1.10.1
++ python3 --version
+Python 3.10.12
++ dpkg-query -W build-essential clang-14 lld-14 cmake ninja-build python3 python3-numpy libgmp-dev libboost-dev libzstd-dev zlib1g-dev libtinfo-dev
+build-essential	12.9ubuntu3
+clang-14	1:14.0.0-1ubuntu1.1
+cmake	3.22.1-1ubuntu1.22.04.2
+libboost-dev:amd64	1.74.0.3ubuntu7
+libgmp-dev:amd64	2:6.2.1+dfsg-3ubuntu1
+libtinfo-dev:amd64	6.3-2ubuntu0.3
+libzstd-dev:amd64	1.4.8+dfsg-3build1
+lld-14	1:14.0.0-1ubuntu1.1
+ninja-build	1.10.1-1
+python3	3.10.6-1~22.04.1
+python3-numpy	1:1.21.5-1ubuntu22.04.1
+zlib1g-dev:amd64	1:1.2.11.dfsg-2ubuntu9.2
++ <WORK>/build/scale/bin/cgeist --version
+LLVM (http://llvm.org/):
+  LLVM version 16.0.0git
+  Optimized build with assertions.
+  Default target: x86_64-unknown-linux-gnu
+  Host CPU: cascadelake
++ <WORK>/build/scale/bin/scalehls-opt --version
+LLVM (http://llvm.org/):
+  LLVM version 16.0.0git
+  Optimized build with assertions.
+  Default target: x86_64-unknown-linux-gnu
+  Host CPU: cascadelake
++ <WORK>/build/hida/bin/scalehls-opt --version
+LLVM (http://llvm.org/):
+  LLVM version 16.0.0git
+  Optimized build with assertions.
+  Default target: x86_64-unknown-linux-gnu
+  Host CPU: cascadelake
++ <WORK>/build/stream-frontend/bin/cgeist --version
+LLVM (http://llvm.org/):
+  LLVM version 18.0.0git
+  Optimized build with assertions.
++ <WORK>/build/streamhls/bin/streamhls-opt --version
+LLVM (http://llvm.org/):
+  LLVM version 18.1.2
+  Optimized build with assertions.

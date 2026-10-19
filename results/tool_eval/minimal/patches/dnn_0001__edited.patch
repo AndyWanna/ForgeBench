@@ -1,0 +1,46 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -12,12 +12,6 @@
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_image_input[16][56][56];
+-data_t BRAM_conv_weight[16][16][1][1];
+-data_t BRAM_conv_bias[16];
+-data_t BRAM_batch_norm_weights[4][16];
+-data_t BRAM_buffer_1[16][58][58];
+-data_t BRAM_buffer_2[16][58][58];
+ 
+ void load_16_56_56_float(data_t input[16][56][56], data_t output[16][56][56])
+ {
+@@ -110,15 +104,13 @@
+                 for (int kw = 0; kw < 1; kw++) {
+                     int in_row = i * 1 - 1 + kh;
+                     int in_col = j * 1 - 1 + kw;
+-                    if (in_row >= 0 && in_row < 56 && in_col >= 0 && in_col < 56) {
+                         for (int ci = 0; ci < 16; ci++) {
+                         #pragma HLS unroll factor=1
+                             for (int co = 0; co < 16; co++) {
+                                 #pragma HLS unroll factor=1
+-                                output[co][i][j] += input[ci][in_row][in_col] * kernel[co][ci][kh][kw];
++                                if (in_row >= 0 && in_row < 56 && in_col >= 0 && in_col < 56) output[co][i][j] += input[ci][in_row][in_col] * kernel[co][ci][kh][kw];
+                             }
+                         }
+-                    }
+                 }
+             }
+         }
+@@ -211,6 +203,13 @@
+     #pragma HLS interface m_axi port=DRAM_conv_bias offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_batch_norm_weights offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_image_output offset=slave bundle=mem2
++    data_t BRAM_image_input[16][56][56];
++    data_t BRAM_conv_weight[16][16][1][1];
++    data_t BRAM_conv_bias[16];
++    data_t BRAM_batch_norm_weights[4][16];
++    data_t BRAM_buffer_1[16][58][58];
++    data_t BRAM_buffer_2[16][58][58];
++
+ 
+     load_16_56_56_float(DRAM_image_input, BRAM_image_input);
+     load_16_16_1_1_float(DRAM_conv_weight, BRAM_conv_weight);

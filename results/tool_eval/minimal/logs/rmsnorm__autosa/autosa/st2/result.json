@@ -1,0 +1,22 @@
+{
+  "stage_reached": "codegen",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "",
+  "status": "codegen_requires_synthesis",
+  "design_id": "rmsnorm__autosa",
+  "domain": "llm",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "144d0e05fc25d2ae18c55b1429dfe061daeda2e14e8c7ce32dddf58382e50e87",
+  "exit_code": 0,
+  "generated_kernels": [
+    "output/src/top_kernel.cpp"
+  ],
+  "input_edits": "diagnostic patch rmsnorm__autosa.patch; sha256=72836bcdca8ceadb5a1fa71cabd55755a39d9bc052b40686d58e9cd8228727c0",
+  "autosa_args": [
+    "--no-pet-autodetect",
+    "--sa-sizes={kernel[]->space_time[2];kernel[]->array_part[8,16];kernel[]->latency[4]}"
+  ],
+  "autosa_stdin": "n\\nn\\nn\\nn\\nn\\nn\\n"
+}

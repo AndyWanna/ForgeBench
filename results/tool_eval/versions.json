@@ -1,0 +1,36 @@
+{
+  "source_commits": {
+    "scalehls": "b69f334c9c122fad3759fcf388d3f039689b6fc0",
+    "hida": "fd79f6c946593c290d6d285c2a2efcab72fbe9c6",
+    "autosa": "b61a1b4132d631600696feba59eb606acb34d304",
+    "streamhls": "00c6219a82fc710492f4eb44e4f34836dfb19e08",
+    "stream-polygeist": "77c04bb2a7a2406ca9480bcc9e729b07d2c8d077",
+    "scalehls/polygeist": "737290e9c8fc87473a101472ea66b2e0e33634d2",
+    "scalehls/polygeist/llvm-project": "cf0ff67a7b051ed44b7d689eec73b12990676013",
+    "streamhls/extern/llvm-project": "26a1d6601d727a96f4301d0d8647b5a42760ae0c",
+    "stream-polygeist/llvm-project": "26eb4285b56edd8c897642078d91f16ff0fd3472"
+  },
+  "binary_sha256": {
+    "scale/cgeist": "a21231f20a07c7b0a47f4a2dbc0beb043ad3b4ebab402d6d3fca3958c90513af",
+    "scale/scalehls-opt": "746341cd57efbf5b46649381bcd723bc6d0c0e20454d8ae018a2ecf11ff232b2",
+    "scale/scalehls-translate": "219e7d5eba4aeaa43d3e02f382687d31b0b0a31fe6b168801bf795919a2282d0",
+    "hida/scalehls-opt": "af1d9affecd579d76232a08916d58ddee6bf782d331564df41704237f07dde75",
+    "hida/scalehls-translate": "00267305aa8b53cc4dc3e62a86aaad67f395328d64f41384a1b9b9e5bbee21b0",
+    "stream-frontend/cgeist": "17d82b78cae6350eddaf130839219fc7ba5f3259759d92321b136baa9df3699c",
+    "streamhls/streamhls-opt": "5ab5207ab683e00e4fe2111d6b547349ccef0c2610b23367dfe28e513693cf4f",
+    "streamhls/streamhls-translate": "f63c80200f32cf90e87a86e0e7d15f42b3d9bdfee9eddd7c7d2099f01528d0de"
+  },
+  "evaluation_date": "2026-10-16",
+  "build_image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "autosa_image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_patches": [
+    "patches/build/hida-target-names.patch"
+  ],
+  "stream_ir_adapter": "scripts/normalize_stream_dlti.py; lossless DLTI metadata integer-payload width conversion",
+  "llvm_versions": {
+    "ScaleHLS/HIDA": "16.0.0git",
+    "StreamHLS backend": "18.1.2",
+    "StreamHLS Polygeist frontend": "18.0.0git"
+  },
+  "historical_tool_commits": "unknown; these pins describe the fresh evaluation only"
+}

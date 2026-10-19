@@ -1,0 +1,40 @@
+command: docker run --rm --name forgebench-control-403cf00a70ef --network none --user 3170772:2626 --ulimit core=0 --mount type=bind,src=<WORK>,dst=<WORK>,readonly --mount type=bind,src=<CONTROL>,dst=<CONTROL> --mount type=bind,src=<EVAL>/scripts,dst=/scripts,readonly --workdir <CONTROL> --entrypoint bash forgebench-tool-eval-build:20261016 /scripts<CONTROL>_mlir.sh streamhls
+exit_code: 134
++ <WORK>/build/stream-frontend/bin/cgeist <WORK><PATH>/test_gemm.c -function=test_gemm -S -memref-fullrank -raise-scf-to-affine -o <CONTROL>/parsed.mlir
++ case "$tool" in
++ python3 /scripts/normalize_stream_dlti.py <CONTROL>/parsed.mlir <CONTROL>/compatible.mlir
++ <WORK>/build/streamhls/bin/streamhls-opt <CONTROL>/compatible.mlir -streamhls-base-kernel-pipeline=top-func=test_gemm -o <CONTROL>/transformed.mlir
+streamhls-opt: <WORK><PATH>/BufferizeFuncArgs.cpp:83: virtual void (anonymous namespace)::BufferizeFuncArgs::runOnOperation(): Assertion `false && "Top Func Argument is not a MemRefType"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: <WORK>/build/streamhls/bin/streamhls-opt <CONTROL>/compatible.mlir -streamhls-base-kernel-pipeline=top-func=test_gemm -o <CONTROL>/transformed.mlir
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  streamhls-opt 0x0000564465578f57
+1  streamhls-opt 0x0000564465576abe
+2  streamhls-opt 0x000056446557960a
+3  libc.so.6     0x00007fb79266a520
+4  libc.so.6     0x00007fb7926be9bc pthread_kill + 300
+5  libc.so.6     0x00007fb79266a476 raise + 22
+6  libc.so.6     0x00007fb7926507f3 abort + 211
+7  libc.so.6     0x00007fb79265071b
+8  libc.so.6     0x00007fb792661e96
+9  streamhls-opt 0x00005644635e8d03
+10 streamhls-opt 0x00005644652971d4
+11 streamhls-opt 0x0000564465297971
+12 streamhls-opt 0x000056446529cdfe
+13 streamhls-opt 0x000056446529910b
+14 streamhls-opt 0x0000564465297318
+15 streamhls-opt 0x0000564465297971
+16 streamhls-opt 0x0000564465299fe2
+17 streamhls-opt 0x0000564463598974
+18 streamhls-opt 0x0000564463597be4
+19 streamhls-opt 0x000056446547eac8
+20 streamhls-opt 0x0000564463592cea
+21 streamhls-opt 0x0000564463592e86
+22 streamhls-opt 0x0000564463593132
+23 streamhls-opt 0x0000564461270d0e
+24 libc.so.6     0x00007fb792651d90
+25 libc.so.6     0x00007fb792651e40 __libc_start_main + 128
+26 streamhls-opt 0x0000564461270ba5
+/scripts<CONTROL>_mlir.sh: line 14:     9 Aborted                 (core dumped) <WORK>/build/streamhls/bin/streamhls-opt <CONTROL>/compatible.mlir '-streamhls-base-kernel-pipeline=top-func=test_gemm' -o <CONTROL>/transformed.mlir
+

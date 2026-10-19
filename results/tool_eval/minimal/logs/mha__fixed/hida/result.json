@@ -1,0 +1,21 @@
+{
+  "design_id": "mha__fixed",
+  "domain": "llm",
+  "tool": "HIDA",
+  "source_sha256": "b2cc5417877cd24cafe8bd60f0c5520e1f6a2bbe8f561048ae94c32bc7172d2e",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EES4_S4_S4_S4_",
+  "stage_reached": "parse",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "loc(\"<VITIS_INCLUDE>/etc/ap_fixed_base.h\":1639:5): error:  + visiting unknonwn sub decl stmt",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 139
+    }
+  ],
+  "status": "parse_failed"
+}

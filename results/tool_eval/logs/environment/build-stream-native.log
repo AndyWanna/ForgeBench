@@ -1,0 +1,50 @@
+-- OCaml bindings disabled.
+-- LLVM default target triple: x86_64-unknown-linux-gnu
+-- Building with -fPIC
+-- Targeting X86
+-- Clang version: 18.1.2
+-- Configuring done
+-- Generating done
+-- Build files have been written to: <WORK>/build/stream-llvm
+[1/12] Linking CXX static library lib/libMLIRTestDialect.a
+[2/12] Linking CXX static library lib/libMLIRDLTITestPasses.a
+[3/12] Linking CXX static library lib/libMLIRTestPDLL.a
+[4/12] Linking CXX static library lib/libMLIRTestOneToNTypeConversionPass.a
+[5/12] Linking CXX static library lib/libMLIRFuncTestPasses.a
+[6/12] Linking CXX static library lib/libMLIRTestAnalysis.a
+[7/12] Linking CXX static library lib/libMLIRTestFuncToLLVM.a
+[8/12] Linking CXX static library lib/libMLIRMemRefTestPasses.a
+[9/12] Linking CXX static library lib/libMLIRTestPass.a
+[10/12] Linking CXX static library lib/libMLIRTestTransforms.a
+[11/12] Linking CXX static library lib/libMLIRTestIR.a
+[12/12] Linking CXX executable bin/mlir-opt
+-- The CXX compiler identification is Clang 14.0.0
+-- The C compiler identification is Clang 14.0.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: <PATH>/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: <PATH>/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test Terminfo_LINKABLE
+-- Performing Test Terminfo_LINKABLE - Success
+-- Found Terminfo: <PATH>/libtinfo.so  
+-- Found ZLIB: <PATH>/libz.so (found version "1.2.11") 
+-- Found zstd: <PATH>/libzstd.so  
+-- Linker detection: unknown
+-- Performing Test LLVM_LIBSTDCXX_MIN
+-- Performing Test LLVM_LIBSTDCXX_MIN - Success
+-- Performing Test LLVM_LIBSTDCXX_SOFT_ERROR
+-- Performing Test LLVM_LIBSTDCXX_SOFT_ERROR - Success
+CMake Error at <WORK>/build/stream-llvm/lib/cmake/llvm/HandleLLVMOptions.cmake:337 (message):
+  LLVM_ENABLE_LLD and LLVM_USE_LINKER can't be set at the same time
+Call Stack (most recent call first):
+  CMakeLists.txt:41 (include)
+
+
+-- Configuring incomplete, errors occurred!
+See also "<WORK>/build/streamhls/CMakeFiles/CMakeOutput.log".

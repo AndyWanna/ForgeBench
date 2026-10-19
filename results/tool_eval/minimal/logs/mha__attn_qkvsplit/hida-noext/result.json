@@ -1,0 +1,29 @@
+{
+  "design_id": "mha__attn_qkvsplit",
+  "domain": "llm",
+  "tool": "HIDA",
+  "source_sha256": "9c9cdc5f56b8fc4f41a248c1400bb5fd36ec606d6192be74ae0a90aa04254c99",
+  "input_edits": "mha__attn_qkvsplit.patch",
+  "pipeline_options": "place-external-buffer=false",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_S0_S0_S0_",
+  "stage_reached": "codegen",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    }
+  ],
+  "status": "codegen_requires_synthesis"
+}

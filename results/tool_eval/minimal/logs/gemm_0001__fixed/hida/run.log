@@ -1,0 +1,73 @@
+tool: HIDA
+design_id: gemm_0001__fixed
+source_sha256: 584b227faf3a3730b1c7ca9ceccce5f3be4c0c39c555f6e6e642e80dbf368803
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":828:9): error:  + visiting unknonwn sub decl stmt
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topP8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EEPA64_S2_S5_S3_S3_S3_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 139
+VarDecl 0x7f1ad0b7d948 <<DESIGN>/top.cpp:15:1, col:17> col:8 used BRAM_x 'data_t[64]' callinit
+`-CXXConstructExpr 0x7f1ad0ba9e38 <col:8> 'data_t[64]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f1ad0ba9e38 'data_t[64]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_x
+VarDecl 0x7f1ad0baa0d8 <<DESIGN>/top.cpp:16:1, col:21> col:8 used BRAM_A 'data_t[64][64]' callinit
+`-CXXConstructExpr 0x7f1ad0baa198 <col:8> 'data_t[64][64]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f1ad0baa198 'data_t[64][64]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_A
+VarDecl 0x7f1ad0baa2c8 <<DESIGN>/top.cpp:17:1, col:21> col:8 used BRAM_B 'data_t[64][64]' callinit
+`-CXXConstructExpr 0x7f1ad0baa330 <col:8> 'data_t[64][64]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f1ad0baa330 'data_t[64][64]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_B
+VarDecl 0x7f1ad0baa410 <<DESIGN>/top.cpp:18:1, col:17> col:8 used BRAM_y 'data_t[64]' callinit
+[middle omitted]
+        |-ParenExpr 0x7f1acee261c8 <col:51, col:66> 'int'
+        | `-BinaryOperator 0x7f1acee261a8 <col:52, col:65> 'int' '-'
+        |   |-BinaryOperator 0x7f1acee26188 <col:52, col:57> 'int' '-'
+        |   | |-ImplicitCastExpr 0x7f1acee26138 <col:52> 'int' <LValueToRValue>
+        |   | | `-DeclRefExpr 0x7f1acee26118 <col:52> 'const int' lvalue Var 0x7f1acee147a0 'F2' 'const int' non_odr_use_constant
+        |   | `-ImplicitCastExpr 0x7f1acee26170 <col:57> 'int' <LValueToRValue>
+        |   |   `-DeclRefExpr 0x7f1acee26150 <col:57> 'const int' lvalue Var 0x7f1acee14618 '_AP_F' 'const int' non_odr_use_constant
+        |   `-IntegerLiteral 0x55af0ee6dab0 <col:65> 'int' 2
+        `-ParenExpr 0x7f1acee26250 <col:70, col:81> 'int'
+          `-BinaryOperator 0x7f1acee26230 <col:71, col:80> 'int' '-'
+            |-SubstNonTypeTemplateParmExpr 0x7f1acee26208 <col:71> 'int'
+            | |-NonTypeTemplateParmDecl 0x7f1ad0b84188 <line:800:13, col:17> col:17 referenced 'int' depth 0 index 0 _AP_W2
+            | `-IntegerLiteral 0x7f1acee261e8 <line:828:71> 'int' 33
+            `-IntegerLiteral 0x55af0ee6db30 <col:80> 'int' 1
+cgeist: <WORK><PATH>/CGStmt.cc:1027: ValueCategory MLIRScanner::VisitDeclStmt(clang::DeclStmt *): Assertion `0 && "unknown sub decl"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	<eof> parser at end of file
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+<WORK>/build/scale/bin/cgeist(+0x39ab613)[0x55af06362613]
+<WORK>/build/scale/bin/cgeist(+0x39a952e)[0x55af0636052e]
+<WORK>/build/scale/bin/cgeist(+0x39abada)[0x55af06362ada]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f1ade4d1520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f1ade5259bc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f1ade4d1476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f1ade4b77f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2871b)[0x7f1ade4b771b]
+/lib/x86_64-linux-gnu/libc.so.6(+0x39e96)[0x7f1ade4c8e96]
+<WORK>/build/scale/bin/cgeist(+0x26b5a2a)[0x55af0506ca2a]
+<WORK>/build/scale/bin/cgeist(+0x265f34c)[0x55af0501634c]
+<WORK>/build/scale/bin/cgeist(+0x26b5c26)[0x55af0506cc26]
+<WORK>/build/scale/bin/cgeist(+0x265f482)[0x55af05016482]
+<WORK>/build/scale/bin/cgeist(+0x26b3ebf)[0x55af0506aebf]
+<WORK>/build/scale/bin/cgeist(+0x265f1cd)[0x55af050161cd]
+<WORK>/build/scale/bin/cgeist(+0x26b5c26)[0x55af0506cc26]
+<WORK>/build/scale/bin/cgeist(+0x265f482)[0x55af05016482]
+<WORK>/build/scale/bin/cgeist(+0x26b3ebf)[0x55af0506aebf]
+<WORK>/build/scale/bin/cgeist(+0x265f1cd)[0x55af050161cd]
+<WORK>/build/scale/bin/cgeist(+0x26b3f7d)[0x55af0506af7d]
+<WORK>/build/scale/bin/cgeist(+0x265f1cd)[0x55af050161cd]
+<WORK>/build/scale/bin/cgeist(+0x26b5c26)[0x55af0506cc26]
+<WORK>/build/scale/bin/cgeist(+0x265f482)[0x55af05016482]
+<WORK>/build/scale/bin/cgeist(+0x2657af6)[0x55af0500eaf6]
+<WORK>/build/scale/bin/cgeist(+0x26905d4)[0x55af050475d4]
+<WORK>/build/scale/bin/cgeist(+0x67623cf)[0x55af091193cf]
+<WORK>/build/scale/bin/cgeist(+0x4e2af60)[0x55af077e1f60]
+<WORK>/build/scale/bin/cgeist(+0x2695496)[0x55af0504c496]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f1ade4b8d90]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f1ade4b8e40]
+<WORK>/build/scale/bin/cgeist(+0x2651225)[0x55af05008225]

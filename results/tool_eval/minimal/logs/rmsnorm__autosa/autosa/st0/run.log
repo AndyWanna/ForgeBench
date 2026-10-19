@@ -1,0 +1,83 @@
+design_id: rmsnorm__autosa
+domain: llm
+input_edits: diagnostic patch rmsnorm__autosa.patch; sha256=72836bcdca8ceadb5a1fa71cabd55755a39d9bc052b40686d58e9cd8228727c0
+source_sha256: 144d0e05fc25d2ae18c55b1429dfe061daeda2e14e8c7ce32dddf58382e50e87
+image: whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72
+command (inside pinned container): ./autosa <DESIGN>/top.cpp --config=./autosa_config/autosa_config.json --target=autosa_hls_c --output-dir=<WORK>/output --hls --pet-autodetect -I<DESIGN> -I<VITIS_INCLUDE> -I<SYSTEM_INCLUDE>/c++/9 -I<SYSTEM_INCLUDE>/x86_64-linux-gnu/c++/9 --no-pet-autodetect '--sa-sizes={kernel[]->space_time[0];kernel[]->array_part[8,16];kernel[]->latency[4]}'
+exit_code: 0
+status: codegen_requires_synthesis
+isl_schedule_node.c:565: cannot handle extension nodes
+[AutoSA] 3 systolic arrays generated.
+[AutoSA] Apply compute management.
+[AutoSA] Apply array partitioning.
+[AutoSA] Apply latency hiding.
+[AutoSA] Apply SIMD vectorization.
+[AutoSA] Detecting the reduction loop.
+[AutoSA] Band member position: 1
+
+domain: "{ S_0[i, j] : 0 <= i <= 7 and 0 <= j <= 127 }"
+child:
+  context: "{ [] }"
+  child:
+    schedule: "[{ S_0[i, j] -> [(floor((i)/8))] }, { S_0[i, j] -> [(floor((j)/16))] }]"
+    permutable: 1
+    coincident: [ 1, 0 ]
+    space_time: [ time, time ]
+    sched_pos: [ 0, 1 ]
+    child:
+      mark: "array"
+      child:
+        # YOU ARE HERE
+        schedule: "[{ S_0[i, j] -> [(floor((i)/4) - 2*floor((i)/8))] }, { S_0[i, j] -> [((j) mod 16)] }]"
+        permutable: 1
+        coincident: [ 1, 0 ]
+        space_time: [ space, time ]
+        sched_pos: [ 0, 1 ]
+        child:
+          mark: "latency"
+          child:
+            schedule: "[{ S_0[i, j] -> [((i) mod 4)] }]"
+            permutable: 1
+            coincident: [ 1 ]
+            space_time: [ time ]
+            sched_pos: [ 0 ]
+[AutoSA] Please input if the current loop is a reduction loop [y/n]: [AutoSA] Reduction property: n
+[AutoSA] No candidate loops found!
+[AutoSA] Apply communication management.
+================= IO Grouping Information =================
+===================================================
+Array: input
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 0
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 1
+copy_out: 0
+io_type: AUTOSA_INT_IO
+io_dir: [1]
+===================================================
+Array: sum_sq
+===================================================
+local: 0
+n_io_groups: 1
+n_drain_groups: 1
+------------------------------
+IO Group: 0
+------------------------------
+copy_in: 0
+copy_out: 0
+io_type: AUTOSA_INT_IO
+io_dir: [1]
+------------------------------
+Drain Group
+------------------------------
+copy_in: 0
+copy_out: 1
+io_type: AUTOSA_INT_IO
+io_dir: [1]
+================= IO Grouping Information =================
+Please find the generated file: <WORK>/output/src/top_kernel.cpp
+[AutoSA] Post-processing the generated code...

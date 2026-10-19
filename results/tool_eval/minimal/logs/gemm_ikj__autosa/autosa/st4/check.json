@@ -1,0 +1,5 @@
+{
+  "functional_check": "COMPILE_ERROR",
+  "max_error": "",
+  "detail": "<SRC>/top_kernel.h:51:59: error: \u2018BRAM_C_t0\u2019 has not been declared"
+}

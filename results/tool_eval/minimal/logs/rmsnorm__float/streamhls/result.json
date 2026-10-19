@@ -1,0 +1,32 @@
+{
+  "design_id": "rmsnorm__float",
+  "domain": "llm",
+  "tool": "StreamHLS",
+  "source_sha256": "e1daf9e4401d37d128478b30f407bf6c74674cf54410e01e64bcce7ac7d81f2e",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fPfS0_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "streamhls-opt: <WORK><PATH>/ilist_iterator.h:138: llvm::ilist_iterator::reference llvm::ilist_iterator<llvm::ilist_detail::node_options<mlir::Block, true, false, void, false>, false, false>::operator*() const [OptionsT = llvm::ilist_detail::node_options<mlir::Block, true, false, void, false>, IsReverse = false, IsConst = false]: Assertion `!NodePtr->isKnownSentinel()' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "7a2a7deaf8ded08a526ef8355c3967a987c067cde6415a067d45573c1199f4e9",
+    "output_sha256": "15154cd97e66dc68a5cd6f38b40b6d2a252a7599391f01308bfb1b815fddf95e"
+  }
+}

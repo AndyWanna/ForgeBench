@@ -1,0 +1,20 @@
+{
+  "stage_reached": "parse",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "collect2: error: ld returned 1 exit status",
+  "status": "parse_failed",
+  "design_id": "mha__autosa_scores",
+  "domain": "llm",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "17befa34f27162a5dbe3869b3edbb988cce07bb27fae6c950233d2975e84364b",
+  "exit_code": 1,
+  "generated_kernels": [],
+  "input_edits": "diagnostic patch mha__autosa_scores.patch; sha256=db7fbc2111e19bbd29d2a79d2b5f8c70adbf5c17111d35b7754b4daca68e0107",
+  "autosa_args": [
+    "--no-pet-autodetect",
+    "--sa-sizes={}"
+  ],
+  "autosa_stdin": "n\\nn\\nn\\nn\\nn\\nn\\n"
+}

@@ -1,0 +1,73 @@
+tool: StreamHLS
+design_id: gemm_0001__fixed
+source_sha256: 584b227faf3a3730b1c7ca9ceccce5f3be4c0c39c555f6e6e642e80dbf368803
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: loc(callsite("<VITIS_INCLUDE>/etc/ap_private.h":2210:9 at "<VITIS_INCLUDE>/etc/ap_private.h":6766:28)): error: 'arith.ori' op requires the same type for all operands and results
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topP8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EEPA64_S2_S5_S3_S3_S3_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 5
+VarDecl 0x7fd5c2c51848 <<DESIGN>/top.cpp:15:1, col:17> col:8 used BRAM_x 'data_t[64]' callinit
+`-CXXConstructExpr 0x7fd5c2c7e058 <col:8> 'data_t[64]' 'void () noexcept(false)'
+CXXConstructExpr 0x7fd5c2c7e058 'data_t[64]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_x
+VarDecl 0x7fd5c2c7e2f8 <<DESIGN>/top.cpp:16:1, col:21> col:8 used BRAM_A 'data_t[64][64]' callinit
+`-CXXConstructExpr 0x7fd5c2c7e3b8 <col:8> 'data_t[64][64]' 'void () noexcept(false)'
+CXXConstructExpr 0x7fd5c2c7e3b8 'data_t[64][64]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_A
+VarDecl 0x7fd5c2c7e4e8 <<DESIGN>/top.cpp:17:1, col:21> col:8 used BRAM_B 'data_t[64][64]' callinit
+`-CXXConstructExpr 0x7fd5c2c7e550 <col:8> 'data_t[64][64]' 'void () noexcept(false)'
+CXXConstructExpr 0x7fd5c2c7e550 'data_t[64][64]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_B
+VarDecl 0x7fd5c2c7e630 <<DESIGN>/top.cpp:18:1, col:17> col:8 used BRAM_y 'data_t[64]' callinit
+[middle omitted]
+      %14 = "llvm.call"(%10, %12, %13) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr, i32) -> i32
+      %15 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %16 = "polygeist.memref2pointer"(%15) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %17 = "llvm.mlir.addressof"() <{global_name = @str9}> : () -> !llvm.ptr
+      %18 = "llvm.getelementptr"(%17) <{elem_type = !llvm.array<2 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %19 = "llvm.call"(%16, %18) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr) -> i32
+      "scf.yield"() : () -> ()
+    }, {
+    }) : (i1) -> ()
+    %6 = "llvm.load"(%3) <{ordering = 0 : i64}> : (!llvm.ptr) -> i32
+    %7 = "arith.cmpi"(%6, %1) <{predicate = 5 : i64}> : (i32, i32) -> i1
+    "scf.if"(%7) ({
+      %8 = "llvm.mlir.addressof"() <{global_name = @stderr}> : () -> !llvm.ptr
+      %9 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %10 = "polygeist.memref2pointer"(%9) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %11 = "llvm.mlir.addressof"() <{global_name = @str22}> : () -> !llvm.ptr
+      %12 = "llvm.getelementptr"(%11) <{elem_type = !llvm.array<54 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %13 = "llvm.load"(%3) <{ordering = 0 : i64}> : (!llvm.ptr) -> i32
+      %14 = "llvm.call"(%10, %12, %13, %1) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr, i32, i32) -> i32
+      %15 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %16 = "polygeist.memref2pointer"(%15) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %17 = "llvm.mlir.addressof"() <{global_name = @str9}> : () -> !llvm.ptr
+      %18 = "llvm.getelementptr"(%17) <{elem_type = !llvm.array<2 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %19 = "llvm.call"(%16, %18) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr) -> i32
+      "scf.yield"() : () -> ()
+    }, {
+    }) : (i1) -> ()
+    "func.return"() : () -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+  "func.func"() <{function_type = (memref<?x1xi64>) -> i64, sym_name = "_ZN10ap_privateILi33ELb0ELb1EE15get_cleared_VALEv"}> ({
+  ^bb0(%arg0: memref<?x1xi64>):
+    %0 = "arith.constant"() <{value = 31 : i64}> : () -> i64
+    %1 = "affine.load"(%arg0) <{map = affine_map<() -> (0, 0)>}> : (memref<?x1xi64>) -> i64
+    %2 = "arith.shli"(%1, %0) : (i64, i64) -> i64
+    %3 = "arith.shrsi"(%2, %0) : (i64, i64) -> i64
+    "affine.store"(%3, %arg0) <{map = affine_map<() -> (0, 0)>}> : (i64, memref<?x1xi64>) -> ()
+    "func.return"(%3) : (i64) -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+  "func.func"() <{function_type = (memref<?x1xi64>, memref<?x1xi64>, memref<?x1xi64>) -> (), sym_name = "_ZNK10ap_privateILi64ELb0ELb1EEanILi33ELb0EEENS0_5RTypeIXT_EXT0_EE5logicERKS_IXT_EXT0_EXleT_Li64EEE"}> ({
+  ^bb0(%arg0: memref<?x1xi64>, %arg1: memref<?x1xi64>, %arg2: memref<?x1xi64>):
+    %0 = "arith.constant"() <{value = 31 : i64}> : () -> i64
+    %1 = "affine.load"(%arg0) <{map = affine_map<() -> (0, 0)>}> : (memref<?x1xi64>) -> i64
+    %2 = "affine.load"(%arg1) <{map = affine_map<() -> (0, 0)>}> : (memref<?x1xi64>) -> i64
+    %3 = "arith.shli"(%2, %0) : (i64, i64) -> i64
+    %4 = "arith.shrsi"(%3, %0) : (i64, i64) -> i64
+    %5 = "arith.andi"(%1, %4) : (i64, i64) -> i64
+    "affine.store"(%5, %arg2) <{map = affine_map<() -> (0, 0)>}> : (i64, memref<?x1xi64>) -> ()
+    "func.return"() : () -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+}) {dlti.dl_spec = #dlti.dl_spec<#dlti.dl_entry<i1, dense<8> : vector<2xi32>>, #dlti.dl_entry<i8, dense<8> : vector<2xi32>>, #dlti.dl_entry<!llvm.ptr, dense<64> : vector<4xi32>>, #dlti.dl_entry<f80, dense<128> : vector<2xi32>>, #dlti.dl_entry<i64, dense<64> : vector<2xi32>>, #dlti.dl_entry<!llvm.ptr<271>, dense<32> : vector<4xi32>>, #dlti.dl_entry<!llvm.ptr<272>, dense<64> : vector<4xi32>>, #dlti.dl_entry<!llvm.ptr<270>, dense<32> : vector<4xi32>>, #dlti.dl_entry<f128, dense<128> : vector<2xi32>>, #dlti.dl_entry<f16, dense<16> : vector<2xi32>>, #dlti.dl_entry<f64, dense<64> : vector<2xi32>>, #dlti.dl_entry<i32, dense<32> : vector<2xi32>>, #dlti.dl_entry<i16, dense<16> : vector<2xi32>>, #dlti.dl_entry<"dlti.stack_alignment", 128 : i32>, #dlti.dl_entry<"dlti.endianness", "little">>, llvm.data_layout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128", llvm.target_triple = "x86_64-unknown-linux-gnu", "polygeist.target-cpu" = "x86-64", "polygeist.target-features" = "+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87", "polygeist.tune-cpu" = "generic"} : () -> ()

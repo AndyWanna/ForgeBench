@@ -1,0 +1,17 @@
+tool: HIDA
+design_id: conv_k1__local
+source_sha256: 6ce46de646de097fb33147f43c0894eba2522bb454cf401e295ce750a6160440
+input_edits: conv_k1__local.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: <RUN>/parsed.mlir:21:5: error: 'func.call' op operand type mismatch: expected operand type 'memref<16x16xf32, #hls.mem<bram_t2p>>', but provided 'memref<16x16x1x1xf32, #hls.mem<bram_t2p>>' for operand number 1
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA14_A14_fPA16_A1_A1_fS1_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/hida/bin/scalehls-opt <RUN>/parsed.mlir -hida-cpp-pipeline=top-func=_Z3topPA14_A14_fPA16_A1_A1_fS1_ -o <RUN>/transformed.mlir
+exit_code: 1
+<RUN>/parsed.mlir:21:5: error: 'func.call' op operand type mismatch: expected operand type 'memref<16x16xf32, #hls.mem<bram_t2p>>', but provided 'memref<16x16x1x1xf32, #hls.mem<bram_t2p>>' for operand number 1
+    call @_Z36conv2d_16_16_14_14_14_14_1_0_1_floatPA14_A14_fPA16_A1_A1_fS1_(%alloca_1, %alloca_0, %alloca) : (memref<16x14x14xf32>, memref<16x16x1x1xf32>, memref<16x14x14xf32>) -> ()
+    ^
+<RUN>/parsed.mlir:21:5: note: see current operation: "func.call"(%arg0, %arg1, %arg2) {callee = @_Z36conv2d_16_16_14_14_14_14_1_0_1_floatPA14_A14_fPA16_A1_A1_fS1_} : (memref<16x14x14xf32, #hls.mem<dram>>, memref<16x16x1x1xf32, #hls.mem<bram_t2p>>, memref<16x14x14xf32, #hls.mem<dram>>) -> ()

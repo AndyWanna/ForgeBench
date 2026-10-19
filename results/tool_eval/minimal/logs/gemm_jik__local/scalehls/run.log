@@ -1,0 +1,17 @@
+tool: ScaleHLS
+design_id: gemm_jik__local
+source_sha256: 397e15506fc169f0f97221b0d74e2155b8249304ef07fd065cf19cfc130c3c88
+input_edits: gemm_jik__local.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA64_fS0_S0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/scale/bin/scalehls-opt <RUN>/parsed.mlir '-scalehls-dse-pipeline=top-func=_Z3topPA64_fS0_S0_ target-spec=<WORK><PATH>/config.json' -o <RUN>/transformed.mlir
+exit_code: 0
+
+stage: codegen
+command (inside build image): <WORK>/build/scale/bin/scalehls-translate <RUN>/transformed.mlir -scalehls-emit-hlscpp -o <RUN>/emitted.cpp
+exit_code: 0

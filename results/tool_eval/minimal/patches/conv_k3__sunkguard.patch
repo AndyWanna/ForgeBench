@@ -1,0 +1,40 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -12,9 +12,6 @@
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_input[16][14][14];
+-data_t BRAM_weight[16][16][3][3];
+-data_t BRAM_output[16][14][14];
+ 
+ void load_16_14_14_float(data_t input[16][14][14], data_t output[16][14][14])
+ {
+@@ -90,15 +87,13 @@
+                 for (int kw = 0; kw < 3; kw++) {
+                     int in_row = i * 1 - 1 + kh;
+                     int in_col = j * 1 - 1 + kw;
+-                    if (in_row >= 0 && in_row < 14 && in_col >= 0 && in_col < 14) {
+                         for (int ci = 0; ci < 16; ci++) {
+                         #pragma HLS unroll factor=1
+                             for (int co = 0; co < 16; co++) {
+                                 #pragma HLS unroll factor=1
+-                                output[co][i][j] += input[ci][in_row][in_col] * kernel[co][ci][kh][kw];
++                                if (in_row >= 0 && in_row < 14 && in_col >= 0 && in_col < 14) output[co][i][j] += input[ci][in_row][in_col] * kernel[co][ci][kh][kw];
+                             }
+                         }
+-                    }
+                 }
+             }
+         }
+@@ -121,6 +116,10 @@
+     #pragma HLS interface m_axi port=DRAM_input offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_weight offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_output offset=slave bundle=mem2
++    data_t BRAM_input[16][14][14];
++    data_t BRAM_weight[16][16][3][3];
++    data_t BRAM_output[16][14][14];
++
+ 
+     load_16_14_14_float(DRAM_input, BRAM_input);
+     load_16_16_3_3_float(DRAM_weight, BRAM_weight);

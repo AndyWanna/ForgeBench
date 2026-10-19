@@ -1,0 +1,2 @@
+# The repository ignores *.log; the per-cell transcripts here are evidence and must be tracked.
+!*.log

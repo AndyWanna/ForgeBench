@@ -1,0 +1,21 @@
+{
+  "design_id": "dnn_0001__fixed",
+  "domain": "dnn",
+  "tool": "ScaleHLS",
+  "source_sha256": "20344b90de63067426b0feeec58146856b53bee3228c6b78d7e90936fa328dbe",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA56_A56_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EEPA16_A1_A1_S2_PS2_PA16_S2_PA58_A58_S2_",
+  "stage_reached": "parse",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "loc(\"<VITIS_INCLUDE>/etc/ap_fixed_base.h\":1288:5): error:  + visiting unknonwn sub decl stmt",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 139
+    }
+  ],
+  "status": "parse_failed"
+}

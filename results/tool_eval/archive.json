@@ -1,0 +1,8 @@
+{
+  "filename": "tool_eval_logs.tar.gz",
+  "sha256": "f7dec762d9b636edb2aa8ef48a9267593f5365f975ecaa25fc808d445d32d5e1",
+  "bytes": 2744937,
+  "files": 378,
+  "contents": "Full redacted run, control, diagnostic, historical and build logs",
+  "distribution": "Outside git; intended for the Zenodo bundle. No public DOI assigned yet."
+}

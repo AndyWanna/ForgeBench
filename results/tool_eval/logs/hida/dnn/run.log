@@ -1,0 +1,73 @@
+tool: HIDA
+design_id: dnn_0001
+source_sha256: 20344b90de63067426b0feeec58146856b53bee3228c6b78d7e90936fa328dbe
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1288:5): error:  + visiting unknonwn sub decl stmt
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA56_A56_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EEPA16_A1_A1_S2_PS2_PA16_S2_PA58_A58_S2_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 139
+VarDecl 0x7f7da0c48ae8 <<DESIGN>/top.cpp:15:1, col:35> col:8 used BRAM_image_input 'data_t[16][56][56]' callinit
+`-CXXConstructExpr 0x7f7da0c74fd8 <col:8> 'data_t[16][56][56]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f7da0c74fd8 'data_t[16][56][56]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_image_input
+VarDecl 0x7f7da0c75498 <<DESIGN>/top.cpp:16:1, col:37> col:8 used BRAM_conv_weight 'data_t[16][16][1][1]' callinit
+`-CXXConstructExpr 0x7f7da0c75558 <col:8> 'data_t[16][16][1][1]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f7da0c75558 'data_t[16][16][1][1]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_conv_weight
+VarDecl 0x7f7da0c756b8 <<DESIGN>/top.cpp:17:1, col:25> col:8 used BRAM_conv_bias 'data_t[16]' callinit
+`-CXXConstructExpr 0x7f7da0c75778 <col:8> 'data_t[16]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f7da0c75778 'data_t[16]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_conv_bias
+VarDecl 0x7f7da0c75928 <<DESIGN>/top.cpp:18:1, col:37> col:8 used BRAM_batch_norm_weights 'data_t[4][16]' callinit
+[middle omitted]
+          |       `-IntegerLiteral 0x7f7dad8628b0 <col:76> 'int' 0
+          `-ParenExpr 0x7f7d98edbbc0 <<VITIS_INCLUDE>/etc/ap_common.h:44:41, col:43> 'int'
+            `-BinaryOperator 0x7f7d98edbba0 <<VITIS_INCLUDE>/etc/ap_fixed_base.h:1289:80, col:116> 'int' '+'
+              |-SubstNonTypeTemplateParmExpr 0x7f7d98edba60 <col:80> 'int'
+              | |-NonTypeTemplateParmDecl 0x7f7da0b4cb78 <line:1281:13, col:17> col:17 referenced 'int' depth 0 index 0 _AP_W2
+              | `-IntegerLiteral 0x7f7d98edba40 <line:1289:80> 'int' 17
+              `-ParenExpr 0x7f7d98edbb80 <col:89, col:116> 'int'
+                `-ConditionalOperator 0x7f7d98edbb50 <col:90, col:115> 'int'
+                  |-ParenExpr 0x7f7d98edbb30 <col:90, col:107> 'bool'
+                  | `-BinaryOperator 0x7f7d98edbb10 <col:91, col:101> 'bool' '&&'
+                  |   |-SubstNonTypeTemplateParmExpr 0x7f7d98edba98 <col:91> 'bool'
+                  |   | |-NonTypeTemplateParmDecl 0x55742c6b4058 <line:108:33, col:38> col:38 referenced 'bool' depth 0 index 2 _AP_S
+                  |   | | `-TemplateArgument expr
+                  |   | |   |-inherited from NonTypeTemplateParm 0x55742a377e58 '_AP_S' 'bool'
+                  |   | |   `-ConstantExpr 0x55742a377eb0 <<VITIS_INCLUDE>/etc/ap_decl.h:151:46> 'bool'
+                  |   | |     |-value: Int 1
+                  |   | |     `-CXXBoolLiteralExpr 0x55742a377e38 <col:46> 'bool' true
+                  |   | `-CXXBoolLiteralExpr 0x7f7d98edba88 <<VITIS_INCLUDE>/etc/ap_fixed_base.h:1289:91> 'bool' true
+                  |   `-UnaryOperator 0x7f7d98edbaf8 <col:100, col:101> 'bool' prefix '!' cannot overflow
+                  |     `-SubstNonTypeTemplateParmExpr 0x7f7d98edbad0 <col:101> 'bool'
+                  |       |-NonTypeTemplateParmDecl 0x7f7da0b4cc28 <line:1281:37, col:42> col:42 referenced 'bool' depth 0 index 2 _AP_S2
+                  |       `-CXXBoolLiteralExpr 0x7f7d98edbac0 <line:1289:101> 'bool' true
+                  |-IntegerLiteral 0x7f7dad862e88 <col:111> 'int' 1
+                  `-IntegerLiteral 0x7f7dad862ea8 <col:115> 'int' 0
+cgeist: <WORK><PATH>/CGStmt.cc:1027: ValueCategory MLIRScanner::VisitDeclStmt(clang::DeclStmt *): Assertion `0 && "unknown sub decl"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	<eof> parser at end of file
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+<WORK>/build/scale/bin/cgeist(+0x39ab613)[0x557424e7e613]
+<WORK>/build/scale/bin/cgeist(+0x39a952e)[0x557424e7c52e]
+<WORK>/build/scale/bin/cgeist(+0x39abada)[0x557424e7eada]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f7dae498520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f7dae4ec9bc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f7dae498476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f7dae47e7f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2871b)[0x7f7dae47e71b]
+/lib/x86_64-linux-gnu/libc.so.6(+0x39e96)[0x7f7dae48fe96]
+<WORK>/build/scale/bin/cgeist(+0x26b5a2a)[0x557423b88a2a]
+<WORK>/build/scale/bin/cgeist(+0x265f34c)[0x557423b3234c]
+<WORK>/build/scale/bin/cgeist(+0x26b5c26)[0x557423b88c26]
+<WORK>/build/scale/bin/cgeist(+0x265f482)[0x557423b32482]
+<WORK>/build/scale/bin/cgeist(+0x2657af6)[0x557423b2aaf6]
+<WORK>/build/scale/bin/cgeist(+0x26905d4)[0x557423b635d4]
+<WORK>/build/scale/bin/cgeist(+0x67623cf)[0x557427c353cf]
+<WORK>/build/scale/bin/cgeist(+0x4e2af60)[0x5574262fdf60]
+<WORK>/build/scale/bin/cgeist(+0x2695496)[0x557423b68496]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f7dae47fd90]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f7dae47fe40]
+<WORK>/build/scale/bin/cgeist(+0x2651225)[0x557423b24225]

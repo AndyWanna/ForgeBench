@@ -1,0 +1,34 @@
+{
+  "design_id": "conv_k1__noguard",
+  "domain": "dnn",
+  "tool": "HIDA",
+  "source_sha256": "10bcd6c40483b277a9a76fa87d0f54e4b4e8e5be87e8da176760f34fc9ce4e20",
+  "input_edits": "conv_k1__noguard.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA14_A14_fPA16_A1_A1_fS1_",
+  "stage_reached": "synth",
+  "rating": "full",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    },
+    {
+      "stage": "synth",
+      "exit_code": 0
+    }
+  ],
+  "status": "synth_passed",
+  "emitted_source_sha256": "60a003a0ffde1fe39b9fedc3db7f0e6bf5a3173410cd0f74e7031ddd0656ef86"
+}

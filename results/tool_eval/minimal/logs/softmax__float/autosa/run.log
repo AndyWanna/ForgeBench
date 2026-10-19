@@ -1,0 +1,20 @@
+design_id: softmax__float
+domain: llm
+input_edits: none
+source_sha256: ad8e9faa738551a10582434a4fc2a05e5f9d9b55fd777d6388a51a64cbf7c6e5
+image: whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72
+command (inside pinned container): ./autosa <DESIGN>/top.cpp --config=./autosa_config/autosa_config.json --target=autosa_hls_c --output-dir=<WORK>/output --hls --pet-autodetect -I<DESIGN> -I<VITIS_INCLUDE> -I<SYSTEM_INCLUDE>/c++/9 -I<SYSTEM_INCLUDE>/x86_64-linux-gnu/c++/9
+exit_code: 250
+status: frontend_assertion
+In file included from <DESIGN>/top.cpp:3:
+In file included from <PATH>/iostream:39:
+In file included from <PATH>/ostream:38:
+In file included from <PATH>/ios:42:
+In file included from <PATH>/ios_base.h:39:
+In file included from <PATH>/atomicity.h:35:
+In file included from <PATH>/gthr.h:148:
+<PATH>/gthr-default.h:251:7: warning: this type of unary operator is not supported
+    = __extension__ (void *) &GTHR_ACTIVE_PROXY;
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+autosa: <PATH>/Decl.h:276: llvm::StringRef clang::NamedDecl::getName() const: Assertion `Name.isIdentifier() && "Name is not a simple identifier"' failed.
+[AutoSA] Error: Exit abnormally!

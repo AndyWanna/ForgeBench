@@ -1,0 +1,11 @@
+design_id: mha__autosa_qkv
+domain: llm
+input_edits: diagnostic patch mha__autosa_qkv.patch; sha256=d0f335e152b9a7646ed544f0076cfc7c0eb963db7c19a92350d16da4bd041eae
+source_sha256: 00f0454d1a9c663c53074e5d0f38fc78e02dc0fcdcba1ce07a07508de264277e
+image: whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72
+command (inside pinned container): ./autosa <DESIGN>/top.cpp --config=./autosa_config/autosa_config.json --target=autosa_hls_c --output-dir=<WORK>/output --hls --pet-autodetect -I<DESIGN> -I<VITIS_INCLUDE> -I<SYSTEM_INCLUDE>/c++/9 -I<SYSTEM_INCLUDE>/x86_64-linux-gnu/c++/9 --no-pet-autodetect '--sa-sizes={}'
+exit_code: 250
+status: unclassified_failure
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  [AutoSA] Error: Single outermost permutable band not found.
+[AutoSA] Error: Exit abnormally!

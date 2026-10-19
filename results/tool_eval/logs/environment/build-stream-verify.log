@@ -1,0 +1,47 @@
+-- bolt project is disabled
+-- clang project is enabled
+-- clang-tools-extra project is disabled
+-- compiler-rt project is disabled
+-- cross-project-tests project is disabled
+-- libc project is disabled
+-- libclc project is disabled
+-- lld project is disabled
+-- lldb project is disabled
+-- mlir project is enabled
+-- openmp project is disabled
+-- polly project is disabled
+-- pstl project is disabled
+-- flang project is disabled
+-- Could NOT find LibXml2 (missing: LIBXML2_LIBRARY LIBXML2_INCLUDE_DIR) 
+-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) 
+-- LLVM host triple: x86_64-unknown-linux-gnu
+-- Native target architecture is X86
+-- Threads enabled.
+-- Doxygen disabled.
+-- Ninja version: 1.10.1
+-- Could NOT find OCaml (missing: OCAMLFIND OCAML_VERSION OCAML_STDLIB_PATH) 
+-- Could NOT find OCaml (missing: OCAMLFIND OCAML_VERSION OCAML_STDLIB_PATH) 
+-- OCaml bindings disabled.
+-- LLVM default target triple: x86_64-unknown-linux-gnu
+-- Building with -fPIC
+-- Targeting X86
+-- Clang version: 18.1.2
+-- Configuring done
+-- Generating done
+-- Build files have been written to: <WORK>/build/stream-llvm
+ninja: no work to do.
+-- Building with -fPIC
+-- Configuring done
+-- Generating done
+-- Build files have been written to: <WORK>/build/streamhls
+[1/53] Building DataflowInterfaces.cpp.inc...
+[2/53] Building Passes.h.inc...
+[3/53] Building DataflowDialect.h.inc...
+[4/53] Building DataflowTypes.h.inc...
+[5/53] Building DataflowInterfaces.h.inc...
+[6/53] Building DataflowDialect.cpp.inc...
+[7/53] Building DataflowTypes.cpp.inc...
+[8/53] Building Dataflow.h.inc...
+[9/53] Building Dataflow.cpp.inc...
+[10/53] Building DataflowAttributes.cpp.inc...
+[11/53] Building DataflowAttributes.h.inc...

@@ -1,0 +1,27 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -12,11 +12,6 @@
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_input[8][128];
+-data_t BRAM_WQ[128][128];
+-data_t BRAM_WK[128][128];
+-data_t BRAM_WV[128][128];
+-data_t BRAM_output[8][128];
+ 
+ void load_8_128_float(data_t input[8][128], data_t output[8][128])
+ {
+@@ -178,6 +173,12 @@
+     #pragma HLS interface m_axi port=DRAM_WK offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_WV offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_output offset=slave bundle=mem2
++    data_t BRAM_input[8][128];
++    data_t BRAM_WQ[128][128];
++    data_t BRAM_WK[128][128];
++    data_t BRAM_WV[128][128];
++    data_t BRAM_output[8][128];
++
+ 
+     load_8_128_float(DRAM_input, BRAM_input);
+     load_128_128_float(DRAM_WQ, BRAM_WQ);

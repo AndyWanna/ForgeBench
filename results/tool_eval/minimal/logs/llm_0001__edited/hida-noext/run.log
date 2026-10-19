@@ -1,0 +1,78 @@
+tool: HIDA
+design_id: llm_0001__edited
+source_sha256: 3fb9d818bd4af4f9b35ac177d310286fe42fa6d7291082d78840d07df384b751
+input_edits: llm_0001__edited.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_fS0_S0_S0_S0_PfS1_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/hida/bin/scalehls-opt <RUN>/parsed.mlir '-hida-cpp-pipeline=top-func=_Z3topPA128_fS0_S0_S0_S0_PfS1_ place-external-buffer=false' -o <RUN>/transformed.mlir
+exit_code: 0
+
+stage: codegen
+command (inside build image): <WORK>/build/hida/bin/scalehls-translate <RUN>/transformed.mlir -scalehls-emit-hlscpp -emit-vitis-directives -o <RUN>/emitted.cpp
+exit_code: 0
+
+first_synthesis_error: 
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Oct 17 00:01:25 2026
+[middle omitted]
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'top_Pipeline_VITIS_LOOP_61_1' pipeline 'VITIS_LOOP_61_1' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Generating core module 'faddfsub_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top_Pipeline_VITIS_LOOP_61_1'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.07 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.1 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'top_Pipeline_VITIS_LOOP_37_1' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'top_Pipeline_VITIS_LOOP_37_1' pipeline 'VITIS_LOOP_37_1' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Generating core module 'fadd_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'faddfsub_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fdiv_32ns_32ns_32_9_no_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top_Pipeline_VITIS_LOOP_37_1'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.09 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.11 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+WARNING: [RTGEN 206-101] Design contains AXI ports. Reset is fixed to synchronous and active low.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v216' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v217' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v218' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v219' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v220' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v221' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s/v222' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s' to 's_axilite & ap_ctrl_hs'.
+INFO: [RTGEN 206-100] Bundling port 'return' to AXI-Lite port ctrl.
+INFO: [RTGEN 206-100] Generating core module 'fadd_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'faddfsub_32ns_32ns_32_4_full_dsp_1': 2 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fdiv_32ns_32ns_32_9_no_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 3 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fsqrt_32ns_32ns_32_8_no_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'p_Z3topPA128_fS0_S0_S0_S0_PfS1_s'.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA128_fS0_S0_S0_S0_PfS1__v47_RAM_T2P_BRAM_1R1W' using block RAMs.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA128_fS0_S0_S0_S0_PfS1__v129_RAM_T2P_BRAM_1R1W' using block RAMs.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA128_fS0_S0_S0_S0_PfS1__v235_RAM_T2P_BRAM_1R1W' using block RAMs.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA128_fS0_S0_S0_S0_PfS1__v239_RAM_T2P_BRAM_1R1W' using block RAMs.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA128_fS0_S0_S0_S0_PfS1__v240_RAM_2P_LUTRAM_1R1W' using distributed RAMs.
+INFO: [RTMG 210-285] Implementing FIFO 'v54_U(_Z3topPA128_fS0_S0_S0_S0_PfS1__fifo_w32_d2_S)' using Shift Registers.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.2 seconds. CPU system time: 0.03 seconds. Elapsed time: 0.24 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 0.35 seconds. CPU system time: 0.11 seconds. Elapsed time: 0.48 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 1.18 seconds. CPU system time: 0.05 seconds. Elapsed time: 1.25 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for p_Z3topPA128_fS0_S0_S0_S0_PfS1_s.
+INFO: [VLOG 209-307] Generating Verilog RTL for p_Z3topPA128_fS0_S0_S0_S0_PfS1_s.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were NOT satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 138.12 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:45; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 39.19 seconds. Total CPU system time: 4.47 seconds. Total elapsed time: 50.36 seconds; peak allocated memory: 0.000 MB.

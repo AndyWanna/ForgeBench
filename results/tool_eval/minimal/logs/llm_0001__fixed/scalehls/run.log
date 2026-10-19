@@ -1,0 +1,73 @@
+tool: ScaleHLS
+design_id: llm_0001__fixed
+source_sha256: 3d0895e4512d87b1ffd6eba9d8a389959af8f70731b9a9e344736ec0bc59d4f0
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: loc("<VITIS_INCLUDE>/etc/ap_fixed_base.h":1639:5): error:  + visiting unknonwn sub decl stmt
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EES4_S4_S4_S4_PS2_S5_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 139
+VarDecl 0x7f45ca7b0a18 <<DESIGN>/top.cpp:15:1, col:30> col:8 used BRAM_attn_input 'data_t[8][128]' callinit
+`-CXXConstructExpr 0x7f45ca7dcf08 <col:8> 'data_t[8][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f45ca7dcf08 'data_t[8][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_attn_input
+VarDecl 0x7f45ca7dd1a8 <<DESIGN>/top.cpp:16:1, col:24> col:8 used BRAM_WQ 'data_t[128][128]' callinit
+`-CXXConstructExpr 0x7f45ca7dd268 <col:8> 'data_t[128][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f45ca7dd268 'data_t[128][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_WQ
+VarDecl 0x7f45ca7dd398 <<DESIGN>/top.cpp:17:1, col:24> col:8 used BRAM_WK 'data_t[128][128]' callinit
+`-CXXConstructExpr 0x7f45ca7dd400 <col:8> 'data_t[128][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f45ca7dd400 'data_t[128][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_WK
+VarDecl 0x7f45ca7dd530 <<DESIGN>/top.cpp:18:1, col:24> col:8 used BRAM_WV 'data_t[128][128]' callinit
+[middle omitted]
+
+EnumDecl 0x7f45c2896328 <<VITIS_INCLUDE>/etc/ap_fixed_base.h:1639:5> col:5
+|-EnumConstantDecl 0x7f45c28964d0 <col:12, col:28> col:12 referenced _AP_F '(unnamed enum at <VITIS_INCLUDE>/etc/ap_fixed_base.h:1651:3)'
+| `-ImplicitCastExpr 0x7f45c2896640 <col:20, col:28> 'unsigned int' <IntegralCast>
+|   `-ConstantExpr 0x7f45c28964b0 <col:20, col:28> 'int'
+|     |-value: Int 11
+|     `-BinaryOperator 0x7f45c2896490 <col:20, col:28> 'int' '-'
+|       |-SubstNonTypeTemplateParmExpr 0x7f45c2896420 <col:20> 'int'
+|       | |-NonTypeTemplateParmDecl 0x559526631a90 <line:108:11, col:15> col:15 referenced 'int' depth 0 index 0 _AP_W
+|       | `-IntegerLiteral 0x7f45c2896400 <line:1639:20> 'int' 16
+|       `-SubstNonTypeTemplateParmExpr 0x7f45c2896468 <col:28> 'int'
+|         |-NonTypeTemplateParmDecl 0x559526631b00 <line:108:22, col:26> col:26 referenced 'int' depth 0 index 1 _AP_I
+|         `-IntegerLiteral 0x7f45c2896448 <line:1639:28> 'int' 5
+`-EnumConstantDecl 0x7f45c28965f0 <col:35, col:49> col:35 referenced F2 '(unnamed enum at <VITIS_INCLUDE>/etc/ap_fixed_base.h:1651:3)'
+  `-ImplicitCastExpr 0x7f45c2896658 <col:40, col:49> 'unsigned int' <IntegralCast>
+    `-ConstantExpr 0x7f45c28965d0 <col:40, col:49> 'int'
+      |-value: Int 11
+      `-BinaryOperator 0x7f45c28965b0 <col:40, col:49> 'int' '-'
+        |-SubstNonTypeTemplateParmExpr 0x7f45c2896540 <col:40> 'int'
+        | |-NonTypeTemplateParmDecl 0x7f45ca7c7a80 <line:1635:13, col:17> col:17 referenced 'int' depth 0 index 0 _AP_W2
+        | `-IntegerLiteral 0x7f45c2896520 <line:1639:40> 'int' 16
+        `-SubstNonTypeTemplateParmExpr 0x7f45c2896588 <col:49> 'int'
+          |-NonTypeTemplateParmDecl 0x7f45ca7c7ad8 <line:1635:25, col:29> col:29 referenced 'int' depth 0 index 1 _AP_I2
+          `-IntegerLiteral 0x7f45c2896568 <line:1639:49> 'int' 5
+cgeist: <WORK><PATH>/CGStmt.cc:1027: ValueCategory MLIRScanner::VisitDeclStmt(clang::DeclStmt *): Assertion `0 && "unknown sub decl"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	<eof> parser at end of file
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+<WORK>/build/scale/bin/cgeist(+0x39ab613)[0x55951e5b3613]
+<WORK>/build/scale/bin/cgeist(+0x39a952e)[0x55951e5b152e]
+<WORK>/build/scale/bin/cgeist(+0x39abada)[0x55951e5b3ada]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f45d8000520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f45d80549bc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f45d8000476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f45d7fe67f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2871b)[0x7f45d7fe671b]
+/lib/x86_64-linux-gnu/libc.so.6(+0x39e96)[0x7f45d7ff7e96]
+<WORK>/build/scale/bin/cgeist(+0x26b5a2a)[0x55951d2bda2a]
+<WORK>/build/scale/bin/cgeist(+0x265f34c)[0x55951d26734c]
+<WORK>/build/scale/bin/cgeist(+0x26b5c26)[0x55951d2bdc26]
+<WORK>/build/scale/bin/cgeist(+0x265f482)[0x55951d267482]
+<WORK>/build/scale/bin/cgeist(+0x2657af6)[0x55951d25faf6]
+<WORK>/build/scale/bin/cgeist(+0x26905d4)[0x55951d2985d4]
+<WORK>/build/scale/bin/cgeist(+0x67623cf)[0x55952136a3cf]
+<WORK>/build/scale/bin/cgeist(+0x4e2af60)[0x55951fa32f60]
+<WORK>/build/scale/bin/cgeist(+0x2695496)[0x55951d29d496]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f45d7fe7d90]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f45d7fe7e40]
+<WORK>/build/scale/bin/cgeist(+0x2651225)[0x55951d259225]

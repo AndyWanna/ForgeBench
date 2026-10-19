@@ -1,0 +1,81 @@
+tool: StreamHLS
+design_id: conv_k3p0__noguard_reorder
+source_sha256: 6df50bf107fe89d706edf69c8630847429bf94f2e134442c9970126be62b0da2
+input_edits: conv_k3p0__noguard_reorder.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: 
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 0
+Permutation DesignSpaceSize: 622080
+Parallelization DesignSpaceSize: 5184000000
+Total DesignSpaceSize: 3224862720000000
+
+stage: codegen
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-translate <RUN>/transformed.mlir -emit-vivado-hls -allow-unregistered-dialect -vitis-hls-top-func=_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f -o <RUN>/emitted.cpp
+exit_code: 0
+
+first_synthesis_error: 
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Oct 17 00:06:17 2026
+[middle omitted]
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'node3' pipeline 'loop12_loop13_loop14_loop15' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Finished creating RTL model for 'node3'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.04 seconds. CPU system time: 0.01 seconds. Elapsed time: 0.05 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'node2' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'node2' pipeline 'loop9_loop10_loop11' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Finished creating RTL model for 'node2'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.09 seconds. CPU system time: 0.01 seconds. Elapsed time: 0.11 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'node1' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'node1' pipeline 'loop3_loop4_loop5_loop6_loop7_loop8' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Generating core module 'fadd_32ns_32ns_32_4_full_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Generating core module 'fmul_32ns_32ns_32_3_max_dsp_1': 1 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'node1'.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_node1_v10_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_node1_v11_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.1 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.19 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'node0' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'node0' pipeline 'loop0_loop1_loop2' pipeline type 'loop pipeline'
+INFO: [RTGEN 206-100] Finished creating RTL model for 'node0'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.15 seconds. CPU system time: 0.03 seconds. Elapsed time: 0.18 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f/v40' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f/v41' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f/v42' to 'ap_memory'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f' to 'ap_ctrl_hs'.
+WARNING: [HLS 200-656] Deadlocks can occur since process node3 is instantiated in a dataflow region with ap_ctrl_none or without start propagation and contains an auto-rewind pipeline.
+Resolution: For help on HLS 200-656 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-656.html
+WARNING: [HLS 200-656] Deadlocks can occur since process node2 is instantiated in a dataflow region with ap_ctrl_none or without start propagation and contains an auto-rewind pipeline.
+Resolution: For help on HLS 200-656 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-656.html
+INFO: [RTGEN 206-100] Finished creating RTL model for 'p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f'.
+INFO: [HLS 200-741] Implementing PIPO _Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v43_RAM_AUTO_1R1W using a single memory for all blocks
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v43_RAM_AUTO_1R1W_memcore' using auto RAMs.
+INFO: [HLS 200-741] Implementing PIPO _Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v44_RAM_AUTO_1R1W using a single memory for all blocks
+INFO: [RTMG 210-278] Implementing memory '_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f_v44_RAM_AUTO_1R1W_memcore' using auto RAMs.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.08 seconds. CPU system time: 0.01 seconds. Elapsed time: 0.1 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 0.21 seconds. CPU system time: 0.05 seconds. Elapsed time: 0.26 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 0.64 seconds. CPU system time: 0.04 seconds. Elapsed time: 0.69 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f.
+INFO: [VLOG 209-307] Generating Verilog RTL for p_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were NOT satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 136.74 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:00:33; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 28.19 seconds. Total CPU system time: 3.45 seconds. Total elapsed time: 38.62 seconds; peak allocated memory: 0.000 MB.

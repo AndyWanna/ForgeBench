@@ -1,0 +1,41 @@
+tool: ScaleHLS
+design_id: gemm_0004__float
+source_sha256: eca1fe0efafd98f8bb8b8fe5f13921cda987c3bf490017c160b27dae7a2deb64
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute): Assertion `name && value && "expected valid attribute name and value"' failed.
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPfPA64_fS1_S_S_S_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/scale/bin/scalehls-opt <RUN>/parsed.mlir '-scalehls-dse-pipeline=top-func=_Z3topPfPA64_fS1_S_S_S_ target-spec=<WORK><PATH>/config.json' -o <RUN>/transformed.mlir
+exit_code: 139
+scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute): Assertion `name && value && "expected valid attribute name and value"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+<WORK>/build/scale/bin/scalehls-opt(+0x1a37c43)[0x561ba724bc43]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a35b5e)[0x561ba7249b5e]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a3810a)[0x561ba724c10a]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f6572439520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f657248d9bc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f6572439476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f657241f7f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2871b)[0x7f657241f71b]
+/lib/x86_64-linux-gnu/libc.so.6(+0x39e96)[0x7f6572430e96]
+<WORK>/build/scale/bin/scalehls-opt(+0x19320d4)[0x561ba71460d4]
+<WORK>/build/scale/bin/scalehls-opt(+0x123ba93)[0x561ba6a4fa93]
+<WORK>/build/scale/bin/scalehls-opt(+0x167d081)[0x561ba6e91081]
+<WORK>/build/scale/bin/scalehls-opt(+0x167cfea)[0x561ba6e90fea]
+<WORK>/build/scale/bin/scalehls-opt(+0x1886e12)[0x561ba709ae12]
+<WORK>/build/scale/bin/scalehls-opt(+0x184e924)[0x561ba7062924]
+<WORK>/build/scale/bin/scalehls-opt(+0x16c2b71)[0x561ba6ed6b71]
+<WORK>/build/scale/bin/scalehls-opt(+0x16c468d)[0x561ba6ed868d]
+<WORK>/build/scale/bin/scalehls-opt(+0x188be84)[0x561ba709fe84]
+<WORK>/build/scale/bin/scalehls-opt(+0x188c368)[0x561ba70a0368]
+<WORK>/build/scale/bin/scalehls-opt(+0x189135f)[0x561ba70a535f]
+<WORK>/build/scale/bin/scalehls-opt(+0x18229c2)[0x561ba70369c2]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a13624)[0x561ba7227624]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a14103)[0x561ba7228103]
+/lib/x86_64-linux-gnu/libc.so.6(+0x94a83)[0x7f657248ba83]
+/lib/x86_64-linux-gnu/libc.so.6(clone+0x44)[0x7f657251ca94]

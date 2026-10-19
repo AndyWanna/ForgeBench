@@ -1,0 +1,32 @@
+{
+  "design_id": "conv_k3p0__float",
+  "domain": "dnn",
+  "tool": "StreamHLS",
+  "source_sha256": "d56d9297b5cb3abea62133b05ff9fd8bd9890bda399502407cba7bd38c193701",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA14_A14_fPA16_A3_A3_fPA12_A12_f",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "streamhls-opt: <WORK><PATH>/Matchers.h:402: bool mlir::matchPattern(mlir::Value, const Pattern &) [Pattern = mlir::detail::constant_op_binder<mlir::Attribute>]: Assertion `value' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "71c4dd48f2d8230924db0c06de389b3ba654055de862b3de3c7a3aaf75d8bea5",
+    "output_sha256": "15ac23877e70b4fb899fd9050fabbfcb7e936e63d3a363042ae220e17ff6f128"
+  }
+}

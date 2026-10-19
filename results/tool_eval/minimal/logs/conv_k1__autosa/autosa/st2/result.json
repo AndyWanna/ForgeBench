@@ -1,0 +1,22 @@
+{
+  "stage_reached": "codegen",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "",
+  "status": "codegen_requires_synthesis",
+  "design_id": "conv_k1__autosa",
+  "domain": "dnn",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "7fc932690e5374ffd81c0e9482a6bced6f73f54f681eb3c9782ccc4e109c9895",
+  "exit_code": 0,
+  "generated_kernels": [
+    "output/src/top_kernel.cpp"
+  ],
+  "input_edits": "diagnostic patch conv_k1__autosa.patch; sha256=42ab65346b6b85eb01e179258ef0b66130ebacc76f92e123fe9cfbf284a21c16",
+  "autosa_args": [
+    "--no-pet-autodetect",
+    "--sa-sizes={kernel[]->space_time[2];kernel[]->array_part[16,14,14,16];kernel[]->latency[4,2,2]}"
+  ],
+  "autosa_stdin": "n\\nn\\nn\\nn\\nn\\nn\\n"
+}

@@ -1,0 +1,73 @@
+tool: StreamHLS
+design_id: softmax__fixed
+source_sha256: f976fe11e6053596bdf225f06f89c57d08b47caada7d4c2e88c947fbab2af2d2
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: loc("<DESIGN>/top.cpp":45:28): error: 'math.exp' op operand #0 must be floating-point-like, but got '!llvm.struct<(struct<(struct<(struct<(i32)>)>)>)>'
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EES4_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 5
+VarDecl 0x7fafca00d918 <<DESIGN>/top.cpp:15:1, col:25> col:8 used BRAM_input 'data_t[8][128]' callinit
+`-CXXConstructExpr 0x7fafca03a128 <col:8> 'data_t[8][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7fafca03a128 'data_t[8][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_input
+VarDecl 0x7fafca03a348 <<DESIGN>/top.cpp:16:1, col:26> col:8 used BRAM_output 'data_t[8][128]' callinit
+`-CXXConstructExpr 0x7fafca03a3b0 <col:8> 'data_t[8][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7fafca03a3b0 'data_t[8][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_output
+cleanup of materialized not handledCXXConstructExpr 0x7fafca0580d0 'data_t':'struct ap_fixed<16, 5>' 'void (const ap_fixed<16, 5> &) noexcept' elidable
+`-MaterializeTemporaryExpr 0x7fafca0580b8 'const data_t':'const struct ap_fixed<16, 5>' lvalue
+  `-ImplicitCastExpr 0x7fafca0580a0 'const data_t':'const struct ap_fixed<16, 5>' <NoOp>
+    `-ImplicitCastExpr 0x7fafca0578f8 'data_t':'struct ap_fixed<16, 5>' <ConstructorConversion>
+      `-CXXConstructExpr 0x7fafca0578c8 'data_t':'struct ap_fixed<16, 5>' 'void (int)'
+[middle omitted]
+      %8 = "llvm.mlir.addressof"() <{global_name = @stderr}> : () -> !llvm.ptr
+      %9 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %10 = "polygeist.memref2pointer"(%9) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %11 = "llvm.mlir.addressof"() <{global_name = @str22}> : () -> !llvm.ptr
+      %12 = "llvm.getelementptr"(%11) <{elem_type = !llvm.array<56 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %13 = "llvm.load"(%3) <{ordering = 0 : i64}> : (!llvm.ptr) -> i32
+      %14 = "llvm.call"(%10, %12, %13) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr, i32) -> i32
+      %15 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %16 = "polygeist.memref2pointer"(%15) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %17 = "llvm.mlir.addressof"() <{global_name = @str14}> : () -> !llvm.ptr
+      %18 = "llvm.getelementptr"(%17) <{elem_type = !llvm.array<2 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %19 = "llvm.call"(%16, %18) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr) -> i32
+      "scf.yield"() : () -> ()
+    }, {
+    }) : (i1) -> ()
+    %6 = "llvm.load"(%3) <{ordering = 0 : i64}> : (!llvm.ptr) -> i32
+    %7 = "arith.cmpi"(%6, %1) <{predicate = 5 : i64}> : (i32, i32) -> i1
+    "scf.if"(%7) ({
+      %8 = "llvm.mlir.addressof"() <{global_name = @stderr}> : () -> !llvm.ptr
+      %9 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %10 = "polygeist.memref2pointer"(%9) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %11 = "llvm.mlir.addressof"() <{global_name = @str23}> : () -> !llvm.ptr
+      %12 = "llvm.getelementptr"(%11) <{elem_type = !llvm.array<54 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %13 = "llvm.load"(%3) <{ordering = 0 : i64}> : (!llvm.ptr) -> i32
+      %14 = "llvm.call"(%10, %12, %13, %1) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr, i32, i32) -> i32
+      %15 = "llvm.load"(%8) <{ordering = 0 : i64}> : (!llvm.ptr) -> memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>
+      %16 = "polygeist.memref2pointer"(%15) : (memref<?x!llvm.struct<(i32, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, i32, i32, i64, i16, i8, array<1 x i8>, ptr, i64, ptr, ptr, ptr, ptr, i64, i32, array<20 x i8>)>>) -> !llvm.ptr
+      %17 = "llvm.mlir.addressof"() <{global_name = @str14}> : () -> !llvm.ptr
+      %18 = "llvm.getelementptr"(%17) <{elem_type = !llvm.array<2 x i8>, rawConstantIndices = array<i32: 0, 0>}> : (!llvm.ptr) -> !llvm.ptr
+      %19 = "llvm.call"(%16, %18) <{callee = @fprintf, callee_type = !llvm.func<i32 (ptr, ptr, ...)>, fastmathFlags = #llvm.fastmath<none>}> : (!llvm.ptr, !llvm.ptr) -> i32
+      "scf.yield"() : () -> ()
+    }, {
+    }) : (i1) -> ()
+    "func.return"() : () -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+  "func.func"() <{function_type = (memref<?x1xi64>) -> (), sym_name = "_ZN10ap_privateILi64ELb0ELb1EE10set_canaryEv"}> ({
+  ^bb0(%arg0: memref<?x1xi64>):
+    "func.return"() : () -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+  "func.func"() <{function_type = (memref<?x1xi64>) -> (), sym_name = "_ZN10ap_privateILi64ELb0ELb1EE15clearUnusedBitsEv"}> ({
+  ^bb0(%arg0: memref<?x1xi64>):
+    %0 = "affine.load"(%arg0) <{map = affine_map<() -> (0, 0)>}> : (memref<?x1xi64>) -> i64
+    "affine.store"(%0, %arg0) <{map = affine_map<() -> (0, 0)>}> : (i64, memref<?x1xi64>) -> ()
+    "func.return"() : () -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+  "func.func"() <{function_type = (memref<?x1xi64>) -> (), sym_name = "_ZN10ap_privateILi64ELb0ELb1EE12check_canaryEv"}> ({
+  ^bb0(%arg0: memref<?x1xi64>):
+    "func.return"() : () -> ()
+  }) {llvm.linkage = #llvm.linkage<linkonce_odr>} : () -> ()
+}) {dlti.dl_spec = #dlti.dl_spec<#dlti.dl_entry<!llvm.ptr<270>, dense<32> : vector<4xi32>>, #dlti.dl_entry<!llvm.ptr<272>, dense<64> : vector<4xi32>>, #dlti.dl_entry<f64, dense<64> : vector<2xi32>>, #dlti.dl_entry<f128, dense<128> : vector<2xi32>>, #dlti.dl_entry<!llvm.ptr<271>, dense<32> : vector<4xi32>>, #dlti.dl_entry<i64, dense<64> : vector<2xi32>>, #dlti.dl_entry<f80, dense<128> : vector<2xi32>>, #dlti.dl_entry<!llvm.ptr, dense<64> : vector<4xi32>>, #dlti.dl_entry<i1, dense<8> : vector<2xi32>>, #dlti.dl_entry<i16, dense<16> : vector<2xi32>>, #dlti.dl_entry<i8, dense<8> : vector<2xi32>>, #dlti.dl_entry<f16, dense<16> : vector<2xi32>>, #dlti.dl_entry<i32, dense<32> : vector<2xi32>>, #dlti.dl_entry<"dlti.stack_alignment", 128 : i32>, #dlti.dl_entry<"dlti.endianness", "little">>, llvm.data_layout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128", llvm.target_triple = "x86_64-unknown-linux-gnu", "polygeist.target-cpu" = "x86-64", "polygeist.target-features" = "+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87", "polygeist.tune-cpu" = "generic"} : () -> ()

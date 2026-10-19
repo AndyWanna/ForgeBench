@@ -1,0 +1,41 @@
+{
+  "design_id": "gemm_kij__local",
+  "domain": "gemm",
+  "tool": "StreamHLS",
+  "source_sha256": "8c77bfb41276f3a688d38d81c4881f22d1c42af0097c24d395b3bd413131eec1",
+  "input_edits": "gemm_kij__local.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA64_fS0_S0_",
+  "stage_reached": "synth",
+  "rating": "full",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    },
+    {
+      "stage": "synth",
+      "exit_code": 0
+    }
+  ],
+  "status": "synth_passed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "1a2596556e22f9593d0723bac0bd126d825502f2dfb095c9057a7c68b51f92c4",
+    "output_sha256": "e726f27339f53719863e2cd0b1ec404b7ca63712d5c5c5264765bbf7398eeb04"
+  },
+  "emitted_source_sha256": "8b771554f5b7fa1edd635c93d230f3e8f855c1ab31537d4b0291c71b43148d0c"
+}

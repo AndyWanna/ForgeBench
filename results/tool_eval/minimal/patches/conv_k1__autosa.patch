@@ -1,0 +1,46 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -1,14 +1,4 @@
+ 
+-#include <stdio.h>
+-#include <iostream>
+-#include <fstream>
+-#include <cstdlib>
+-#include <ap_fixed.h>
+-#include <hls_math.h>
+-#include <stdlib.h>
+-#include <cstdint>
+-#include <hls_math.h>
+-using namespace std;
+ 
+ typedef float data_t;
+ 
+@@ -84,25 +74,23 @@
+     }
+ 
+     // Perform convolution (co in the innermost loop)
++#pragma scop
+     for (int i = 0; i < 14; i++) {
+         for (int j = 0; j < 14; j++) {
+             for (int kh = 0; kh < 1; kh++) {
+                 for (int kw = 0; kw < 1; kw++) {
+-                    int in_row = i * 1 - 0 + kh;
+-                    int in_col = j * 1 - 0 + kw;
+-                    if (in_row >= 0 && in_row < 14 && in_col >= 0 && in_col < 14) {
+                         for (int ci = 0; ci < 16; ci++) {
+                         #pragma HLS unroll factor=1
+                             for (int co = 0; co < 16; co++) {
+                                 #pragma HLS unroll factor=1
+-                                output[co][i][j] += input[ci][in_row][in_col] * kernel[co][ci][kh][kw];
++                                output[co][i][j] = output[co][i][j] + input[ci][i * 1 - 0 + kh][j * 1 - 0 + kw] * kernel[co][ci][kh][kw];
+                             }
+                         }
+-                    }
+                 }
+             }
+         }
+     }
++#pragma endscop
+ }
+ 
+ void store_16_14_14_float(data_t input[16][14][14], data_t output[16][14][14])

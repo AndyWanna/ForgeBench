@@ -1,0 +1,73 @@
+tool: StreamHLS
+design_id: rmsnorm__fixed
+source_sha256: 6f72509ca32127246c4fb2ae8357688020b7fe2dc5a7c3a7ad4559ff4027315f
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: cgeist: <WORK><PATH>/ValueCategory.cc:154: void ValueCategory::store(mlir::Location, mlir::OpBuilder &, ValueCategory, bool) const: Assertion `toStore.isReference' failed.
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EEPS2_S4_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 139
+VarDecl 0x7f7084785918 <<DESIGN>/top.cpp:15:1, col:25> col:8 used BRAM_input 'data_t[8][128]' callinit
+`-CXXConstructExpr 0x7f70847b2128 <col:8> 'data_t[8][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f70847b2128 'data_t[8][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_input
+VarDecl 0x7f70847b22f8 <<DESIGN>/top.cpp:16:1, col:22> col:8 used BRAM_gamma 'data_t[128]' callinit
+`-CXXConstructExpr 0x7f70847b23b8 <col:8> 'data_t[128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f70847b23b8 'data_t[128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_gamma
+VarDecl 0x7f70847b24e8 <<DESIGN>/top.cpp:17:1, col:26> col:8 used BRAM_output 'data_t[8][128]' callinit
+`-CXXConstructExpr 0x7f70847b2550 <col:8> 'data_t[8][128]' 'void () noexcept(false)'
+CXXConstructExpr 0x7f70847b2550 'data_t[8][128]' 'void (void) noexcept(false)'
+ warning not initializing global: BRAM_output
+cleanup of materialized not handledCXXConstructExpr 0x7f70847b8ab0 'data_t':'struct ap_fixed<16, 5>' 'void (const ap_fixed<16, 5> &) noexcept' elidable
+[middle omitted]
+| `-ImplicitCastExpr 0x7f708280f950 'struct ssdm_int_sim<55, true>' lvalue <UncheckedDerivedToBase (ssdm_int_sim)>
+|   `-DeclRefExpr 0x7f708280f930 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>' lvalue Var 0x7f708280f4d0 'ret' 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>'
+`-MaterializeTemporaryExpr 0x7f708248bde0 'const typename RType<55, true>::minus':'const class ap_private<56, true>' lvalue
+  `-ImplicitCastExpr 0x7f708248bdc8 'const typename RType<55, true>::minus':'const class ap_private<56, true>' <NoOp>
+    `-CXXOperatorCallExpr 0x7f7082459af0 'typename RType<55, true>::minus':'class ap_private<56, true>' '-'
+      |-ImplicitCastExpr 0x7f7082459ad8 'typename RType<55, true>::minus (*)(const ap_private<55, true> &) const' <FunctionToPointerDecay>
+      | `-DeclRefExpr 0x7f7082459a58 'typename RType<55, true>::minus (const ap_private<55, true> &) const' lvalue CXXMethod 0x7f7082458888 'operator-' 'typename RType<55, true>::minus (const ap_private<55, true> &) const'
+      |-ImplicitCastExpr 0x7f7082459a40 'const class ap_private<55, true>' lvalue <NoOp>
+      | `-MemberExpr 0x7f708280f9e0 'ap_private<55, true>':'class ap_private<55, true>' lvalue .V 0x7f7090d28b98
+      |   `-ImplicitCastExpr 0x7f708280f9c0 'struct ssdm_int_sim<55, true>' lvalue <UncheckedDerivedToBase (ssdm_int_sim)>
+      |     `-DeclRefExpr 0x7f708280f9a0 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>' lvalue Var 0x7f708280cf80 'lhs' 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>'
+      `-ImplicitCastExpr 0x7f7082459a28 'const ap_private<55, true>':'const class ap_private<55, true>' lvalue <NoOp>
+        `-MemberExpr 0x7f708280fa50 'ap_private<55, true>':'class ap_private<55, true>' lvalue .V 0x7f7090d28b98
+          `-ImplicitCastExpr 0x7f708280fa30 'struct ssdm_int_sim<55, true>' lvalue <UncheckedDerivedToBase (ssdm_int_sim)>
+            `-DeclRefExpr 0x7f708280fa10 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>' lvalue Var 0x7f708280e210 'rhs' 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>'
+cleanup not handled
+cleanup of materialized not handledCXXConstructExpr 0x7f708248c870 'typename ap_int_base<1, false>::RType<54, true>::minus':'struct ap_int<55>' 'void (const ap_int<55> &) noexcept' elidable
+`-MaterializeTemporaryExpr 0x7f708248c858 'const typename ap_int_base<1, false>::RType<54, true>::minus':'const struct ap_int<55>' lvalue
+  `-ImplicitCastExpr 0x7f708248c840 'const typename ap_int_base<1, false>::RType<54, true>::minus':'const struct ap_int<55>' <NoOp>
+    `-ImplicitCastExpr 0x7f708248c3d8 'typename ap_int_base<1, false>::RType<54, true>::minus':'struct ap_int<55>' <ConstructorConversion>
+      `-CXXConstructExpr 0x7f708248c3a8 'typename ap_int_base<1, false>::RType<54, true>::minus':'struct ap_int<55>' 'void (const ap_int_base<55, true> &)'
+        `-ImplicitCastExpr 0x7f708248c368 'const typename ap_int_base<1, false>::RType<54, true>::minus_base':'const struct ap_int_base<55, true>' xvalue <NoOp>
+          `-DeclRefExpr 0x7f708248bfb8 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>' lvalue Var 0x7f708280f4d0 'ret' 'typename ap_int_base<1, false>::RType<54, true>::minus_base':'struct ap_int_base<55, true>'
+cleanup not handled
+TODO: cleanup
+ toStore.val: %1 = "polygeist.pointer2memref"(%0) : (!llvm.ptr<i8>) -> memref<2xi64> isref 0 isar1
+cgeist: <WORK><PATH>/ValueCategory.cc:154: void ValueCategory::store(mlir::Location, mlir::OpBuilder &, ValueCategory, bool) const: Assertion `toStore.isReference' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EEPS2_S4_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I <DESIGN> -I <VITIS_INCLUDE> -o <RUN>/parsed.mlir
+1.	<eof> parser at end of file
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  cgeist    0x000055d0204d7987
+1  cgeist    0x000055d0204d555e
+2  cgeist    0x000055d0204d819a
+3  libc.so.6 0x00007f70918f2520
+4  libc.so.6 0x00007f70919469bc pthread_kill + 300
+5  libc.so.6 0x00007f70918f2476 raise + 22
+6  libc.so.6 0x00007f70918d87f3 abort + 211
+7  libc.so.6 0x00007f70918d871b
+8  libc.so.6 0x00007f70918e9e96
+9  cgeist    0x000055d01f399587
+10 cgeist    0x000055d01f320098
+11 cgeist    0x000055d01f353924
+12 cgeist    0x000055d02536c9b4
+13 cgeist    0x000055d021d6c760
+14 cgeist    0x000055d01f358f64
+15 libc.so.6 0x00007f70918d9d90
+16 libc.so.6 0x00007f70918d9e40 __libc_start_main + 128
+17 cgeist    0x000055d01f3170e5
