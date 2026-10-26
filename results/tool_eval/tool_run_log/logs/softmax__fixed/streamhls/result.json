@@ -1,0 +1,21 @@
+{
+  "design_id": "softmax__fixed",
+  "domain": "llm",
+  "tool": "StreamHLS",
+  "source_sha256": "f976fe11e6053596bdf225f06f89c57d08b47caada7d4c2e88c947fbab2af2d2",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_8ap_fixedILi16ELi5EL9ap_q_mode5EL9ap_o_mode3ELi0EES4_",
+  "stage_reached": "parse",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "loc(\"<DESIGN>/top.cpp\":45:28): error: 'math.exp' op operand #0 must be floating-point-like, but got '!llvm.struct<(struct<(struct<(struct<(i32)>)>)>)>'",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 5
+    }
+  ],
+  "status": "parse_failed"
+}

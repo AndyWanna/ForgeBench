@@ -1,0 +1,20 @@
+{
+  "stage_reached": "",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "what():  [AutoSA] Error: Non-uniform dependence detected.",
+  "status": "unclassified_failure",
+  "design_id": "conv_k3__autosa_guard",
+  "domain": "dnn",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "b74aeab9c3d233dff94022eb95423ba553c9c3598ed56b5198167894fe1742c6",
+  "exit_code": 250,
+  "generated_kernels": [],
+  "input_edits": "diagnostic patch conv_k3__autosa_guard.patch; sha256=3479e36e0c8876f062f6e039a47dc2f33b2ac9dadff537264d845420e972ee27",
+  "autosa_args": [
+    "--no-pet-autodetect",
+    "--sa-sizes={}"
+  ],
+  "autosa_stdin": "n\\nn\\nn\\nn\\nn\\nn\\n"
+}

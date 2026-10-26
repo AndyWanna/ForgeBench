@@ -1,0 +1,34 @@
+{
+  "design_id": "rmsnorm__local",
+  "domain": "llm",
+  "tool": "ScaleHLS",
+  "source_sha256": "96515976a783490e9539efd655f7d5da8a0b1154803d83cfde31c20cb3b31da1",
+  "input_edits": "rmsnorm__local.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fPfS0_",
+  "stage_reached": "synth",
+  "rating": "full",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    },
+    {
+      "stage": "synth",
+      "exit_code": 0
+    }
+  ],
+  "status": "synth_passed",
+  "emitted_source_sha256": "5fd5b44d159af3ec4ad8514fe325d29e07605ae10a21be0914b20b419c3573b2"
+}

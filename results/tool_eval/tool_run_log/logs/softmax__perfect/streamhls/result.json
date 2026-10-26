@@ -1,0 +1,32 @@
+{
+  "design_id": "softmax__perfect",
+  "domain": "llm",
+  "tool": "StreamHLS",
+  "source_sha256": "bc07e3307c89ca4f80230965e88f1aedb8fe7d715fe6469390ecc7449fa43fff",
+  "input_edits": "softmax__perfect.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "streamhls-opt: <WORK><PATH>/SmallVector.h:308: llvm::SmallVectorTemplateCommon::const_reference llvm::SmallVectorTemplateCommon<unsigned int>::operator[](llvm::SmallVectorTemplateCommon::size_type) const [T = unsigned int]: Assertion `idx < size()' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "f78a33dc7dca29e8e453b6fa06676899e6ef106fe28c8ca8506d4e2b3f5d98aa",
+    "output_sha256": "1d609863e9d5a94d1df91a222f439da64985f11a775619d2e74eb03353bca72a"
+  }
+}

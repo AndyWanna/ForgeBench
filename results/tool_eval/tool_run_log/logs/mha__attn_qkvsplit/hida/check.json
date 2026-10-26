@@ -1,0 +1,5 @@
+{
+  "verdict": "COMPILE_ERROR",
+  "max_error": "",
+  "detail": "<TMP>/cand.cpp:630:222: error: too few arguments to function \u2018void _Z3topPA128_fS0_S0_S0_S0_(float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128], float (*)[128])\u2019"
+}

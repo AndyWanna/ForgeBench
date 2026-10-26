@@ -1,0 +1,7 @@
+PASS
+Fixed-point comparison: PASS
+FP64 comparison: PASS
+
+Final layer output comparison:
+  resnet34/logits: shape=[1000] codes=PASS mismatches=0 max_code_error=0 FP64=PASS max_abs=0.0123520183612 relative_l2=0.007648993730727063 relative_l2_limit=0.05
+

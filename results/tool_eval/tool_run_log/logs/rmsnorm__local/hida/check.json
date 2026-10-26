@@ -1,0 +1,5 @@
+{
+  "verdict": "COMPILE_ERROR",
+  "max_error": "",
+  "detail": "<TMP>/cand.cpp:55:17: error: expected primary-expression before \u2018float\u2019"
+}

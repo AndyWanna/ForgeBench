@@ -1,0 +1,25 @@
+{
+  "design_id": "mha_rope__local",
+  "domain": "llm",
+  "tool": "ScaleHLS",
+  "source_sha256": "3b90344eb124fbcb42e0b109310c5e18e8bbda68bae0a8fa55385e453426734e",
+  "input_edits": "mha_rope__local.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_S0_S0_S0_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "scalehls-opt: <WORK><PATH>/BufferViewFlowAnalysis.cpp:90: auto mlir::BufferViewFlowAnalysis::build(mlir::Operation *)::(anonymous class)::operator()(mlir::RegionBranchOpInterface) const: Assertion `entrySuccessor.getSuccessor() && \"Invalid entry region without an attached successor region\"' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed"
+}

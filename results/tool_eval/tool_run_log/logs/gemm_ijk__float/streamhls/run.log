@@ -1,0 +1,51 @@
+tool: StreamHLS
+design_id: gemm_ijk__float
+source_sha256: b33ab0d462921a70121d3477abf70c1914b375d77b1a6f224662993334111958
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: streamhls-opt: <WORK><PATH>/Matchers.h:402: bool mlir::matchPattern(mlir::Value, const Pattern &) [Pattern = mlir::detail::constant_op_binder<mlir::Attribute>]: Assertion `value' failed.
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA64_fS0_S0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPA64_fS0_S0_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 139
+Permutation DesignSpaceSize: 16
+Parallelization DesignSpaceSize: 5764801
+Total DesignSpaceSize: 92236816
+streamhls-opt: <WORK><PATH>/Matchers.h:402: bool mlir::matchPattern(mlir::Value, const Pattern &) [Pattern = mlir::detail::constant_op_binder<mlir::Attribute>]: Assertion `value' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir "-streamhls-kernel-pipeline=top-func=_Z3topPA64_fS0_S0_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true" -o <RUN>/transformed.mlir
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  streamhls-opt 0x0000559ac30c7f57
+1  streamhls-opt 0x0000559ac30c5abe
+2  streamhls-opt 0x0000559ac30c860a
+3  libc.so.6     0x00007fec2f010520
+4  libc.so.6     0x00007fec2f0649bc pthread_kill + 300
+5  libc.so.6     0x00007fec2f010476 raise + 22
+6  libc.so.6     0x00007fec2eff67f3 abort + 211
+7  libc.so.6     0x00007fec2eff671b
+8  libc.so.6     0x00007fec2f007e96
+9  streamhls-opt 0x0000559ac2f9a894
+10 streamhls-opt 0x0000559ac2d5fc19
+11 streamhls-opt 0x0000559ac2d5cc7c
+12 streamhls-opt 0x0000559ac114472b
+13 streamhls-opt 0x0000559ac2de61d4
+14 streamhls-opt 0x0000559ac2de6971
+15 streamhls-opt 0x0000559ac2debdfe
+16 streamhls-opt 0x0000559ac2de810b
+17 streamhls-opt 0x0000559ac2de6318
+18 streamhls-opt 0x0000559ac2de6971
+19 streamhls-opt 0x0000559ac2de8fe2
+20 streamhls-opt 0x0000559ac10e7974
+21 streamhls-opt 0x0000559ac10e6be4
+22 streamhls-opt 0x0000559ac2fcdac8
+23 streamhls-opt 0x0000559ac10e1cea
+24 streamhls-opt 0x0000559ac10e1e86
+25 streamhls-opt 0x0000559ac10e2132
+26 streamhls-opt 0x0000559abedbfd0e
+27 libc.so.6     0x00007fec2eff7d90
+28 libc.so.6     0x00007fec2eff7e40 __libc_start_main + 128
+29 streamhls-opt 0x0000559abedbfba5

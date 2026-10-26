@@ -1,0 +1,22 @@
+{
+  "stage_reached": "codegen",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "",
+  "status": "codegen_requires_synthesis",
+  "design_id": "gemm_ikj__autosa",
+  "domain": "gemm",
+  "tool": "AutoSA",
+  "image": "whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72",
+  "source_sha256": "fc74f09eaf61e778f3ec5145787cb1dd8dcf9d81f06b05b12abca4df745a4d07",
+  "exit_code": 0,
+  "generated_kernels": [
+    "output/src/top_kernel.cpp"
+  ],
+  "input_edits": "diagnostic patch gemm_ikj__autosa.patch; sha256=1a80765089be46cd90e9d7d3350ed7df30d2a0a9f7e84c609a890234528cb6bd",
+  "autosa_args": [
+    "--no-pet-autodetect",
+    "--sa-sizes={kernel[]->space_time[3];kernel[]->array_part[16,16,16];kernel[]->latency[4,4]}"
+  ],
+  "autosa_stdin": "n\\nn\\nn\\nn\\nn\\nn\\n"
+}

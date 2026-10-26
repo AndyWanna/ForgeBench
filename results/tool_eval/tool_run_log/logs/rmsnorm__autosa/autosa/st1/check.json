@@ -1,0 +1,5 @@
+{
+  "functional_check": "COMPILE_ERROR",
+  "max_error": "",
+  "detail": "<SRC>/top_kernel.cpp:362:24: error: \u2018fifo_sum_sq_in\u2019 was not declared in this scope"
+}

@@ -1,0 +1,34 @@
+{
+  "design_id": "gemm_kij__local",
+  "domain": "gemm",
+  "tool": "HIDA",
+  "source_sha256": "8c77bfb41276f3a688d38d81c4881f22d1c42af0097c24d395b3bd413131eec1",
+  "input_edits": "gemm_kij__local.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA64_fS0_S0_",
+  "stage_reached": "synth",
+  "rating": "full",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    },
+    {
+      "stage": "synth",
+      "exit_code": 0
+    }
+  ],
+  "status": "synth_passed",
+  "emitted_source_sha256": "257f4cd959799c2325fe7ac3563949cedaf0e347ee379b3417abf019901e2171"
+}

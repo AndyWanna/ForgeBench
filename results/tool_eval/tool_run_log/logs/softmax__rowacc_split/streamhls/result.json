@@ -1,0 +1,32 @@
+{
+  "design_id": "softmax__rowacc_split",
+  "domain": "llm",
+  "tool": "StreamHLS",
+  "source_sha256": "f6bef50293199366dfba583e8d0748207824e6b8ace06d3b8a989ed8dff7eaf4",
+  "input_edits": "softmax__rowacc_split.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "streamhls-opt: <WORK><PATH>/AffineMemAccess.cpp:1293: mlir::AffineMap mlir::streamhls::getMinimalAccessPattern(mlir::Operation *): Assertion `false && \"relevantLoops.size() != mapOperands.size()\"' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "2e2e2d7113b94fd4d56b78778e883ca71833814a48fdd9950f60ef335c991656",
+    "output_sha256": "7a8502a5540dfc0622b398c666cb126a095a1ac48f3d757ed6c18dc5fae051fd"
+  }
+}

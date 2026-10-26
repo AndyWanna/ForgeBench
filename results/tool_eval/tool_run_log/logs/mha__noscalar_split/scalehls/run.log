@@ -1,0 +1,39 @@
+tool: ScaleHLS
+design_id: mha__noscalar_split
+source_sha256: 3c7eb0a0ce4bd0c6bfa4570e11ebb7d2315049095b5552ca425d8e3821facd8e
+input_edits: mha__noscalar_split.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: scalehls-opt: <WORK><PATH>/BufferViewFlowAnalysis.cpp:90: auto mlir::BufferViewFlowAnalysis::build(mlir::Operation *)::(anonymous class)::operator()(mlir::RegionBranchOpInterface) const: Assertion `entrySuccessor.getSuccessor() && "Invalid entry region without an attached successor region"' failed.
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_fS0_S0_S0_S0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/scale/bin/scalehls-opt <RUN>/parsed.mlir '-scalehls-dse-pipeline=top-func=_Z3topPA128_fS0_S0_S0_S0_ target-spec=<WORK><PATH>/config.json' -o <RUN>/transformed.mlir
+exit_code: 139
+scalehls-opt: <WORK><PATH>/BufferViewFlowAnalysis.cpp:90: auto mlir::BufferViewFlowAnalysis::build(mlir::Operation *)::(anonymous class)::operator()(mlir::RegionBranchOpInterface) const: Assertion `entrySuccessor.getSuccessor() && "Invalid entry region without an attached successor region"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+<WORK>/build/scale/bin/scalehls-opt(+0x1a37c43)[0x55b3b2120c43]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a35b5e)[0x55b3b211eb5e]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a3810a)[0x55b3b212110a]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7effeb185520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7effeb1d99bc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7effeb185476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7effeb16b7f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2871b)[0x7effeb16b71b]
+/lib/x86_64-linux-gnu/libc.so.6(+0x39e96)[0x7effeb17ce96]
+<WORK>/build/scale/bin/scalehls-opt(+0x9be97d)[0x55b3b10a797d]
+<WORK>/build/scale/bin/scalehls-opt(+0x19c253e)[0x55b3b20ab53e]
+<WORK>/build/scale/bin/scalehls-opt(+0x19c253e)[0x55b3b20ab53e]
+<WORK>/build/scale/bin/scalehls-opt(+0x9bd27e)[0x55b3b10a627e]
+<WORK>/build/scale/bin/scalehls-opt(+0x9bbccf)[0x55b3b10a4ccf]
+<WORK>/build/scale/bin/scalehls-opt(+0x9b72a3)[0x55b3b10a02a3]
+<WORK>/build/scale/bin/scalehls-opt(+0x188be84)[0x55b3b1f74e84]
+<WORK>/build/scale/bin/scalehls-opt(+0x188c368)[0x55b3b1f75368]
+<WORK>/build/scale/bin/scalehls-opt(+0x189135f)[0x55b3b1f7a35f]
+<WORK>/build/scale/bin/scalehls-opt(+0x18229c2)[0x55b3b1f0b9c2]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a13624)[0x55b3b20fc624]
+<WORK>/build/scale/bin/scalehls-opt(+0x1a14103)[0x55b3b20fd103]
+/lib/x86_64-linux-gnu/libc.so.6(+0x94a83)[0x7effeb1d7a83]
+/lib/x86_64-linux-gnu/libc.so.6(clone+0x44)[0x7effeb268a94]

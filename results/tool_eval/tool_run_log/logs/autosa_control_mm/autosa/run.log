@@ -1,0 +1,4 @@
+command: control_autosa.sh (upstream autosa_tests/mm, documented --sa-sizes, --host-serialize)
+autosa exit_code: 0
+g++ exit_code: 0
+built-in golden check: Failed with 4096 errors!

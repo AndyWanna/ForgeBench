@@ -1,0 +1,8 @@
+{
+  "filename": "tool_eval_logs.tar.gz",
+  "sha256": "3a38bfd65b1396bb8651da0e3a2f055b724932eaa42ac95c7fd2bd401c2a81a9",
+  "bytes": 4545432,
+  "files": 482,
+  "contents": "Full redacted logs of every tool run behind Table 9 (tab:tool-support), plus tool builds, controls and setup tests",
+  "distribution": "Committed next to archive.json and included in the Zenodo release."
+}

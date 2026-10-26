@@ -1,0 +1,109 @@
+{
+    "brams": [
+        {
+            "name": "BRAM_input",
+            "dims": [
+                8,
+                128
+            ]
+        },
+        {
+            "name": "BRAM_gamma",
+            "dims": [
+                128
+            ]
+        },
+        {
+            "name": "BRAM_output",
+            "dims": [
+                8,
+                128
+            ]
+        }
+    ],
+    "drams": [
+        {
+            "name": "DRAM_input",
+            "dims": [
+                8,
+                128
+            ],
+            "bundle": "mem1"
+        },
+        {
+            "name": "DRAM_gamma",
+            "dims": [
+                128
+            ],
+            "bundle": "mem1"
+        },
+        {
+            "name": "DRAM_output",
+            "dims": [
+                8,
+                128
+            ],
+            "bundle": "mem2"
+        }
+    ],
+    "ops": {
+        "load_1": {
+            "func_name": "load",
+            "dims": [
+                8,
+                128
+            ],
+            "args": [
+                "DRAM_input",
+                "BRAM_input"
+            ]
+        },
+        "load_2": {
+            "func_name": "load",
+            "dims": [
+                128
+            ],
+            "args": [
+                "DRAM_gamma",
+                "BRAM_gamma"
+            ]
+        },
+        "norm": {
+            "func_name": "rmsnorm",
+            "dims": [
+                8,
+                128,
+                0.01
+            ],
+            "func_info": [
+                "rms_norm_template.cpp"
+            ],
+            "args": [
+                "BRAM_input",
+                "BRAM_gamma",
+                "BRAM_output"
+            ]
+        },
+        "store": {
+            "func_name": "store",
+            "dims": [
+                8,
+                128
+            ],
+            "args": [
+                "BRAM_output",
+                "DRAM_output"
+            ]
+        }
+    },
+    "output_dram_names": [
+        "DRAM_output"
+    ],
+    "FPGA_name": "xczu9eg-ffvb1156-2-e",
+    "clock_period": 10,
+    "task": [
+        "csynth"
+    ],
+    "data_type": "ap_fixed<16,5>",
+    "top_func_name": "top"
+}

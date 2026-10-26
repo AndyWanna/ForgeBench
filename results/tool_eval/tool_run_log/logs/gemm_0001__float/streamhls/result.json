@@ -1,0 +1,32 @@
+{
+  "design_id": "gemm_0001__float",
+  "domain": "gemm",
+  "tool": "StreamHLS",
+  "source_sha256": "ce62b174a2f31f10b0658b7cd5f2717ab0b58136b5ba3c3b398195172587c60d",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPfPA64_fS1_S_S_S_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed",
+  "ir_compatibility_adapter": {
+    "script": "normalize_stream_dlti.py + stream_handoff.py",
+    "changed": true,
+    "scope": "DLTI integer metadata payload widths only; memref.alloca -> memref.alloc; uncalled helper functions dropped; bufferize-func-args=true",
+    "input_sha256": "33609cbfaf084ffc6f52d35b2ffc4e9dc074e9bd4f7096103e51e8d8cd3ef7bb",
+    "output_sha256": "9d8543ae3a5d9b07cb215f0c5f753fc63e5811c202290298e86542ceeb27839b"
+  }
+}

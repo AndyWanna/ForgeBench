@@ -1,0 +1,48 @@
+tool: StreamHLS
+design_id: gemm_jik__local
+source_sha256: 397e15506fc169f0f97221b0d74e2155b8249304ef07fd065cf19cfc130c3c88
+input_edits: gemm_jik__local.patch
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mlir::affine::AffineForOp>, ArrayRef<unsigned int>): Assertion `isPerfectlyNested(input) && "input not perfectly nested"' failed.
+stage: parse
+command (inside build image): <WORK>/build/stream-frontend/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA64_fS0_S0_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir '-streamhls-kernel-pipeline=top-func=_Z3topPA64_fS0_S0_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true' -o <RUN>/transformed.mlir
+exit_code: 139
+streamhls-opt: <WORK><PATH>/LoopUtils.cpp:1438: unsigned int mlir::affine::permuteLoops(MutableArrayRef<mlir::affine::AffineForOp>, ArrayRef<unsigned int>): Assertion `isPerfectlyNested(input) && "input not perfectly nested"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: <WORK>/build/streamhls/bin/streamhls-opt <RUN>/compatible.mlir "-streamhls-kernel-pipeline=top-func=_Z3topPA64_fS0_S0_ board-dsps=2520 graph-file=<RUN>/graph report-file=<RUN>/report optimize-schedule=false parallelize-nodes=false combined-optimization=false bufferize-func-args=true" -o <RUN>/transformed.mlir
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  streamhls-opt 0x0000558eb7b0af57
+1  streamhls-opt 0x0000558eb7b08abe
+2  streamhls-opt 0x0000558eb7b0b60a
+3  libc.so.6     0x00007f2cbc88b520
+4  libc.so.6     0x00007f2cbc8df9bc pthread_kill + 300
+5  libc.so.6     0x00007f2cbc88b476 raise + 22
+6  libc.so.6     0x00007f2cbc8717f3 abort + 211
+7  libc.so.6     0x00007f2cbc87171b
+8  libc.so.6     0x00007f2cbc882e96
+9  streamhls-opt 0x0000558eb38df403
+10 streamhls-opt 0x0000558eb5bb7088
+11 streamhls-opt 0x0000558eb5bba8c6
+12 streamhls-opt 0x0000558eb5b9721f
+13 streamhls-opt 0x0000558eb78291d4
+14 streamhls-opt 0x0000558eb7829971
+15 streamhls-opt 0x0000558eb782edfe
+16 streamhls-opt 0x0000558eb782b10b
+17 streamhls-opt 0x0000558eb7829318
+18 streamhls-opt 0x0000558eb7829971
+19 streamhls-opt 0x0000558eb782bfe2
+20 streamhls-opt 0x0000558eb5b2a974
+21 streamhls-opt 0x0000558eb5b29be4
+22 streamhls-opt 0x0000558eb7a10ac8
+23 streamhls-opt 0x0000558eb5b24cea
+24 streamhls-opt 0x0000558eb5b24e86
+25 streamhls-opt 0x0000558eb5b25132
+26 streamhls-opt 0x0000558eb3802d0e
+27 libc.so.6     0x00007f2cbc872d90
+28 libc.so.6     0x00007f2cbc872e40 __libc_start_main + 128
+29 streamhls-opt 0x0000558eb3802ba5

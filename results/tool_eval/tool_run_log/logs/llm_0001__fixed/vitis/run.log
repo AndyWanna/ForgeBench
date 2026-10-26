@@ -1,0 +1,65 @@
+command: vitis_hls -f run_hls.tcl
+exit_code: 0
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Oct 17 00:00:34 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source <PATH>/hls.tcl -notrace
+INFO: [HLS 200-10] For user '<USER>' on host '<HOST>' (Linux_x86_64 version 4.18.0-553.159.1.el8_10.x86_64) on Sat Oct 17 00:00:36 EDT 2026
+INFO: [HLS 200-10] On os "Red Hat Enterprise Linux release 8.10 (Ootpa)"
+[middle omitted]
+INFO: [HLS 200-1030] Apply Unified Pipeline Control on module 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2' pipeline 'VITIS_LOOP_210_1_VITIS_LOOP_211_2' pipeline type 'loop pipeline'
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWVALID' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWADDR' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWID' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWLEN' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWSIZE' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWBURST' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWLOCK' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWCACHE' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWPROT' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWQOS' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWREGION' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_AWUSER' to 0.
+WARNING: [RTGEN 206-101] Setting dangling out port 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2/m_axi_mem6_BREADY' to 0.
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top_Pipeline_VITIS_LOOP_210_1_VITIS_LOOP_211_2'.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.16 seconds. CPU system time: 0.02 seconds. Elapsed time: 0.18 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'top' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+WARNING: [RTGEN 206-101] Design contains AXI ports. Reset is fixed to synchronous and active low.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem1' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem2' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem3' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem4' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem6' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem5' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/mem7' to 'm_axi'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_attn_input' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_WQ' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_WK' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_WV' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_norm_output' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_norm_gamma' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'top/DRAM_norm_beta' to 's_axilite & ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'top' to 'ap_ctrl_hs'.
+INFO: [RTGEN 206-100] Bundling port 'DRAM_attn_input', 'DRAM_WQ', 'DRAM_WK', 'DRAM_WV', 'DRAM_norm_output', 'DRAM_norm_gamma' and 'DRAM_norm_beta' to AXI-Lite port control.
+INFO: [RTGEN 206-100] Finished creating RTL model for 'top'.
+INFO: [RTMG 210-278] Implementing memory 'top_BRAM_attn_input_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [RTMG 210-278] Implementing memory 'top_BRAM_WQ_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [RTMG 210-278] Implementing memory 'top_BRAM_norm_gamma_RAM_AUTO_1R1W' using auto RAMs.
+INFO: [HLS 200-111] Finished Creating RTL model: CPU user time: 0.23 seconds. CPU system time: 0.03 seconds. Elapsed time: 0.27 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-111] Finished Generating all RTL models: CPU user time: 0.45 seconds. CPU system time: 0.14 seconds. Elapsed time: 0.6 seconds; current allocated memory: 0.000 MB.
+INFO: [HLS 200-1603] Design has inferred MAXI bursts and missed bursts, see Vitis HLS GUI synthesis summary report for detailed information.
+INFO: [HLS 200-111] Finished Updating report files: CPU user time: 5.95 seconds. CPU system time: 0.08 seconds. Elapsed time: 6.05 seconds; current allocated memory: 0.000 MB.
+INFO: [VHDL 208-304] Generating VHDL RTL for top.
+INFO: [VLOG 209-307] Generating Verilog RTL for top.
+INFO: [HLS 200-790] **** Loop Constraint Status: All loop constraints were NOT satisfied.
+INFO: [HLS 200-789] **** Estimated Fmax: 136.99 MHz
+INFO: [HLS 200-2161] Finished Command csynth_design Elapsed time: 00:01:12; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 65.19 seconds. Total CPU system time: 5.37 seconds. Total elapsed time: 76.92 seconds; peak allocated memory: 0.000 MB.

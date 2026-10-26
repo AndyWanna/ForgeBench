@@ -1,0 +1,29 @@
+\begin{table*}[t]
+\centering
+\caption{\new{m4}{1}{Support of source-to-source HLS tools for \thiswork{} designs, using the \texttt{float} option with minor edits. \emph{Design}: base design of the ML test suite ($\S$.~\ref{sec:ml_testsuite}); \fullcirc{} passes functional verification, \halfcirc{} synthesizes but fails functional verification, \emptycirc{} fails before synthesis. \emph{Ops}: single-operator designs that synthesize (\emph{Synth.}) and that pass functional verification (\emph{FV}), out of those evaluated; bold when all pass. F1--F6: whether the tool handles (\cmark) or fails on (\xmark) each construct.}}
+\label{tab:tool-support}
+\resizebox{\textwidth}{!}{%
+\revfloat{
+\begin{tabular}{l ccc ccc ccc | cccccc}
+\toprule
+\multirow{3}{*}{\textbf{Tool}} & \multicolumn{3}{c}{\textbf{GEMM}} & \multicolumn{3}{c}{\textbf{DNN}} & \multicolumn{3}{c}{\textbf{LLM}} & \multicolumn{6}{c}{\textbf{Constructs}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-16}
+& \multirow{2}{*}{Design} & \multicolumn{2}{c}{Ops} & \multirow{2}{*}{Design} & \multicolumn{2}{c}{Ops} & \multirow{2}{*}{Design} & \multicolumn{2}{c}{Ops} & \multirow{2}{*}{F1} & \multirow{2}{*}{F2} & \multirow{2}{*}{F3} & \multirow{2}{*}{F4} & \multirow{2}{*}{F5} & \multirow{2}{*}{F6} \\
+\cmidrule(lr){3-4}\cmidrule(lr){6-7}\cmidrule(lr){9-10}
+& & Synth. & FV & & Synth. & FV & & Synth. & FV & & & & & & \\
+\midrule
+ScaleHLS~\cite{yeScaleHLSScalableHighlevel2022a} & \fullcirc{}$^\ddagger$ & 6/6 & 2/6 & \halfcirc{} & \textbf{3/3} & \textbf{3/3} & \emptycirc{} & 4/4 & 2/4 & \xmark{} & \xmark{} & \cmark{} & \xmark{} & \xmark{} & \cmark{} \\
+HIDA~\cite{yeHIDAHierarchicalDataflow2024a} & \halfcirc{} & \textbf{6/6} & \textbf{6/6} & \halfcirc{} & \textbf{3/3} & \textbf{3/3} & \fullcirc{} & \textbf{4/4} & \textbf{4/4} & \xmark{} & \xmark{} & \xmark{} & \cmark{} & \xmark{} & \xmark{} \\
+AutoSA~\cite{wangAutoSAPolyhedralCompiler2021a} & \emptycirc{} & 2/2$^\dagger$ & 0/2$^\dagger$ & \emptycirc{} & 2/3 & 0/3 & \emptycirc{} & 2/4 & 0/4 & \xmark{} & \cmark{} & \cmark{} & \xmark{} & \xmark{} & \xmark{} \\
+StreamHLS~\cite{basalamaStreamHLSAutomaticDataflow2025a} & \emptycirc{} & 2/6 & 2/6 & \emptycirc{} & 3/3 & 2/3 & \emptycirc{} & 0/4 & 0/4 & \xmark{} & \xmark{} & \cmark{} & \xmark{} & \xmark{} & \xmark{} \\
+\bottomrule
+\end{tabular}
+}
+}
+\vspace{2pt}
+{\centering\footnotesize
+F1: vendor fixed-point types; F2: file-scope buffers; F3: top-level interface; \\ F4: arbitrary loop order; F5: conditional accesses; F6: scalar reductions. \\
+$^\dagger$ AutoSA was run on two of the six GEMM loop orders (reduction loop innermost and not innermost); it reschedules the loop nest itself and emitted identical kernels for both.
+$^\ddagger$ The base design \texttt{gemm\_0001} synthesizes but computes wrong results; its \texttt{ji} loop-order version (\texttt{gemm\_0004}) passes.
+}
+\end{table*}

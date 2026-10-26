@@ -1,0 +1,25 @@
+{
+  "design_id": "conv_k3__local",
+  "domain": "dnn",
+  "tool": "HIDA",
+  "source_sha256": "4c743cffe20803fc38ca5ca922f05a09943f6064a7f3e575e1d347efee2c39c6",
+  "input_edits": "conv_k3__local.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA14_A14_fPA16_A3_A3_fS1_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "scalehls-opt: <WORK><PATH>/BlockAndValueMapping.h:82: T mlir::BlockAndValueMapping::lookupImpl(T) const [T = mlir::Value]: Assertion `result && \"expected 'from' to be contained within the map\"' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed"
+}

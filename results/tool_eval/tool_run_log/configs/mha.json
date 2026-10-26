@@ -1,0 +1,170 @@
+{
+    "brams": [
+        {
+            "name": "BRAM_input",
+            "dims": [
+                8,
+                128
+            ]
+        },
+        {
+            "name": "BRAM_WQ",
+            "dims": [
+                128,
+                128
+            ]
+        },
+        {
+            "name": "BRAM_WK",
+            "dims": [
+                128,
+                128
+            ]
+        },
+        {
+            "name": "BRAM_WV",
+            "dims": [
+                128,
+                128
+            ]
+        },
+        {
+            "name": "BRAM_output",
+            "dims": [
+                8,
+                128
+            ]
+        }
+    ],
+    "drams": [
+        {
+            "name": "DRAM_input",
+            "dims": [
+                8,
+                128
+            ],
+            "bundle": "mem1"
+        },
+        {
+            "name": "DRAM_WQ",
+            "dims": [
+                128,
+                128
+            ],
+            "bundle": "mem1"
+        },
+        {
+            "name": "DRAM_WK",
+            "dims": [
+                128,
+                128
+            ],
+            "bundle": "mem1"
+        },
+        {
+            "name": "DRAM_WV",
+            "dims": [
+                128,
+                128
+            ],
+            "bundle": "mem1"
+        },
+        {
+            "name": "DRAM_output",
+            "dims": [
+                8,
+                128
+            ],
+            "bundle": "mem2"
+        }
+    ],
+    "ops": {
+        "load_1": {
+            "func_name": "load",
+            "dims": [
+                8,
+                128
+            ],
+            "args": [
+                "DRAM_input",
+                "BRAM_input"
+            ]
+        },
+        "load_2": {
+            "func_name": "load",
+            "dims": [
+                128,
+                128
+            ],
+            "args": [
+                "DRAM_WQ",
+                "BRAM_WQ"
+            ]
+        },
+        "load_3": {
+            "func_name": "load",
+            "dims": [
+                128,
+                128
+            ],
+            "args": [
+                "DRAM_WK",
+                "BRAM_WK"
+            ]
+        },
+        "load_4": {
+            "func_name": "load",
+            "dims": [
+                128,
+                128
+            ],
+            "args": [
+                "DRAM_WV",
+                "BRAM_WV"
+            ]
+        },
+        "attn": {
+            "func_name": "mha",
+            "dims": [
+                8,
+                128,
+                8,
+                16
+            ],
+            "func_info": [
+                "grouped_mha_rope_template.cpp",
+                false,
+                1
+            ],
+            "args": [
+                "BRAM_input",
+                "BRAM_WQ",
+                "BRAM_WK",
+                "BRAM_WV",
+                "BRAM_output",
+                "1"
+            ]
+        },
+        "store": {
+            "func_name": "store",
+            "dims": [
+                8,
+                128
+            ],
+            "args": [
+                "BRAM_output",
+                "DRAM_output"
+            ]
+        }
+    },
+    "output_dram_names": [
+        "DRAM_output"
+    ],
+    "FPGA_name": "xczu9eg-ffvb1156-2-e",
+    "clock_period": 10,
+    "task": [
+        "csynth"
+    ],
+    "data_type": "ap_fixed<16,5>",
+    "top_func_name": "top"
+}

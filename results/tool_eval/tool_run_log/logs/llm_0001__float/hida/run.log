@@ -1,0 +1,41 @@
+tool: HIDA
+design_id: llm_0001__float
+source_sha256: 9e27ca140107f8283cd5691b716578b49124a4573cb3bc7872ed379569eda4a3
+input_edits: none
+image_id: sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e
+first_error: scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute): Assertion `name && value && "expected valid attribute name and value"' failed.
+stage: parse
+command (inside build image): <WORK>/build/scale/bin/cgeist <DESIGN>/top.cpp -function=_Z3topPA128_fS0_S0_S0_S0_PfS1_ -S -memref-fullrank -raise-scf-to-affine -std=c++14 -I<DESIGN> -I<VITIS_INCLUDE> -o <RUN>/parsed.mlir
+exit_code: 0
+
+stage: transform
+command (inside build image): <WORK>/build/hida/bin/scalehls-opt <RUN>/parsed.mlir -hida-cpp-pipeline=top-func=_Z3topPA128_fS0_S0_S0_S0_PfS1_ -o <RUN>/transformed.mlir
+exit_code: 139
+scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute): Assertion `name && value && "expected valid attribute name and value"' failed.
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+<WORK>/build/hida/bin/scalehls-opt(+0x1a5a533)[0x560cf06a9533]
+<WORK>/build/hida/bin/scalehls-opt(+0x1a5844e)[0x560cf06a744e]
+<WORK>/build/hida/bin/scalehls-opt(+0x1a5a9fa)[0x560cf06a99fa]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f34880b6520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f348810a9bc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f34880b6476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f348809c7f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2871b)[0x7f348809c71b]
+/lib/x86_64-linux-gnu/libc.so.6(+0x39e96)[0x7f34880ade96]
+<WORK>/build/hida/bin/scalehls-opt(+0x1954b04)[0x560cf05a3b04]
+<WORK>/build/hida/bin/scalehls-opt(+0x124b5c3)[0x560cefe9a5c3]
+<WORK>/build/hida/bin/scalehls-opt(+0x169c531)[0x560cf02eb531]
+<WORK>/build/hida/bin/scalehls-opt(+0x169c49a)[0x560cf02eb49a]
+<WORK>/build/hida/bin/scalehls-opt(+0x18a9742)[0x560cf04f8742]
+<WORK>/build/hida/bin/scalehls-opt(+0x1871254)[0x560cf04c0254]
+<WORK>/build/hida/bin/scalehls-opt(+0x16e2471)[0x560cf0331471]
+<WORK>/build/hida/bin/scalehls-opt(+0x16e3f8d)[0x560cf0332f8d]
+<WORK>/build/hida/bin/scalehls-opt(+0x18ae7b4)[0x560cf04fd7b4]
+<WORK>/build/hida/bin/scalehls-opt(+0x18aec98)[0x560cf04fdc98]
+<WORK>/build/hida/bin/scalehls-opt(+0x18b3c8f)[0x560cf0502c8f]
+<WORK>/build/hida/bin/scalehls-opt(+0x18452f2)[0x560cf04942f2]
+<WORK>/build/hida/bin/scalehls-opt(+0x1a35f14)[0x560cf0684f14]
+<WORK>/build/hida/bin/scalehls-opt(+0x1a369f3)[0x560cf06859f3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x94a83)[0x7f3488108a83]
+/lib/x86_64-linux-gnu/libc.so.6(clone+0x44)[0x7f3488199a94]

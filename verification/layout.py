@@ -1,0 +1,60 @@
+"""Where operator verification inputs live.
+
+    verification/operators/<operator>/
+        variants/<domain>/<operator>[__<variant>].json  the design configs that are verified (<operator>.json for operators with no
+                                                        compute-affecting parameter)
+        input.txt                                       (optional) static inputs
+
+`<operator>` is the generator op name (gemm, vmm, mmv, dot_product, conv, batchnorm, maxpool, adaptive_avgpool, matrix_add, mha, swa,
+matmul, layernorm, rmsnorm, elementwise_mult, dropout, activation): the 17 operators of the paper's Table 2. The file stem
+(`activation__relu`, `vmm__bias0`, `batchnorm`) is unique within a domain and is the variant's historical short id.
+"""
+import os
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+OPERATORS_DIR = os.path.join(HERE, "operators")
+DOMAINS = ("gemm", "dnn", "llm")
+
+
+def variant_name(operator, stem):
+    """'vmm__bias0' -> 'bias0'; the bare 'batchnorm' -> 'default'."""
+    return "default" if stem == operator else stem[len(operator) + 2:]
+
+
+def variants(domain=None, operator=None):
+    """All verified design configs as dicts: domain, operator, variant, stem, id (ops/<domain>/<stem>), path."""
+    out = []
+    if not os.path.isdir(OPERATORS_DIR):
+        return out
+    for op in sorted(os.listdir(OPERATORS_DIR)):
+        vdir = os.path.join(OPERATORS_DIR, op, "variants")
+        if not os.path.isdir(vdir) or (operator and op != operator):
+            continue
+        for d in sorted(os.listdir(vdir)):
+            if domain and d != domain:
+                continue
+            ddir = os.path.join(vdir, d)
+            for fn in sorted(os.listdir(ddir)):
+                if fn.endswith(".json"):
+                    stem = os.path.splitext(fn)[0]
+                    out.append({"domain": d, "operator": op, "variant": variant_name(op, stem), "stem": stem,
+                                "id": f"ops/{d}/{stem}", "path": os.path.join(ddir, fn)})
+    return sorted(out, key=lambda x: (x["domain"], x["stem"]))
+
+
+def design_variants():
+    """Whole multi-operator designs verified end to end: the generated programs of the paper's modularization study (Table 10)
+    that have a JSON config in the repo (manifest/designs/modular.csv: role=program, construction=generated). id: designs/<domain>/<stem>."""
+    import csv
+    path = os.path.join(os.path.dirname(HERE), "manifest", "designs", "modular.csv")
+    out = []
+    if not os.path.isfile(path):
+        return out
+    with open(path, newline="") as f:
+        for r in csv.DictReader(f):
+            if r["role"] != "program" or r["construction"] != "generated" or not r["config_path"]:
+                continue
+            stem = os.path.splitext(os.path.basename(r["config_path"]))[0]
+            out.append({"domain": r["domain"], "operator": "design", "variant": stem, "stem": stem, "id": f"designs/{r['domain']}/{stem}",
+                        "path": os.path.join(os.path.dirname(HERE), r["config_path"])})
+    return sorted(out, key=lambda x: (x["domain"], x["stem"]))

@@ -1,0 +1,34 @@
+{
+  "design_id": "softmax__rowacc_split",
+  "domain": "llm",
+  "tool": "ScaleHLS",
+  "source_sha256": "f6bef50293199366dfba583e8d0748207824e6b8ace06d3b8a989ed8dff7eaf4",
+  "input_edits": "softmax__rowacc_split.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fS0_",
+  "stage_reached": "synth",
+  "rating": "full",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    },
+    {
+      "stage": "synth",
+      "exit_code": 0
+    }
+  ],
+  "status": "synth_passed",
+  "emitted_source_sha256": "942323bf2073aae91f390a553f9dc2715504b7d7511fbdbefa6a3587d05e424d"
+}

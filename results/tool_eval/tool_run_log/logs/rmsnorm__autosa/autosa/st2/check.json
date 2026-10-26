@@ -1,0 +1,5 @@
+{
+  "functional_check": "COMPILE_ERROR",
+  "max_error": "",
+  "detail": "<SRC>/top_kernel.h:37:43: error: \u2018sum_sq_t0\u2019 has not been declared"
+}

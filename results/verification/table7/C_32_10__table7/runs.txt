@@ -1,0 +1,30 @@
+This run combines four C-sim runs of experiments/table7/C_32_10__table7.json (same settings). Three programs were re-run
+after a config fix; their rows, configs and logs (run.<fix>.log.gz) replace the first run's. The committed configs in
+designs/configs/modular_designs/ are the fixed ones, so re-running the config reproduces every row.
+
+designs/conv/activation_op1	C_32_10__table7r2_pm1
+designs/conv/activation_op2	C_32_10__table7r2_pm1
+designs/conv/activation_op3	C_32_10__table7r2_pm1
+designs/conv/conv_A	C_32_10__table7r2_pm1
+designs/conv/conv_B	C_32_10__table7r2_pm1
+designs/conv/conv_C	C_32_10__table7r2_pm1
+designs/conv/conv_block_op1	C_32_10__table7r2_pm1
+designs/conv/conv_block_op2	C_32_10__table7r2_pm1
+designs/conv/conv_block_op3	C_32_10__table7r2_convblock3_fix
+designs/gemm/diff_dims_p1	C_32_10__table7r2_pm1
+designs/gemm/diff_dims_p2	C_32_10__table7r2_pm1
+designs/gemm/diff_dims_p3	C_32_10__table7r2_pm1
+designs/gemm/diff_orders_p1	C_32_10__table7r2_pm1
+designs/gemm/diff_orders_p2	C_32_10__table7r2_pm1
+designs/gemm/diff_orders_p3	C_32_10__table7r2_pm1
+designs/gemm/mult_op_p1	C_32_10__table7r2_pm1
+designs/gemm/mult_op_p2	C_32_10__table7r2_pm1
+designs/gemm/mult_op_p3	C_32_10__table7r2_pm1
+designs/gemm/vec_mtx_p1	C_32_10__table7r2_pm1
+designs/gemm/vec_mtx_p2	C_32_10__table7r2_vecmtx_fix
+designs/llm/attn_breakdown_op1	C_32_10__table7r2_pm1
+designs/llm/attn_breakdown_op2	C_32_10__table7r2_pm1
+designs/llm/gpt_transformer_p1	C_32_10__table7r2_pm1
+designs/llm/llama_transformer_p2	C_32_10__table7r2_llamaswish
+designs/llm/tiled_attn_p1	C_32_10__table7r2_pm1
+designs/llm/tiled_attn_p2	C_32_10__table7r2_pm1

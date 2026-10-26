@@ -1,0 +1,133 @@
+--- a/top.cpp
++++ b/top.cpp
+@@ -12,11 +12,6 @@
+ 
+ typedef float data_t;
+ 
+-data_t BRAM_input[8][128];
+-data_t BRAM_WQ[128][128];
+-data_t BRAM_WK[128][128];
+-data_t BRAM_WV[128][128];
+-data_t BRAM_output[8][128];
+ 
+ void load_8_128_float(data_t input[8][128], data_t output[8][128])
+ {
+@@ -59,7 +54,7 @@
+ {
+     const int num_heads = 8;   // total number of heads (must equal DIM_OUT / HEAD_DIM)
+     const int head_dim = 16;       // dimension per head
+-    const int heads_per_group = num_heads / groups;
++    const int heads_per_group = num_heads / 1;   // groups is always 1 at the call site
+     const data_t scale = (data_t)0.25;   // 1/sqrt(head_dim), computed at generation time (head_dim itself may not fit in data_t)
+ 
+     data_t Q[8][128];
+@@ -75,9 +70,25 @@
+             Q[seq][dout] = 0;
+             K[seq][dout] = 0;
+             V[seq][dout] = 0;
++        }
++    }
++    for (int seq = 0; seq < 8; seq++) {
++        for (int dout = 0; dout < 128; dout++) {
+             for (int din = 0; din < 128; din++) {
+                 Q[seq][dout] += input[seq][din] * W_q[dout][din];
++            }
++        }
++    }
++    for (int seq = 0; seq < 8; seq++) {
++        for (int dout = 0; dout < 128; dout++) {
++            for (int din = 0; din < 128; din++) {
+                 K[seq][dout] += input[seq][din] * W_k[dout][din];
++            }
++        }
++    }
++    for (int seq = 0; seq < 8; seq++) {
++        for (int dout = 0; dout < 128; dout++) {
++            for (int din = 0; din < 128; din++) {
+                 V[seq][dout] += input[seq][din] * W_v[dout][din];
+             }
+         }
+@@ -112,7 +123,7 @@
+     /*==== END OPTIONAL ROPE LOGIC ====*/
+ 
+     // Compute Attention per head in groups.
+-    for (int g = 0; g < groups; g++) {
++    for (int g = 0; g < 1; g++) {
+         for (int h = 0; h < heads_per_group; h++) {
+             int head_index = g * heads_per_group + h;
+             data_t scores[8][8];
+@@ -121,6 +132,10 @@
+             for (int i = 0; i < 8; i++) {
+                 for (int j = 0; j < 8; j++) {
+                     scores[i][j] = 0;
++                }
++            }
++            for (int i = 0; i < 8; i++) {
++                for (int j = 0; j < 8; j++) {
+                     for (int d = 0; d < head_dim; d++) {
+                         #pragma HLS UNROLL factor=1
+                         int idx = head_index * head_dim + d;
+@@ -131,31 +146,35 @@
+             }
+ 
+             // Softmax for this head.
+-            for (int i = 0; i < 8; i++) {
+-                data_t sum_exp = 0;
+-                data_t max_score = scores[i][0];
++            data_t sum_exp[8];
++            data_t max_score[8];
++            for (int i = 0; i < 8; i++) sum_exp[i] = 0;
++            for (int i = 0; i < 8; i++) max_score[i] = scores[i][0];
++            for (int i = 0; i < 8; i++) {
+                 for (int j = 1; j < 8; j++) {
+-                    if (scores[i][j] > max_score)
+-                        max_score = scores[i][j];
+-                }
+-                for (int j = 0; j < 8; j++) {
+-                    scores[i][j] = hls::exp(scores[i][j] - max_score);
+-                    sum_exp += scores[i][j];
+-                }
+-                for (int j = 0; j < 8; j++) {
+-                    scores[i][j] /= sum_exp;
++                    max_score[i] = (scores[i][j] > max_score[i]) ? (data_t)scores[i][j] : (data_t)max_score[i];
++                }
++                for (int j = 0; j < 8; j++) {
++                    scores[i][j] = hls::exp(scores[i][j] - max_score[i]);
++                    sum_exp[i] += scores[i][j];
++                }
++                for (int j = 0; j < 8; j++) {
++                    scores[i][j] /= sum_exp[i];
+                 }
+             }
+ 
+             // Compute context: scores x V for head head_index.
++            for (int i = 0; i < 8; i++) {
++                for (int d = 0; d < head_dim; d++) {
++                    output[i][head_index * head_dim + d] = 0;
++                }
++            }
+             for (int i = 0; i < 8; i++) {
+                 for (int d = 0; d < head_dim; d++) {
+                     #pragma HLS UNROLL factor=1
+-                    data_t context = 0;
+                     for (int j = 0; j < 8; j++) {
+-                        context += scores[i][j] * V[j][head_index * head_dim + d];
++                        output[i][head_index * head_dim + d] += scores[i][j] * V[j][head_index * head_dim + d];
+                     }
+-                    output[i][head_index * head_dim + d] = context;
+                 }
+             }
+         }
+@@ -178,6 +197,12 @@
+     #pragma HLS interface m_axi port=DRAM_WK offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_WV offset=slave bundle=mem1
+     #pragma HLS interface m_axi port=DRAM_output offset=slave bundle=mem2
++    data_t BRAM_input[8][128];
++    data_t BRAM_WQ[128][128];
++    data_t BRAM_WK[128][128];
++    data_t BRAM_WV[128][128];
++    data_t BRAM_output[8][128];
++
+ 
+     load_8_128_float(DRAM_input, BRAM_input);
+     load_128_128_float(DRAM_WQ, BRAM_WQ);

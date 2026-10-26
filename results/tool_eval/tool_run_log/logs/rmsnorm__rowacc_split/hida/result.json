@@ -1,0 +1,29 @@
+{
+  "design_id": "rmsnorm__rowacc_split",
+  "domain": "llm",
+  "tool": "HIDA",
+  "source_sha256": "5bb14f361a218764a85267985b85501c5aaf411b8bb875710c2a9c48d1bb6024",
+  "input_edits": "rmsnorm__rowacc_split.patch",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPA128_fPfS0_",
+  "stage_reached": "codegen",
+  "rating": "",
+  "failure_category": "",
+  "error_head": "",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 0
+    },
+    {
+      "stage": "codegen",
+      "exit_code": 0
+    }
+  ],
+  "status": "codegen_requires_synthesis"
+}

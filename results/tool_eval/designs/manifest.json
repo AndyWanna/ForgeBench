@@ -1,0 +1,45 @@
+{
+  "generator_commit": "6b7c510dcc8db43bfcc269da6348dd84b135f082",
+  "selection": "The first design of each domain in manifest/designs/: the base designs of the ML test suite.",
+  "cases": [
+    {
+      "design_id": "gemm_0001",
+      "domain": "gemm",
+      "config_path": "designs/configs/ml_sweep/gemm/GEMM_config_M64_K64_N64_UM1_UK1_UN1_GORDna_VM1ij_VM2ij_BIAS_False_INLINE_True_COMPORDER_option_1_ap_fixed_16_5_.json",
+      "config_sha256": "27fadf55ed7bcfa83923eec40ddc4632b34f376cf573988507f4853890493fde",
+      "source_sha256": {
+        "run_hls.tcl": "43ae3b0bb2b1e34db985e1a69f6ce5952243f159b36ae44777c15a2da31d6a96",
+        "tb_top.cpp": "68f0ac583b0d67bf8dbb564882aa802dafcec43c7a917557ae1c884d16d9c12b",
+        "top.cpp": "584b227faf3a3730b1c7ca9ceccce5f3be4c0c39c555f6e6e642e80dbf368803",
+        "top.h": "a66283efd9aae1b6d1a096815571ec96c1c2412d537f20391129cec5da5b6c6b"
+      },
+      "input_edits": "none"
+    },
+    {
+      "design_id": "dnn_0001",
+      "domain": "dnn",
+      "config_path": "designs/configs/ml_sweep/dnn/config_CIN16_HIN56_WIN56_COUT16_K1_UFCIN1_UFCOU1_PAD1_STRIDE1_BIASTrue_conv2d_ACTIVATIONrelu_ap_fixed_16_5_.json",
+      "config_sha256": "dc7c65419d348da029dfac38ebeb79163e790f952c12ce52ae51eff4f86d71f5",
+      "source_sha256": {
+        "run_hls.tcl": "931a2a289dcccdddf4385be04e21cfaeae760723624d926dc6f053ee19aa289f",
+        "tb_top.cpp": "04f7b2e2e85d2b2e749ed26d988e9386dbe750c167932c3e2276eac53d21a13e",
+        "top.cpp": "20344b90de63067426b0feeec58146856b53bee3228c6b78d7e90936fa328dbe",
+        "top.h": "d4d73cb8d0cbff90c7b0a92d5a415af2efc7eda9635a354c3d5136554ec27034"
+      },
+      "input_edits": "none"
+    },
+    {
+      "design_id": "llm_0001",
+      "domain": "llm",
+      "config_path": "designs/configs/ml_sweep/llm/ATTN_config_S8_D128_H8_HD16_G1_layer_norm_ROPETrue_UHD1_ap_fixed_16_5_.json",
+      "config_sha256": "3773c3365a47ee1f40f8d4cfc499d882b07e51e4432a30f13189de2c32815c58",
+      "source_sha256": {
+        "run_hls.tcl": "4bf7b08f7d257714d8cd63864ca56b8ea3530a3be424f7e0d968724f103f0248",
+        "tb_top.cpp": "ae399ed8041e20257c0393f95e259dc93787698c905ba9b8b9d665158893559a",
+        "top.cpp": "3d0895e4512d87b1ffd6eba9d8a389959af8f70731b9a9e344736ec0bc59d4f0",
+        "top.h": "28fb9de0123a0c479410ee0b01f0ade271fbae9b2c6268d0fbf6de662c1e36ac"
+      },
+      "input_edits": "none"
+    }
+  ]
+}

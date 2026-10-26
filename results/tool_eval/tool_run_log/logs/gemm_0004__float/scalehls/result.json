@@ -1,0 +1,25 @@
+{
+  "design_id": "gemm_0004__float",
+  "domain": "gemm",
+  "tool": "ScaleHLS",
+  "source_sha256": "eca1fe0efafd98f8bb8b8fe5f13921cda987c3bf490017c160b27dae7a2deb64",
+  "input_edits": "none",
+  "pipeline_options": "",
+  "image_id": "sha256:8ddda1ff0d1fd218f1d8dcc2302d13fc5e18901b0c8a62a625248de258c8528e",
+  "top_symbol": "_Z3topPfPA64_fS1_S_S_S_",
+  "stage_reached": "transform",
+  "rating": "none",
+  "failure_category": "",
+  "error_head": "scalehls-opt: <WORK><PATH>/Attributes.cpp:28: mlir::NamedAttribute::NamedAttribute(mlir::StringAttr, mlir::Attribute): Assertion `name && value && \"expected valid attribute name and value\"' failed.",
+  "stages": [
+    {
+      "stage": "parse",
+      "exit_code": 0
+    },
+    {
+      "stage": "transform",
+      "exit_code": 139
+    }
+  ],
+  "status": "transform_failed"
+}

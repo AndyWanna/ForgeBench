@@ -1,0 +1,22 @@
+design_id: mha__autosa_scores
+domain: llm
+input_edits: diagnostic patch mha__autosa_scores.patch; sha256=db7fbc2111e19bbd29d2a79d2b5f8c70adbf5c17111d35b7754b4daca68e0107
+source_sha256: 17befa34f27162a5dbe3869b3edbb988cce07bb27fae6c950233d2975e84364b
+image: whbldhwj/autosa@sha256:b9318c507d8e9876e363ad2cb3a7913ef743a95eb02517a538ea7f8ec0225b72
+command (inside pinned container): ./autosa <DESIGN>/top.cpp --config=./autosa_config/autosa_config.json --target=autosa_hls_c --output-dir=<WORK>/output --hls --pet-autodetect -I<DESIGN> -I<VITIS_INCLUDE> -I<SYSTEM_INCLUDE>/c++/9 -I<SYSTEM_INCLUDE>/x86_64-linux-gnu/c++/9 --no-pet-autodetect '--sa-sizes={}'
+exit_code: 1
+status: parse_failed
+<PATH>/ld: <PATH>/Scrt1.o: in function `_start':
+(.text+0x24): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+[AutoSA] Post-processing the generated code...
+Traceback (most recent call last):
+  File "<TOOL_ROOT>/autosa", line 105, in <module>
+    process = subprocess.run(cmd.split(), env=my_env)
+  File "<PATH>/subprocess.py", line 493, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "<PATH>/subprocess.py", line 858, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "<PATH>/subprocess.py", line 1704, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '<WORK>/output/src/top_gen'
